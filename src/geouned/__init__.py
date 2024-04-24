@@ -7,5 +7,5 @@ try:
 except:
     pass
 
-from .GEOUNED import *
-from .GEOReverse import *
+from .geouned import *
+from .georeverse import *
