@@ -47,13 +47,20 @@ def write_geometry(
             outSphere = None
 
         mcnpfile = McnpInput(
-            MetaList, Surfaces, step_file, title, vol_sdef, vol_card, ucard, dummy_mat
+            Meta=MetaList,
+            Surfaces=Surfaces,
+            step_file=step_file, # todo remove arg, this is just used if the title is none
+            title=title,
+            vol_sdef=vol_sdef,
+            vol_card=vol_card,
+            ucard=ucard,
+            dummy_mat=dummy_mat,
         )
         mcnpfile.set_sdef((outSphere, outBox))
         mcnpfile.write_input(mcnpFilename)
 
     if "openmc_xml" in out_format or "openmc_py" in out_format:
-        OMCFile = OpenmcInput(MetaList, Surfaces)
+        OMCFile = OpenmcInput(Meta=MetaList, Surfaces=Surfaces)
 
     if "openmc_xml" in out_format:
         omcFilename = geometry_name + ".xml"

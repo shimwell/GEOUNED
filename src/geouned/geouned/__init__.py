@@ -474,7 +474,7 @@ class Geouned:
             else:
                 init = 0
             MetaVoid = void.void_generation(
-                MetaList=MetaList,
+                MetaList=MetaReduced,
                 EnclosureList=EnclosureList,
                 Surfaces=Surfaces,
                 UniverseBox=UniverseBox,
@@ -520,7 +520,7 @@ class Geouned:
             # if a solid belong to several enclosure, its definition will be written
             # for the highest enclosure level or if same enclosure level in the first
             # enclosure found
-            MetaList = sort_enclosure(MetaList, MetaVoid, cellOffSet)
+            MetaList = get_sort_enclosure(MetaList, MetaVoid, cellOffSet)
         else:
             # remove Null Cell and apply cell numbering offset
             deleted = []
@@ -574,7 +574,7 @@ class Geouned:
             cell_summary_file=self.cell_summary_file,
             out_format=self.out_format,
             geometry_name=self.geometry_name,
-            step_file=self.step_file,
+            step_file=self.step_file, # todo remove arg, this is just used if title is none
             title=self.title,
             vol_sdef=self.vol_sdef,
             vol_card=self.vol_card,
@@ -754,7 +754,7 @@ def exclude_cells(MetaList, labelList):
     return voidMeta
 
 
-def sort_enclosure(MetaList, MetaVoid, offSet=0):
+def get_sort_enclosure(MetaList, MetaVoid, offSet=0):
 
     newList = {}
     for m in MetaVoid:
