@@ -13,8 +13,8 @@ from ..utils import functions as UF
 from ..utils import geometry_gu as GU
 from ..utils.basic_functions_part1 import is_in_line, is_in_plane, is_parallel, is_same_value
 from ..utils.basic_functions_part2 import is_duplicate_in_list
-from ..utils.Options.classes import Options as opt
-from ..utils.Options.classes import Tolerances as tol
+from ..utils.options.classes import Options as opt
+from ..utils.options.classes import Tolerances as tol
 
 twoPi = math.pi * 2
 
@@ -771,7 +771,7 @@ def split_planes_org(Solids, UniverseBox):
                 if len(comsolid.Solids) == 1:
                     if (
                         abs(comsolid.Solids[0].Volume - base.Volume) / base.Volume
-                        > tol.relativePrecision
+                        > tol.relative_precision
                     ):
                         if opt.verbose:
                             print(

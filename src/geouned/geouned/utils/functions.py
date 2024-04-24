@@ -17,8 +17,8 @@ from .basic_functions_part1 import (
     TorusParams,
     is_parallel,
 )
-from .Options.classes import Options
-from .Options.classes import Tolerances as tol
+from .options.classes import Options
+from .options.classes import Tolerances as tol
 from . import basic_functions_part2 as BF
 
 

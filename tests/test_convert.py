@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from geouned import GEOUNED
+from geouned import Geouned
 
 path_to_cad = Path("testing/inputSTEP")
 step_files = list(path_to_cad.rglob("*.stp")) + list(path_to_cad.rglob("*.step"))
@@ -19,27 +19,27 @@ def test_conversion(input_step_file):
 
     # creates the config file contents
     template = (
-        "[Files]\n"
+        "[files]\n"
         "title = 'Input Test'\n"
-        f"stepFile = {input_step_file.resolve()}\n"
-        f"geometryName = {output_filename_stem.resolve()}\n"
-        "outFormat = ('mcnp', 'openMC_XML')\n"
-        "[Parameters]\n"
-        "compSolids = False\n"
-        "volCARD = False\n"
-        "volSDEF = True\n"
-        "voidGen = True\n"
-        "dummyMat = True\n"
-        "minVoidSize = 100\n"
-        "cellSummaryFile = False\n"
-        "cellCommentFile = False\n"
+        f"step_file = {input_step_file.resolve()}\n"
+        f"geometry_name = {output_filename_stem.resolve()}\n"
+        "out_format = ('mcnp', 'openMC_XML')\n"
+        "[parameters]\n"
+        "comp_solids = False\n"
+        "vol_card = False\n"
+        "vol_sdef = True\n"
+        "void_gen = True\n"
+        "dummy_mat = True\n"
+        "min_void_size = 100\n"
+        "cell_summary_file = False\n"
+        "cell_comment_file = False\n"
         "debug = False\n"
         "simplify = no\n"
-        "[Options]\n"
-        "forceCylinder = False\n"
-        "splitTolerance = 0\n"
-        "newSplitPlane = True\n"
-        "nPlaneReverse = 0\n"
+        "[options]\n"
+        "force_cylinder = False\n"
+        "split_tolerance = 0\n"
+        "new_split_plane = True\n"
+        "n_plane_reverse = 0\n"
     )
 
     with open(output_dir / "config.ini", mode="w") as file:
@@ -50,10 +50,10 @@ def test_conversion(input_step_file):
     output_filename_stem.with_suffix(".xml").unlink(missing_ok=True)
 
     inifile = f"{output_dir/'config.ini'}"
-    GEO = GEOUNED(inifile)
-    GEO.SetOptions()
-    GEO.outFormat = ("mcnp", "openMC_XML")
-    GEO.Start()
+    GEO = Geouned(inifile)
+    GEO.set_options()
+    GEO.out_format = ("mcnp", "openMC_XML")
+    GEO.start()
 
     assert output_filename_stem.with_suffix(".mcnp").exists()
     assert output_filename_stem.with_suffix(".xml").exists()

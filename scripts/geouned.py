@@ -39,8 +39,8 @@ else:
 
 if not runReverse:
     GEO = GEOUNED.GEOUNED(inifile)
-    GEO.SetOptions()
-    GEO.Start()
+    GEO.set_options()
+    GEO.start()
 
 else:
     print(inifile)

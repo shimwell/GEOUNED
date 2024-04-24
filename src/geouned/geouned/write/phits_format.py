@@ -19,7 +19,7 @@ import FreeCAD
 from ..code_version import *
 from ..utils.basic_functions_part1 import is_opposite, points_to_coeffs
 from ..utils.functions import Surfaces_dict
-from ..utils.Options.classes import Options as opt
+from ..utils.options.classes import Options as opt
 from .functions import (
     CellString,
     phits_surface,
@@ -33,11 +33,11 @@ class PhitsInput:
         self.Title = setting["title"]
         self.VolSDEF = setting["vol_sdef"]
         self.VolCARD = setting["vol_card"]
-        self.U0CARD = setting["UCARD"]
+        self.U0CARD = setting["ucard"]
         self.DummyMat = setting["dummy_mat"]
-        self.Matfile = setting["matFile"]
-        self.voidMat = setting["voidMat"]
-        self.startCell = setting["startCell"]
+        self.Matfile = setting["mat_file"]
+        self.void_mat = setting["void_mat"]
+        self.start_cell = setting["start_cell"]
         self.Cells = Meta
         self.Options = {"Volume": self.VolCARD, "Universe": self.U0CARD}
 
@@ -216,15 +216,15 @@ $ **************************************************************
 
             elif cell.MatInfo == "Graveyard_in":
                 cell.MatInfo = "Inner void"
-                if self.voidMat != []:
-                    self.Materials.add(self.voidMat[0])
-                    if abs(self.voidMat[1]) < 1e-2:
+                if self.void_mat != []:
+                    self.Materials.add(self.void_mat[0])
+                    if abs(self.void_mat[1]) < 1e-2:
                         cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(
-                            index, self.voidMat[0], self.voidMat[1]
+                            index, self.void_mat[0], self.void_mat[1]
                         )
                     else:
                         cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(
-                            index, self.voidMat[0], self.voidMat[1]
+                            index, self.void_mat[0], self.void_mat[1]
                         )
                 else:
                     cellHeader = "{:<5d} {:<5d}  ".format(index, 0)
@@ -287,13 +287,13 @@ $ **************************************************************
                 cell.Definition.elements = newInnerVoidCell
 
                 inclSolidCells = ""
-                startVoidIndex = self.__solidCells__ + self.startCell
-                eliminated_endVoidIndex = self.__cells__ + self.startCell - 3
+                startVoidIndex = self.__solidCells__ + self.start_cell
+                eliminated_endVoidIndex = self.__cells__ + self.start_cell - 3
 
-                if self.startCell == startVoidIndex - 1:
-                    inclSolidCells = "{:1s}#{}".format("", self.startCell)
+                if self.start_cell == startVoidIndex - 1:
+                    inclSolidCells = "{:1s}#{}".format("", self.start_cell)
                 else:
-                    for i in range(self.startCell, startVoidIndex):
+                    for i in range(self.start_cell, startVoidIndex):
                         inclSolidCells += "{:1s}#{}".format("", i)
 
                 if startVoidIndex == eliminated_endVoidIndex:
@@ -304,15 +304,15 @@ $ **************************************************************
                     cell.Comments = some_mervoid_str.format(
                         startVoidIndex, eliminated_endVoidIndex
                     )
-                if self.voidMat != []:
-                    self.Materials.add(self.voidMat[0])
-                    if abs(self.voidMat[1]) < 1e-2:
+                if self.void_mat != []:
+                    self.Materials.add(self.void_mat[0])
+                    if abs(self.void_mat[1]) < 1e-2:
                         cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(
-                            index, self.voidMat[0], self.voidMat[1]
+                            index, self.void_mat[0], self.void_mat[1]
                         )
                     else:
                         cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(
-                            index, self.voidMat[0], self.voidMat[1]
+                            index, self.void_mat[0], self.void_mat[1]
                         )
                 else:
                     cellHeader = "{:<5d} {:<5d}  ".format(index, 0)
@@ -415,8 +415,8 @@ $ **************************************************************
 
         vol = "{:5s}reg{:5s}vol\n".format("", "")
 
-        startVoidIndex = self.__solidCells__ + self.startCell
-        eliminated_endVoidIndex = self.__cells__ + self.startCell - 3
+        startVoidIndex = self.__solidCells__ + self.start_cell
+        eliminated_endVoidIndex = self.__cells__ + self.start_cell - 3
 
         enclenvChk = []
         enclenvChk = self.__step_file_label_chk__(self.step_file)

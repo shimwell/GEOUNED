@@ -25,7 +25,7 @@ from .decompose import decom_one as Decom
 from .load_file import load_step as Load
 from .utils import functions as UF
 from .utils.boolean_solids import build_c_table_from_solids
-from .utils.Options.classes import mcnp_numeric_format, Options, Tolerances
+from .utils.options.classes import mcnp_numeric_format, Options, Tolerances
 from .void import void as void
 from .write.functions import write_mcnp_cell_def
 from .write.write_files import write_geometry
@@ -38,47 +38,47 @@ class Geouned:
         self.__dict__ = dict()
         self.__dict__["step_file"] = ""
         self.__dict__["geometry_name"] = ""
-        self.__dict__["matFile"] = ""
+        self.__dict__["mat_file"] = ""
         self.__dict__["out_format"] = ("mcnp",)
-        self.__dict__["title"] = title
+        self.title = title
         self.__dict__["void_gen"] = True
         self.__dict__["debug"] = False
         self.__dict__["comp_solids"] = True
         self.__dict__["vol_sdef"] = False
-        self.__dict__["dummy_mat"] = False
+        self.__dict__["dummyMat"] = False
         self.__dict__["vol_card"] = True
-        self.__dict__["UCARD"] = None
+        self.__dict__["ucard"] = None
         self.__dict__["simplify"] = "No"
-        self.__dict__["cellRange"] = []
-        self.__dict__["exportSolids"] = ""
+        self.__dict__["cell_range"] = []
+        self.__dict__["export_solids"] = ""
         self.__dict__["min_void_size"] = 200  # units mm
-        self.__dict__["maxSurf"] = 50
-        self.__dict__["maxBracket"] = 30
-        self.__dict__["voidMat"] = []
-        self.__dict__["voidExclude"] = []
-        self.__dict__["startCell"] = 1
-        self.__dict__["startSurf"] = 1
+        self.__dict__["max_surf"] = 50
+        self.__dict__["max_bracket"] = 30
+        self.__dict__["void_mat"] = []
+        self.__dict__["void_exclude"] = []
+        self.__dict__["start_cell"] = 1
+        self.__dict__["start_surf"] = 1
         self.__dict__["cell_comment_file"] = False
         self.__dict__["cell_summary_file"] = True
         self.__dict__["sort_enclosure"] = False
 
     def set_options(self):
         toleranceKwrd = (
-            "relativeTolerance",
-            "relativePrecision",
-            "singleValue",
-            "generalDistance",
-            "generalAngle",
-            "planeDistance",
-            "planeAngle",
-            "cylinderDistance",
-            "cylinderAngle",
-            "sphereDistance",
-            "coneDistance",
-            "coneAngle",
-            "torusDistance",
-            "torusAngle",
-            "minArea",
+            "relative_tolerance",
+            "relative_precision",
+            "single_value",
+            "general_distance",
+            "general_angle",
+            "plane_distance",
+            "plane_angle",
+            "cylinder_distance",
+            "cylinder_angle",
+            "sphere_distance",
+            "cone_distance",
+            "cone_angle",
+            "torus_distance",
+            "torus_angle",
+            "min_area",
         )
         numericKwrd = (
             "P_abc",
@@ -97,21 +97,21 @@ class Geouned:
             "GQ_10",
         )
         tolKwrdEquiv = {
-            "relativeTolerance": "relativeTol",
-            "relativePrecision": "relativePrecision",
-            "singleValue": "value",
-            "generalDistance": "distance",
-            "generalAngle": "angle",
-            "planeDistance": "pln_distance",
-            "planeAngle": "pln_angle",
-            "cylinderDistance": "cyl_distance",
-            "cylinderAngle": "cyl_angle",
-            "sphereDistance": "sph_distance",
-            "coneDistance": "kne_distance",
-            "coneAngle": "kne_angle",
-            "torusDistance": "tor_distance",
-            "torusAngle": "tor_angle",
-            "minArea": "min_area",
+            "relative_tolerance": "relativeTol",
+            "relative_precision": "relative_precision",
+            "single_value": "value",
+            "general_distance": "distance",
+            "general_angle": "angle",
+            "plane_distance": "pln_distance",
+            "plane_angle": "pln_angle",
+            "cylinder_distance": "cyl_distance",
+            "cylinder_angle": "cyl_angle",
+            "sphere_distance": "sph_distance",
+            "cone_distance": "kne_distance",
+            "cone_angle": "kne_angle",
+            "torus_distance": "tor_distance",
+            "torus_angle": "tor_angle",
+            "min_area": "min_area",
         }
 
         config = configparser.ConfigParser()
@@ -120,7 +120,7 @@ class Geouned:
         for section in config.sections():
             if section == "Files":
                 for key in config["Files"].keys():
-                    if key in ("geometry_name", "matFile", "title"):
+                    if key in ("geometry_name", "mat_file", "title"):
                         self.set(key, config.get("Files", key))
 
                     elif key == "step_file":
@@ -168,15 +168,15 @@ class Geouned:
                         self.set(key, config.getboolean("parameters", key))
                     elif key in (
                         "min_void_size",
-                        "maxSurf",
-                        "maxBracket",
-                        "startCell",
-                        "startSurf",
+                        "max_surf",
+                        "max_bracket",
+                        "start_cell",
+                        "start_surf",
                     ):
                         self.set(key, config.getint("parameters", key))
-                    elif key in ("exportSolids", "UCARD", "simplify"):
+                    elif key in ("export_solids", "ucard", "simplify"):
                         self.set(key, config.get("parameters", key))
-                    elif key == "voidMat":
+                    elif key == "void_mat":
                         value = config.get("parameters", key).strip()
                         data = value[1:-1].split(",")
                         self.set(key, (int(data[0]), float(data[1]), data[2]))
@@ -190,11 +190,11 @@ class Geouned:
                     if key in (
                         "force_cylinder",
                         "new_split_plane",
-                        "delLastNumber",
+                        "del_last_number",
                         "verbose",
-                        "scaleUP",
-                        "quadricPY",
-                        "Facets",
+                        "scale_up",
+                        "quadric_py",
+                        "facets",
                         "prnt3PPlane",
                         "forceNoOverlap",
                     ):
@@ -204,7 +204,7 @@ class Geouned:
 
             elif section == "Tolerances":
                 for key in config["Tolerances"].keys():
-                    if key == "relativeTolerance":
+                    if key == "relative_tolerance":
                         setattr(Tolerances, key, config.getboolean("Tolerances", key))
                     elif key in toleranceKwrd:
                         setattr(
@@ -252,7 +252,7 @@ class Geouned:
                 print("{} should be string or tuple of strings".format(kwrd))
                 return
 
-        elif kwrd == "UCARD":
+        elif kwrd == "ucard":
             if value == "None":
                 value = None
             elif value.isdigit():
@@ -263,15 +263,15 @@ class Geouned:
         elif kwrd == "out_format":
             if len(value) == 0:
                 return
-        elif kwrd in ("geometry_name", "matFile", "exportSolids"):
+        elif kwrd in ("geometry_name", "mat_file", "export_solids"):
             if not isinstance(value, str):
                 print("{} value should be str instance".format(kwrd))
                 return
-        elif kwrd in ("cellRange", "voidMat", "voidExclude"):
+        elif kwrd in ("cell_range", "void_mat", "void_exclude"):
             if not isinstance(value, (list, tuple)):
                 print("{} value should be list or tuple".format(kwrd))
                 return
-        elif kwrd in ("min_void_size", "maxSurf", "maxBracket", "startCell", "startSurf"):
+        elif kwrd in ("min_void_size", "max_surf", "max_bracket", "start_cell", "start_surf"):
             if not isinstance(value, int):
                 print("{} value should be integer".format(kwrd))
                 return
@@ -315,7 +315,7 @@ class Geouned:
             raise ValueError("Cannot run the code. Step file name is missing")
 
         step_file = code_setting["step_file"]
-        matfile = code_setting["matFile"]
+        mat_file = code_setting["mat_file"]
 
         if isinstance(step_file, (tuple, list)):
             for stp in step_file:
@@ -332,7 +332,7 @@ class Geouned:
             EnclosureChunk = []
             for stp in step_file:
                 print("read step file : {}".format(stp))
-                Meta, Enclosure = Load.LoadCAD(stp, matfile)
+                Meta, Enclosure = Load.LoadCAD(stp, mat_file)
                 MetaChunk.append(Meta)
                 EnclosureChunk.append(Enclosure)
             MetaList = join_meta_lists(MetaChunk)
@@ -340,7 +340,7 @@ class Geouned:
         else:
             print("read step file : {}".format(step_file))
             MetaList, EnclosureList = Load.LoadCAD(
-                step_file, matfile, code_setting["voidMat"], code_setting["comp_solids"]
+                step_file, mat_file, code_setting["void_mat"], code_setting["comp_solids"]
             )
 
         print("End of loading phase")
@@ -349,22 +349,22 @@ class Geouned:
         tempTime = datetime.now()
 
         # Select a specific solid range from original STEP solids
-        if code_setting["cellRange"]:
+        if code_setting["cell_range"]:
             MetaList = MetaList[
-                code_setting["cellRange"][0] : code_setting["cellRange"][1]
+                code_setting["cell_range"][0] : code_setting["cell_range"][1]
             ]
 
         # export in STEP format solids read from input file
         # terminate excution
-        if code_setting["exportSolids"] != "":
+        if code_setting["export_solids"] != "":
             solids = []
             for m in MetaList:
                 if m.IsEnclosure:
                     continue
                 solids.extend(m.Solids)
-            Part.makeCompound(solids).exportStep(code_setting["exportSolids"])
+            Part.makeCompound(solids).exportStep(code_setting["export_solids"])
             msg = (
-                f'Solids exported in file {code_setting["exportSolids"]}\n'
+                f'Solids exported in file {code_setting["export_solids"]}\n'
                 "GEOUNED Finish. No solid translation performed."
             )
             raise ValueError(msg)
@@ -376,14 +376,14 @@ class Geouned:
             UniverseBox = get_universe(MetaList)
         Comsolids = []
 
-        surfOffset = code_setting["startSurf"] - 1
+        surfOffset = code_setting["start_surf"] - 1
         Surfaces = UF.Surfaces_dict(offset=surfOffset)
 
         warnSolids = []
         warnEnclosures = []
         coneInfo = dict()
         tempTime0 = datetime.now()
-        if not Options.Facets:
+        if not Options.facets:
 
             # decompose all solids in elementary solids (convex ones)
             warningSolidList = decompose_solids(
@@ -444,11 +444,11 @@ class Geouned:
         MetaVoid = []
         if code_setting["void_gen"]:
             print("Build Void")
-            print(code_setting["voidExclude"])
-            if not code_setting["voidExclude"]:
+            print(code_setting["void_exclude"])
+            if not code_setting["void_exclude"]:
                 MetaReduced = MetaList
             else:
-                MetaReduced = exclude_cells(MetaList, code_setting["voidExclude"])
+                MetaReduced = exclude_cells(MetaList, code_setting["void_exclude"])
 
             if MetaList:
                 init = MetaList[-1].__id__ - len(EnclosureList)
@@ -485,7 +485,7 @@ class Geouned:
 
         print(datetime.now() - startTime)
 
-        cellOffSet = code_setting["startCell"] - 1
+        cellOffSet = code_setting["start_cell"] - 1
         if EnclosureList and code_setting["sort_enclosure"]:
             # sort group solid cell / void cell sequence in each for each enclosure
             # if a solid belong to several enclosure, its definition will be written

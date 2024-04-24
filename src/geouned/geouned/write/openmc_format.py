@@ -6,7 +6,7 @@ import FreeCAD
 
 from ..code_version import *
 from ..utils.functions import Surfaces_dict
-from ..utils.Options.classes import Options as opt
+from ..utils.options.classes import Options as opt
 from .functions import openmc_surface, change_surf_sign, write_openmc_region
 
 
@@ -149,7 +149,7 @@ import openmc
         """Write the surfaces in python OpenMC format"""
 
         surfType, coeffs = openmc_surface(
-            surface.Type, surface.Surf, outXML=False, quadricForm=opt.quadricPY
+            surface.Type, surface.Surf, outXML=False, quadricForm=opt.quadric_py
         )
 
         if not boundary:

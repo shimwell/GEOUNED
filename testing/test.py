@@ -28,18 +28,18 @@ def setInput(inName, inpDir, outDir):
 
     template = """[Files]
 title    = Input Test
-stepFile = {}
-geometryName = {}
+step_file = {}
+geometry_name = {}
 
 [Parameters]
-compSolids = False
-volCARD    = False
-volSDEF    = True
-voidGen    = True
+comp_solids = False
+vol_card    = False
+vol_sdef    = True
+void_gen    = True
 dummyMat    = True
-minVoidSize =  100
-cellSummaryFile = False
-cellCommentFile = False
+min_void_size =  100
+cell_comment_file = False
+cell_comment_file = False
 debug       = False
 simplify   = full
 
@@ -158,8 +158,8 @@ def mkGEOInp(inpDir, outDir):
     for f in getInputList(inpDir, ("stp", "step")):
         setInput(f, inpDir, outDir)
         GEO = GEOUNED(inifile)
-        GEO.SetOptions()
-        GEO.Start()
+        GEO.set_options()
+        GEO.start()
         del GEO
 
 

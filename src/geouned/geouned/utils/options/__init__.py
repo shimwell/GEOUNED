@@ -3,14 +3,14 @@ from .classes import mcnp_numeric_format, Options, Tolerances
 # default options values
 force_cylinder = True  # Force using cylinders instead cones for auxillary surfaces of torus surface definition
 new_split_plane = True  # Use new module for planes splitting in decomposition module
-delLastNumber = False  # Deleting the last word in the comment if it is a number
+del_last_number = False  # Deleting the last word in the comment if it is a number
 verbose = False  # Display information during conversion process
 enlargeBox = 2  # Enlarge box Boundary when evaluating Ctable (dimension in mm)
 n_plane_reverse = 0  # numbers of plane thresold whether cut of parallel planes are made fisrt with lowest or highest number
 split_tolerance = 0  # First try for fuzzy tolerance used in BOPTOOL Split function. If BOPTSplit crash try lower value for tolerance
 scaleUp = True  # Scale up fuzzy tolerance once get below 1e-12
-quadricPY = False  # use quadric form of cones and cylinder not aligned with X,Y,Z axis when write openMC script file
-Facets = False  # use alternative conversion module when geometry is defined by cells compound by only triangular plane faces
+quadric_py = False  # use quadric form of cones and cylinder not aligned with X,Y,Z axis when write openMC script file
+facets = False  # use alternative conversion module when geometry is defined by cells compound by only triangular plane faces
 prnt3PPlane = (
     False  # print 3 point plane definition in mcnp output as 3 points coordinates
 )
@@ -18,7 +18,7 @@ forceNoOverlap = False  # force no overlaping cell definition. Adjacent cell def
 
 tolValueDict = {
     "relativeTol": False,
-    "relativePrecision": 1.0e-6,  # relative precision
+    "relative_precision": 1.0e-6,  # relative precision
     "value": 1.0e-6,  # Tolerance in single value comparison
     "distance": 1.0e-4,  # General Distance Tolerance
     "angle": 1.0e-4,  # General Angle Tolerance
@@ -57,13 +57,13 @@ numValueDict = {
 setattr(Options, "force_cylinder", force_cylinder)
 setattr(Options, "new_split_plane", new_split_plane)
 setattr(Options, "enlargeBox", enlargeBox)
-setattr(Options, "delLastNumber", delLastNumber)
+setattr(Options, "del_last_number", del_last_number)
 setattr(Options, "verbose", verbose)
 setattr(Options, "n_plane_reverse", n_plane_reverse)
 setattr(Options, "split_tolerance", split_tolerance)
 setattr(Options, "scaleUp", scaleUp)
-setattr(Options, "quadricPY", quadricPY)
-setattr(Options, "Facets", Facets)
+setattr(Options, "quadric_py", quadric_py)
+setattr(Options, "facets", facets)
 setattr(Options, "prnt3PPlane", prnt3PPlane)
 setattr(Options, "forceNoOverlap", forceNoOverlap)
 

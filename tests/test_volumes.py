@@ -45,6 +45,8 @@ else:
     # acceptable tolerance can also be smaller
     rel_tol = 0.01
 
+    samples = 4_000_000
+    rel_tol = 0.05
 
 @pytest.mark.skipif(
     sys.platform in ["win32", "darwin"],

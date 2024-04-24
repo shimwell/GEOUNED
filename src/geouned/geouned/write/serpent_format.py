@@ -8,7 +8,7 @@ import FreeCAD
 from ..code_version import *
 from ..utils.basic_functions_part1 import is_opposite, points_to_coeffs
 from ..utils.functions import Surfaces_dict
-from ..utils.Options.classes import Options as opt
+from ..utils.options.classes import Options as opt
 from .functions import SerpentSurface, change_surf_sign, write_serpent_cell_def
 
 
@@ -17,7 +17,7 @@ class SerpentInput:
         self.Title = setting["title"]
         self.VolSDEF = setting["vol_sdef"]
         self.VolCARD = setting["vol_card"]
-        self.U0CARD = setting["UCARD"]
+        self.U0CARD = setting["ucard"]
         self.dummy_mat = setting["dummy_mat"]
         self.Cells = Meta
         self.Options = {

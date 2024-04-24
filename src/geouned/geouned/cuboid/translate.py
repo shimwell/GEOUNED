@@ -6,8 +6,8 @@ from ..utils import basic_functions_part2 as BF
 from ..utils import geometry_gu as GU
 from ..utils.basic_functions_part1 import is_opposite, is_parallel
 from ..utils.boolean_function import BoolSequence
-from ..utils.Options.classes import Options as opt
-from ..utils.Options.classes import Tolerances as tol
+from ..utils.options.classes import Options as opt
+from ..utils.options.classes import Tolerances as tol
 
 
 def commonEdge(face1, face2):
