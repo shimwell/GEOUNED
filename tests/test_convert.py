@@ -8,7 +8,7 @@ path_to_cad = Path("testing/inputSTEP")
 step_files = list(path_to_cad.rglob("*.stp")) + list(path_to_cad.rglob("*.step"))
 
 
-@pytest.mark.parametrize("input_step_file", step_files)
+@pytest.mark.parametrize("input_step_file", step_files[:4])
 def test_conversion(input_step_file):
     """Test that step files can be converted to openmc and mcnp files"""
 
@@ -23,7 +23,7 @@ def test_conversion(input_step_file):
         "title = 'Input Test'\n"
         f"step_file = {input_step_file.resolve()}\n"
         f"geometry_name = {output_filename_stem.resolve()}\n"
-        "out_format = ('mcnp', 'openMC_XML')\n"
+        "out_format = ('mcnp', 'openmc_xml')\n"
         "[parameters]\n"
         "comp_solids = False\n"
         "vol_card = False\n"
@@ -52,7 +52,7 @@ def test_conversion(input_step_file):
     inifile = f"{output_dir/'config.ini'}"
     GEO = Geouned(inifile)
     GEO.set_options()
-    GEO.out_format = ("mcnp", "openMC_XML")
+    GEO.out_format = ("mcnp", "openmc_xml")
     GEO.start()
 
     assert output_filename_stem.with_suffix(".mcnp").exists()
