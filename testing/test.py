@@ -9,7 +9,7 @@ sys.path.append("/usr/lib64/freecad/lib64/")
 from geouned import GEOUNED
 
 
-def setInput(inName, inpDir, outDir):
+def set_input(inName, inpDir, outDir):
 
     if inName.endswith(".step"):
         filename = inName[0:-5]
@@ -29,25 +29,25 @@ def setInput(inName, inpDir, outDir):
     template = """[Files]
 title    = Input Test
 step_file = {}
-geometryName = {}
+geometry_name = {}
 
-[Parameters]
-compSolids = False
-volCARD    = False
-volSDEF    = True
-voidGen    = True
-dummyMat    = True
-minVoidSize =  100
-cellSummaryFile = False
-cellCommentFile = False
+[parameters]
+comp_solids = False
+vol_card    = False
+vol_sdef    = True
+void_gen    = True
+dummy_mat    = True
+min_void_size =  100
+cell_summary_file = False
+cell_comment_file = False
 debug       = False
 simplify   = full
 
 [Options]
-forceCylinder = False
-splitTolerance = 0
-newSplitPlane = True
-nPlaneReverse = 0
+force_cylinder = False
+split_tolerance = 0
+new_split_plane = True
+n_plane_reverse = 0
 """.format(
         inName, outName
     )
@@ -57,7 +57,7 @@ nPlaneReverse = 0
     file.close()
 
 
-def getInputList(folder, ext=None):
+def get_input_list(folder, ext=None):
     filenameList = []
     if ext is None:
         return os.listdir(folder)
@@ -85,7 +85,7 @@ def getInputList(folder, ext=None):
     return filenameList
 
 
-def runMCNP(path, inpFile):
+def run_mcnp(path, inpFile):
     code = "/opt/mcnp5/last/bin/mcnp5"
     xsdir = "/opt/mcnp.data/ascii/xsdir"
     inp = inpFile
@@ -103,13 +103,13 @@ def clean(folder):
         os.remove(filename)
 
 
-def cleanDir(folder):
-    for file in getInputList(folder, (".o", ".m")):
+def clean_dir(folder):
+    for file in get_input_list(folder, (".o", ".m")):
         filename = "{}/{}".format(folder, file)
         os.remove(filename)
 
 
-def checkLost(outp):
+def check_lost(outp):
     cmd = "grep 'particles got lost.' {}".format(outp)
     stdout = subprocess.getoutput(cmd)
     lineout = stdout.split("\n")
@@ -121,7 +121,7 @@ def checkLost(outp):
     return lost
 
 
-def getMctalValues(mctal):
+def get_mctal_values(mctal):
     file = open(mctal, "r")
     while True:
         line = file.readline()
@@ -143,7 +143,7 @@ def getMctalValues(mctal):
     return values
 
 
-def printResults(f, res, lost):
+def print_results(f, res, lost):
 
     line = "{} :\n".format(f)
     if lost != 0:
@@ -154,33 +154,33 @@ def printResults(f, res, lost):
     print(line)
 
 
-def mkGEOInp(inpDir, outDir):
-    for f in getInputList(inpDir, ("stp", "step")):
-        setInput(f, inpDir, outDir)
+def mk_geo_inp(inpDir, outDir):
+    for f in get_input_list(inpDir, ("stp", "step")):
+        set_input(f, inpDir, outDir)
         GEO = GEOUNED(inifile)
         GEO.SetOptions()
         GEO.Start()
         del GEO
 
 
-def processMCNPfolder(outDir):
-    cleanDir(outDir)
-    for f in getInputList(outDir, ".mcnp"):
+def process_mcnp_folder(outDir):
+    clean_dir(outDir)
+    for f in get_input_list(outDir, ".mcnp"):
         os.rename(f"{outDir}/{f}", f"{outDir}/{f[:-4]}i")
 
-    for f in getInputList(outDir, ".i"):
-        runMCNP(outDir, f)
+    for f in get_input_list(outDir, ".i"):
+        run_mcnp(outDir, f)
         clean(outDir)
 
 
-def postProcess(folder):
-    for fmct in getInputList(folder, ".m"):
+def post_process(folder):
+    for fmct in get_input_list(folder, ".m"):
         fout = fmct[:-1] + "o"
         mctal = "{}/{}".format(folder, fmct)
         outp = "{}/{}".format(folder, fout)
-        res = getMctalValues(mctal)
-        lost = checkLost(outp)
-        printResults(fmct[:-1] + "i", res, lost)
+        res = get_mctal_values(mctal)
+        lost = check_lost(outp)
+        print_results(fmct[:-1] + "i", res, lost)
 
 
 # ****************************************************
@@ -209,16 +209,16 @@ test = "all"
 
 if test == "all":
     for inpDir, outDir in folder.values():
-        mkGEOInp(inpDir, outDir)
+        mk_geo_inp(inpDir, outDir)
 
     for inpDir, outDir in folder.values():
-        processMCNPfolder(outDir)
+        process_mcnp_folder(outDir)
 
     for inpDir, outDir in folder.values():
-        postProcess(outDir)
+        post_process(outDir)
 
 else:
     inpDir, outDir = folder[test]
-    mkGEOInp(inpDir, outDir)
-    processMCNPfolder(outDir)
-    postProcess(outDir)
+    mk_geo_inp(inpDir, outDir)
+    process_mcnp_folder(outDir)
+    post_process(outDir)
