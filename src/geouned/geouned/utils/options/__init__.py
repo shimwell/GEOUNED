@@ -14,7 +14,7 @@ facets = False  # use alternative conversion module when geometry is defined by 
 prnt3PPlane = (
     False  # print 3 point plane definition in mcnp output as 3 points coordinates
 )
-forceNoOverlap = False  # force no overlaping cell definition. Adjacent cell definition are rested from current cell definition
+force_no_overlap = False  # force no overlaping cell definition. Adjacent cell definition are rested from current cell definition
 
 tolValueDict = {
     "relativeTol": False,
@@ -65,7 +65,7 @@ setattr(Options, "scaleUp", scaleUp)
 setattr(Options, "quadric_py", quadric_py)
 setattr(Options, "facets", facets)
 setattr(Options, "prnt3PPlane", prnt3PPlane)
-setattr(Options, "forceNoOverlap", forceNoOverlap)
+setattr(Options, "force_no_overlap", force_no_overlap)
 
 # Set default  attributes to Tolerances class
 for key in tolValueDict.keys():

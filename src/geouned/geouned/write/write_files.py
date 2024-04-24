@@ -35,16 +35,16 @@ def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
         mcnpfile.write_input(mcnpFilename)
 
     if (
-        "openMC_XML" in code_setting["out_format"]
-        or "openMC_PY" in code_setting["out_format"]
+        "openmc_xml" in code_setting["out_format"]
+        or "openmc_py" in code_setting["out_format"]
     ):
         OMCFile = OpenmcInput(MetaList, Surfaces, code_setting)
 
-    if "openMC_XML" in code_setting["out_format"]:
+    if "openmc_xml" in code_setting["out_format"]:
         omcFilename = baseName + ".xml"
         OMCFile.write_xml(omcFilename)
 
-    if "openMC_PY" in code_setting["out_format"]:
+    if "openmc_py" in code_setting["out_format"]:
         omcFilename = baseName + ".py"
         OMCFile.write_py(omcFilename)
 
