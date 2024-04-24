@@ -2,11 +2,11 @@ import FreeCAD
 import Import
 
 from .code_version import *
-from .Modules.build_cad import build_cad, make_tree
-from .Modules.McnpInput import McnpInput
-from .Modules.objects import CADCell
-from .Modules.process_inp import set_options
-from .Modules.xml_input import XmlInput
+from .modules.build_cad import build_cad, make_tree
+from .modules.mcnp_input import McnpInput
+from .modules.objects import CADCell
+from .modules.process_inp import set_options
+from .modules.xml_input import XmlInput
 
 
 def reverse(optFile="configRevese.ini"):

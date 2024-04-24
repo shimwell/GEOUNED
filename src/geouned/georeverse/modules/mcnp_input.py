@@ -7,7 +7,7 @@ import numpy as np
 from numpy import linalg as LA
 
 from .objects import *
-from .Parser import parser as mp
+from .parser import parser as mp
 from .remh import CellCardString, remove_hash
 
 
