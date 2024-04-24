@@ -3,14 +3,6 @@
 
 # We load the STEP and the materials
 
-# this try except attempts to import freecad (lowercase) which is the conda
-# package name for FreeCAD (mixed case) upon import the conda package appends
-# the sys path for Conda installed FreeCAD, consequently FreeCAD can then be
-# found by subsequent import statements through out the code base
-try:
-    import freecad
-except:
-    pass
 import configparser
 from datetime import datetime
 from os import mkdir, path
@@ -323,9 +315,11 @@ class Geouned:
                 self.__dict__["geometry_name"] == "joined_step_files"
             else:
                 self.__dict__["geometry_name"] == value[:-4]
+        
+
 
     def start(self):
-        print(self.__dict__)
+        print('this one', self.__dict__)
         print("start")
         FreeCAD_Version = "{V[0]:}.{V[1]:}.{V[2]:}".format(V=FreeCAD.Version())
         print(
