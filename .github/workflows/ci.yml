@@ -45,8 +45,8 @@ jobs:
             python -m pip install --upgrade pip
             python -m pip install .
             python -c 'import geouned'
-            python -c 'from geouned import GEOUNED'
-            python -c 'from geouned.GEOReverse import reverse'
+            python -c 'from geouned import Geouned'
+            python -c 'from geouned.georeverse import reverse'
             python -m pip install .[tests]
 
         - name: testing GEOUNED functionality
