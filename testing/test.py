@@ -31,7 +31,7 @@ title    = Input Test
 step_file = {}
 geometry_name = {}
 
-[Parameters]
+[parameters]
 comp_solids = False
 vol_card    = False
 vol_sdef    = True
@@ -44,10 +44,10 @@ debug       = False
 simplify   = full
 
 [Options]
-forceCylinder = False
-splitTolerance = 0
-newSplitPlane = True
-nPlaneReverse = 0
+force_cylinder = False
+split_tolerance = 0
+new_split_plane = True
+n_plane_reverse = 0
 """.format(
         inName, outName
     )

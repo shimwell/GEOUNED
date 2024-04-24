@@ -325,7 +325,7 @@ class Geouned:
                 self.__dict__["geometry_name"] == value[:-4]
 
     def start(self):
-
+        print(self.__dict__)
         print("start")
         FreeCAD_Version = "{V[0]:}.{V[1]:}.{V[2]:}".format(V=FreeCAD.Version())
         print(
