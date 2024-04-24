@@ -26,7 +26,9 @@ def build_cad(UnivCell, data, config):
 
     # read Cells and group into universes
     print(config)
-    levels, UniverseCells, modelSurfaces = data.get_filtered_cells(modelSurfaces, config)
+    levels, UniverseCells, modelSurfaces = data.get_filtered_cells(
+        modelSurfaces, config
+    )
 
     # assign to each cell the surfaces belonging to the cell
     assign_surface_to_cell(UniverseCells, modelSurfaces)

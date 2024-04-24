@@ -11,7 +11,7 @@ from .functions import openmc_surface, change_surf_sign, write_openmc_region
 
 
 class OpenmcInput:
-    def __init__(self, Meta, Surfaces, setting):
+    def __init__(self, Meta, Surfaces):
 
         self.Cells = Meta
 

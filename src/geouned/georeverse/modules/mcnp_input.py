@@ -161,6 +161,7 @@ class McnpInput:
                 trl[c.name] = get_trans_matrix(trValues, c.unit)
         return trl
 
+
 # fmt: off
 def get_trans_matrix(trsf, unit="", scale=10.0):
 

@@ -5,18 +5,34 @@ from .phits_format import PhitsInput
 from .serpent_format import SerpentInput
 
 
-def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
-
-    baseName = code_setting["geometry_name"]
+def write_geometry(
+    UniverseBox,
+    MetaList,
+    Surfaces,
+    void_gen,
+    cell_comment_file,
+    cell_summary_file,
+    out_format,
+    geometry_name,
+    step_file,
+    title,
+    vol_sdef,
+    vol_card,
+    ucard,
+    dummy_mat,
+    mat_file,
+    void_mat,
+    start_cell,
+):
 
     # write cells comments in file
-    if code_setting["cell_comment_file"]:
-        OutFiles.comments_write(baseName, MetaList)
-    if code_setting["cell_summary_file"]:
-        OutFiles.summary_write(baseName, MetaList)
+    if cell_comment_file:
+        OutFiles.comments_write(geometry_name, MetaList)
+    if cell_summary_file:
+        OutFiles.summary_write(geometry_name, MetaList)
 
-    if "mcnp" in code_setting["out_format"]:
-        mcnpFilename = baseName + ".mcnp"
+    if "mcnp" in out_format:
+        mcnpFilename = geometry_name + ".mcnp"
         outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -25,31 +41,30 @@ def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if code_setting["void_gen"]:
+        if void_gen:
             outSphere = (Surfaces["Sph"][-1].Index, Surfaces["Sph"][-1].Surf.Radius)
         else:
             outSphere = None
 
-        mcnpfile = McnpInput(MetaList, Surfaces, code_setting)
+        mcnpfile = McnpInput(
+            MetaList, Surfaces, step_file, title, vol_sdef, vol_card, ucard, dummy_mat
+        )
         mcnpfile.set_sdef((outSphere, outBox))
         mcnpfile.write_input(mcnpFilename)
 
-    if (
-        "openmc_xml" in code_setting["out_format"]
-        or "openmc_py" in code_setting["out_format"]
-    ):
-        OMCFile = OpenmcInput(MetaList, Surfaces, code_setting)
+    if "openmc_xml" in out_format or "openmc_py" in out_format:
+        OMCFile = OpenmcInput(MetaList, Surfaces)
 
-    if "openmc_xml" in code_setting["out_format"]:
-        omcFilename = baseName + ".xml"
+    if "openmc_xml" in out_format:
+        omcFilename = geometry_name + ".xml"
         OMCFile.write_xml(omcFilename)
 
-    if "openmc_py" in code_setting["out_format"]:
-        omcFilename = baseName + ".py"
+    if "openmc_py" in out_format:
+        omcFilename = geometry_name + ".py"
         OMCFile.write_py(omcFilename)
 
-    if "serpent" in code_setting["out_format"]:
-        serpentFilename = baseName + ".serp"
+    if "serpent" in out_format:
+        serpentFilename = geometry_name + ".serp"
         outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -58,17 +73,19 @@ def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if code_setting["void_gen"]:
+        if void_gen:
             outSphere = (Surfaces["Sph"][-1].Index, Surfaces["Sph"][-1].Surf.Radius)
         else:
             outSphere = None
 
-        Serpentfile = SerpentInput(MetaList, Surfaces, code_setting)
+        Serpentfile = SerpentInput(
+            MetaList, Surfaces, step_file, title, vol_sdef, vol_card, ucard, dummy_mat
+        )
         # Serpentfile.set_sdef((outSphere,outBox))
         Serpentfile.write_input(serpentFilename)
 
-    if "phits" in code_setting["out_format"]:
-        phitsFilename = baseName + ".inp"
+    if "phits" in out_format:
+        phitsFilename = geometry_name + ".inp"
         phits_outBox = (
             UniverseBox.XMin,
             UniverseBox.XMax,
@@ -77,7 +94,7 @@ def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if code_setting["void_gen"]:
+        if void_gen:
             phits_outSphere = (
                 Surfaces["Sph"][-1].Index,
                 Surfaces["Sph"][-1].Surf.Radius,
@@ -85,6 +102,18 @@ def write_geometry(UniverseBox, MetaList, Surfaces, code_setting):
         else:
             phits_outSphere = None
 
-        phitsfile = PhitsInput(MetaList, Surfaces, code_setting)
+        phitsfile = PhitsInput(
+            MetaList,
+            Surfaces,
+            step_file,
+            title,
+            vol_sdef,
+            vol_card,
+            ucard,
+            dummy_mat,
+            mat_file,
+            void_mat,
+            start_cell,
+        )
         # phitsfile.set_sdef_phits((phits_outSphere,phits_outBox))
         phitsfile.write_phits(phitsFilename)

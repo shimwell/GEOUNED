@@ -14,26 +14,28 @@ from .functions import CardLine, mcnp_surface, change_surf_sign, write_mcnp_cell
 
 
 class McnpInput:
-    def __init__(self, Meta, Surfaces, setting):
-        self.Title = setting["title"]
-        self.VolSDEF = setting["vol_sdef"]
-        self.VolCARD = setting["vol_card"]
-        self.U0CARD = setting["ucard"]
-        self.dummy_mat = setting["dummy_mat"]
+    def __init__(
+        self, Meta, Surfaces, step_file, title, vol_sdef, vol_card, ucard, dummy_mat
+    ):
+        self.title = title
+        self.vol_sdef = vol_sdef
+        self.vol_card = vol_card
+        self.ucard = ucard
+        self.dummy_mat = dummy_mat
         self.Cells = Meta
         self.Options = {
-            "Volume": self.VolCARD,
+            "Volume": self.vol_card,
             "Particle": ("n", "p"),
-            "Universe": self.U0CARD,
+            "Universe": self.ucard,
         }
         self.part = "P"
+        self.step_file = step_file
 
-        self.step_file = setting["step_file"]
         if isinstance(self.step_file, (tuple, list)):
             self.step_file = "; ".join(self.step_file)
 
-        if self.Title == "":
-            self.Title = self.step_file
+        if self.title == "":
+            self.title = self.step_file
 
         self.__getSurfaceTable__()
         self.__simplifyPlanes__(Surfaces)
@@ -101,7 +103,7 @@ C  |  ____ |______ |     | ___ |     | | \  | |______ |     \
 C  |_____| |______ |_____|     |_____| |  \_| |______ |_____/
 C Version : {}     {}
 C FreeCAD Version : {} \n""".format(
-            self.Title, version, releaseDate, freeCAD_Version
+            self.title, version, releaseDate, freeCAD_Version
         )
 
         Information = """C
@@ -197,7 +199,7 @@ C **************************************************************\n""".format(
         else:
             Block = MODE
 
-        if self.VolSDEF:
+        if self.vol_sdef:
             Block += "PRDMP 2J -1\n"
             for line in self.SDEF_box:
                 Block += "C " + line
@@ -212,7 +214,7 @@ C **************************************************************\n""".format(
             SD4.extend(volList)
 
             Block += F4Tally.str + "\n"
-            if not self.VolCARD:
+            if not self.vol_card:
                 Block += SD4.str
             else:
                 Block += "C Cell volume normalization is set in cell cards VOL\n"

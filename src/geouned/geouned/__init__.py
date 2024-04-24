@@ -28,30 +28,30 @@ class Geouned:
     def __init__(
         self,
         title="Geouned conversion",
-        step_file = "",
-        geometry_name = "",
-        mat_file = "",
-        out_format = ("mcnp",),
-        void_gen = True,
-        debug = False,
-        comp_solids = True,
-        vol_sdef = False,
-        dummy_mat = False,
-        vol_card = True,
-        ucard = None,
-        simplify = "no",
-        cell_range = [],
-        export_solids = "",
-        min_void_size = 200,  # units mm
-        max_surf = 50,
-        max_bracket = 30,
-        void_mat = [],
-        void_exclude = [],
-        start_cell = 1,
-        start_surf = 1,
-        cell_comment_file = False,
-        cell_summary_file = True,
-        sort_enclosure = False,
+        step_file="",
+        geometry_name="",
+        mat_file="",
+        out_format=("mcnp",),
+        void_gen=True,
+        debug=False,
+        comp_solids=True,
+        vol_sdef=False,
+        dummy_mat=False,
+        vol_card=True,
+        ucard=None,
+        simplify="no",
+        cell_range=[],
+        export_solids="",
+        min_void_size=200,  # units mm
+        max_surf=50,
+        max_bracket=30,
+        void_mat=[],
+        void_exclude=[],
+        start_cell=1,
+        start_surf=1,
+        cell_comment_file=False,
+        cell_summary_file=True,
+        sort_enclosure=False,
     ):
 
         self.title = title
@@ -136,7 +136,7 @@ class Geouned:
 
         config = configparser.ConfigParser()
         config.optionxform = str
-        config.read(self.__dict__["title"])
+        config.read(self.title)
         for section in config.sections():
             if section == "files":
                 for key in config["files"].keys():
@@ -248,8 +248,8 @@ class Geouned:
             else:
                 print("bad section name : {}".format(section))
 
-        if self.__dict__["geometry_name"] == "":
-            self.__dict__["geometry_name"] = self.__dict__["step_file"][:-4]
+        if self.geometry_name == "":
+            self.geometry_name = self.step_file[:-4]
 
         if Options.prnt3PPlane and not PdEntry:
             mcnp_numeric_format.P_d = "22.15e"
@@ -289,7 +289,13 @@ class Geouned:
             if not isinstance(value, (list, tuple)):
                 print("{} value should be list or tuple".format(kwrd))
                 return
-        elif kwrd in ("min_void_size", "max_surf", "max_bracket", "start_cell", "start_surf"):
+        elif kwrd in (
+            "min_void_size",
+            "max_surf",
+            "max_bracket",
+            "start_cell",
+            "start_surf",
+        ):
             if not isinstance(value, int):
                 print("{} value should be integer".format(kwrd))
                 return
@@ -310,16 +316,14 @@ class Geouned:
                 return
 
         self.__dict__[kwrd] = value
-        if kwrd == "step_file" and self.__dict__["geometry_name"] == "":
+        if kwrd == "step_file" and self.geometry_name == "":
             if isinstance(value, (tuple, list)):
-                self.__dict__["geometry_name"] == "joined_step_files"
+                self.geometry_name == "joined_step_files"
             else:
-                self.__dict__["geometry_name"] == value[:-4]
-        
-
+                self.geometry_name == value[:-4]
 
     def start(self):
-        print('this one', self.__dict__)
+
         print("start")
         FreeCAD_Version = "{V[0]:}.{V[1]:}.{V[2]:}".format(V=FreeCAD.Version())
         print(
@@ -328,40 +332,36 @@ class Geouned:
             )
         )
 
-        code_setting = self.__dict__
-        print(code_setting)
-        if code_setting is None:
+        print(self)
+        if self.__dict__ is None:
             raise ValueError("Cannot run the code. Input are missing")
-        if code_setting["step_file"] == "":
+        if self.step_file == "":
             raise ValueError("Cannot run the code. Step file name is missing")
 
-        step_file = code_setting["step_file"]
-        mat_file = code_setting["mat_file"]
-
-        if isinstance(step_file, (tuple, list)):
-            for stp in step_file:
+        if isinstance(self.step_file, (tuple, list)):
+            for stp in self.step_file:
                 if not path.isfile(stp):
                     raise FileNotFoundError(f"Step file {stp} not found.\nStop.")
         else:
-            if not path.isfile(step_file):
-                raise FileNotFoundError(f"Step file {step_file} not found.\nStop.")
+            if not path.isfile(self.step_file):
+                raise FileNotFoundError(f"Step file {self.step_file} not found.\nStop.")
 
         startTime = datetime.now()
 
-        if isinstance(step_file, (list, tuple)):
+        if isinstance(self.step_file, (list, tuple)):
             MetaChunk = []
             EnclosureChunk = []
-            for stp in step_file:
+            for stp in self.step_file:
                 print("read step file : {}".format(stp))
-                Meta, Enclosure = Load.LoadCAD(stp, mat_file)
+                Meta, Enclosure = Load.LoadCAD(stp, self.mat_file)
                 MetaChunk.append(Meta)
                 EnclosureChunk.append(Enclosure)
             MetaList = join_meta_lists(MetaChunk)
             EnclosureList = join_meta_lists(EnclosureChunk)
         else:
-            print("read step file : {}".format(step_file))
+            print("read step file : {}".format(self.step_file))
             MetaList, EnclosureList = Load.LoadCAD(
-                step_file, mat_file, code_setting["void_mat"], code_setting["comp_solids"]
+                self.step_file, self.mat_file, self.void_mat, self.comp_solids
             )
 
         print("End of loading phase")
@@ -370,22 +370,20 @@ class Geouned:
         tempTime = datetime.now()
 
         # Select a specific solid range from original STEP solids
-        if code_setting["cell_range"]:
-            MetaList = MetaList[
-                code_setting["cell_range"][0] : code_setting["cell_range"][1]
-            ]
+        if self.cell_range:
+            MetaList = MetaList[self.cell_range[0] : self.cell_range[1]]
 
         # export in STEP format solids read from input file
         # terminate excution
-        if code_setting["export_solids"] != "":
+        if self.export_solids != "":
             solids = []
             for m in MetaList:
                 if m.IsEnclosure:
                     continue
                 solids.extend(m.Solids)
-            Part.makeCompound(solids).exportStep(code_setting["export_solids"])
+            Part.makeCompound(solids).exportStep(self.export_solids)
             msg = (
-                f'Solids exported in file {code_setting["export_solids"]}\n'
+                f"Solids exported in file {self.export_solids}\n"
                 "GEOUNED Finish. No solid translation performed."
             )
             raise ValueError(msg)
@@ -397,7 +395,7 @@ class Geouned:
             UniverseBox = get_universe(MetaList)
         Comsolids = []
 
-        surfOffset = code_setting["start_surf"] - 1
+        surfOffset = self.start_surf - 1
         Surfaces = UF.Surfaces_dict(offset=surfOffset)
 
         warnSolids = []
@@ -408,13 +406,13 @@ class Geouned:
 
             # decompose all solids in elementary solids (convex ones)
             warningSolidList = decompose_solids(
-                MetaList, Surfaces, UniverseBox, code_setting, True
+                MetaList, Surfaces, UniverseBox, self.debug, True
             )
 
             # decompose Enclosure solids
-            if code_setting["void_gen"] and EnclosureList:
+            if self.void_gen and EnclosureList:
                 warningEnclosureList = decompose_solids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
+                    EnclosureList, Surfaces, UniverseBox, self.debug, False
                 )
 
             print("End of decomposition phase")
@@ -438,11 +436,11 @@ class Geouned:
                 Conv.no_overlapping_cell(MetaList, Surfaces)
 
         else:
-            translate(MetaList, Surfaces, UniverseBox, code_setting)
+            translate(MetaList, Surfaces, UniverseBox, self.debug)
             # decompose Enclosure solids
-            if code_setting["void_gen"] and EnclosureList:
+            if self.void_gen and EnclosureList:
                 warningEnclosureList = decompose_solids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
+                    EnclosureList, Surfaces, UniverseBox, self.debug, False
                 )
 
         tempstr2 = str(datetime.now() - tempTime)
@@ -450,7 +448,7 @@ class Geouned:
 
         #  building enclosure solids
 
-        if code_setting["void_gen"] and EnclosureList:
+        if self.void_gen and EnclosureList:
             for j, m in enumerate(EnclosureList):
                 print("Building Enclosure Cell: ", j + 1)
                 cones = Conv.cell_def(m, Surfaces, UniverseBox)
@@ -463,24 +461,34 @@ class Geouned:
 
         # void generation phase
         MetaVoid = []
-        if code_setting["void_gen"]:
+        if self.void_gen:
             print("Build Void")
-            print(code_setting["void_exclude"])
-            if not code_setting["void_exclude"]:
+            print(self.void_exclude)
+            if not self.void_exclude:
                 MetaReduced = MetaList
             else:
-                MetaReduced = exclude_cells(MetaList, code_setting["void_exclude"])
+                MetaReduced = exclude_cells(MetaList, self.void_exclude)
 
             if MetaList:
                 init = MetaList[-1].__id__ - len(EnclosureList)
             else:
                 init = 0
             MetaVoid = void.void_generation(
-                MetaReduced, EnclosureList, Surfaces, UniverseBox, code_setting, init
+                MetaList=MetaList,
+                EnclosureList=EnclosureList,
+                Surfaces=Surfaces,
+                UniverseBox=UniverseBox,
+                sort_enclosure=self.sort_enclosure,
+                void_mat=self.void_mat,
+                max_surf=self.max_surf,
+                max_bracket=self.max_bracket,
+                min_void_size=self.min_void_size,
+                simplify=self.simplify,
+                init=init,
             )
 
         # if code_setting['simplify'] == 'full' and not Options.force_no_overlap:
-        if code_setting["simplify"] == "full":
+        if self.simplify == "full":
             Surfs = {}
             for lst in Surfaces.values():
                 for s in lst:
@@ -506,8 +514,8 @@ class Geouned:
 
         print(datetime.now() - startTime)
 
-        cellOffSet = code_setting["start_cell"] - 1
-        if EnclosureList and code_setting["sort_enclosure"]:
+        cellOffSet = self.start_cell - 1
+        if EnclosureList and self.sort_enclosure:
             # sort group solid cell / void cell sequence in each for each enclosure
             # if a solid belong to several enclosure, its definition will be written
             # for the highest enclosure level or if same enclosure level in the first
@@ -557,9 +565,27 @@ class Geouned:
         process_cones(MetaList, coneInfo, Surfaces, UniverseBox)
 
         # write outputformat input
-        write_geometry(UniverseBox, MetaList, Surfaces, code_setting)
+        write_geometry(
+            UniverseBox=UniverseBox,
+            MetaList=MetaList,
+            Surfaces=Surfaces,
+            void_gen=self.void_gen,
+            cell_comment_file=self.cell_comment_file,
+            cell_summary_file=self.cell_summary_file,
+            out_format=self.out_format,
+            geometry_name=self.geometry_name,
+            step_file=self.step_file,
+            title=self.title,
+            vol_sdef=self.vol_sdef,
+            vol_card=self.vol_card,
+            ucard=self.ucard,
+            dummy_mat=self.dummy_mat,
+            mat_file=self.mat_file,
+            void_mat=self.void_mat,
+            start_cell=self.start_cell,
+        )
 
-        print("End of mcnp, OpenMC, Serpent and phits translation phase")
+        print("End of MCNP, OpenMC, Serpent and Phits translation phase")
 
         print("Process finished")
         print(datetime.now() - startTime)
@@ -568,14 +594,14 @@ class Geouned:
         print("Translation time of void cells", tempTime2 - tempTime1)
 
 
-def decompose_solids(MetaList, Surfaces, UniverseBox, setting, meta):
+def decompose_solids(MetaList, Surfaces, UniverseBox, debug, meta):
     totsolid = len(MetaList)
     warningSolids = []
     for i, m in enumerate(MetaList):
         if meta and m.IsEnclosure:
             continue
         print("Decomposing solid: {}/{} ".format(i + 1, totsolid))
-        if setting["debug"]:
+        if debug:
             print(m.Comments)
             if not path.exists("debug"):
                 mkdir("debug")
@@ -604,7 +630,7 @@ def decompose_solids(MetaList, Surfaces, UniverseBox, setting, meta):
 
             warningSolids.append(i)
 
-        if setting["debug"]:
+        if debug:
             if m.IsEnclosure:
                 comsolid.exportStep("debug/comp_enclosure_{}.stp".format(i))
             else:

@@ -149,7 +149,9 @@ def build_solid_parts(cell, base, mode):
 
         if planes:
 
-            full, cut = split_solid(base, planes, cell, tolerance=Options.split_tolerance)
+            full, cut = split_solid(
+                base, planes, cell, tolerance=Options.split_tolerance
+            )
             # for i,s in enumerate(full):
             #    s.exportStep('fullplane_{}.stp'.format(i))
             # for i,s in enumerate(cut):
@@ -161,7 +163,9 @@ def build_solid_parts(cell, base, mode):
             cut = base
 
         if others:
-            newf, cut = split_solid(cut, others, cell, tolerance=Options.split_tolerance)
+            newf, cut = split_solid(
+                cut, others, cell, tolerance=Options.split_tolerance
+            )
             # print('others',newf)
             # print('others',cut)
         else:
@@ -179,7 +183,9 @@ def build_solid_parts(cell, base, mode):
                 others.append(s)
 
         if others:
-            full, cut = split_solid(base, others, cell, tolerance=Options.split_tolerance)
+            full, cut = split_solid(
+                base, others, cell, tolerance=Options.split_tolerance
+            )
             # print('others',full)
             # print('others',cut)
         else:
@@ -187,7 +193,9 @@ def build_solid_parts(cell, base, mode):
             cut = base
 
         if planes:
-            newf, cut = split_solid(cut, planes, cell, tolerance=Options.split_tolerance)
+            newf, cut = split_solid(
+                cut, planes, cell, tolerance=Options.split_tolerance
+            )
             # print('planes',newf)
             # print('planes',cut)
 
@@ -206,14 +214,18 @@ def build_solid_parts(cell, base, mode):
                 others.append(s)
 
         if planes:
-            full, cut = split_solid(base, planes, cell, tolerance=Options.split_tolerance)
+            full, cut = split_solid(
+                base, planes, cell, tolerance=Options.split_tolerance
+            )
         else:
             full = []
             cut = base
 
         # cut[0].base.exportStep('cutPlane.stp')
         for surf in others:
-            newf, cut = split_solid(cut, (surf,), cell, tolerance=Options.split_tolerance)
+            newf, cut = split_solid(
+                cut, (surf,), cell, tolerance=Options.split_tolerance
+            )
             full.extend(newf)
 
     elif mode == "otherOneByOne":
@@ -228,11 +240,15 @@ def build_solid_parts(cell, base, mode):
         cut = base
         full = []
         for surf in others:
-            newf, cut = split_solid(cut, (surf,), cell, tolerance=Options.split_tolerance)
+            newf, cut = split_solid(
+                cut, (surf,), cell, tolerance=Options.split_tolerance
+            )
             full.extend(newf)
 
         for surf in planes:
-            newf, cut = split_solid(cut, (surf,), cell, tolerance=Options.split_tolerance)
+            newf, cut = split_solid(
+                cut, (surf,), cell, tolerance=Options.split_tolerance
+            )
             full.extend(newf)
 
     return full, cut

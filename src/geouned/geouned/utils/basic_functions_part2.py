@@ -77,7 +77,9 @@ def is_same_cylinder(cyl1, cyl2, dtol=1e-6, atol=1e-6, relTol=True, fuzzy=(False
         cyl2.Radius - cyl1.Radius, rtol, 0.5 * rtol, 2 * rtol
     )
     if isfuzzy and fuzzy[0]:
-        fuzzy_write(fuzzy[1], "cylRad", cyl2, cyl1, abs(cyl2.Radius - cyl1.Radius), rtol)
+        fuzzy_write(
+            fuzzy[1], "cylRad", cyl2, cyl1, abs(cyl2.Radius - cyl1.Radius), rtol
+        )
 
     if isSameRad:
         if is_parallel(cyl1.Axis, cyl2.Axis, atol):

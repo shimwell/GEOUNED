@@ -48,6 +48,7 @@ else:
     samples = 4_000_000
     rel_tol = 0.05
 
+
 @pytest.mark.skipif(
     sys.platform in ["win32", "darwin"],
     reason="OpenMC doesn't install on Windows currently and is not well tested on Mac",

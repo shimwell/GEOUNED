@@ -48,7 +48,9 @@ def split_solid(base, surfacesCut, cellObj, solidTool=False, tolerance=0.01):  #
     # part if several base in input
     if type(base) is list or type(base) is tuple:
         for b in base:
-            fullList, cutList = split_solid(b, surfacesCut, cellObj, tolerance=tolerance)
+            fullList, cutList = split_solid(
+                b, surfacesCut, cellObj, tolerance=tolerance
+            )
             fullPart.extend(fullList)
             cutPart.extend(cutList)
         return fullPart, cutPart

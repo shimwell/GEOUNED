@@ -834,8 +834,12 @@ def cell_def(metaObj, Surfaces, UniverseBox):
 
                 if (
                     is_parallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tol.angle)
-                    or is_parallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.angle)
-                    or is_parallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.angle)
+                    or is_parallel(
+                        face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.angle
+                    )
+                    or is_parallel(
+                        face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.angle
+                    )
                 ):
 
                     idT = get_id(face.Surface, Surfaces)

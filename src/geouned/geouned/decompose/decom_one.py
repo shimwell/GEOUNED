@@ -11,7 +11,12 @@ import Part
 from ..conversion import cell_definition as CD
 from ..utils import functions as UF
 from ..utils import geometry_gu as GU
-from ..utils.basic_functions_part1 import is_in_line, is_in_plane, is_parallel, is_same_value
+from ..utils.basic_functions_part1 import (
+    is_in_line,
+    is_in_plane,
+    is_parallel,
+    is_same_value,
+)
 from ..utils.basic_functions_part2 import is_duplicate_in_list
 from ..utils.options.classes import Options as opt
 from ..utils.options.classes import Tolerances as tol
@@ -935,7 +940,9 @@ def split_2nd_order(Solids, UniverseBox):
                     for s in Surfaces[kind]:
                         s.buildSurface()
                         try:
-                            comsolid = UF.splitBOP(solid, [s.shape], opt.split_tolerance)
+                            comsolid = UF.splitBOP(
+                                solid, [s.shape], opt.split_tolerance
+                            )
                             solidsInCom = []
                             for s in comsolid.Solids:
                                 if s.Volume > 1e-9:
