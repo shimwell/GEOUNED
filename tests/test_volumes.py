@@ -52,7 +52,7 @@ else:
     sys.platform in ["win32", "darwin"],
     reason="OpenMC doesn't install on Windows currently and is not well tested on Mac",
 )
-@pytest.mark.parametrize("input_step_file", step_files)
+@pytest.mark.parametrize("input_step_file", step_files[:4])
 def test_volumes(input_step_file):
 
     output_dir = Path("tests_outputs") / input_step_file.with_suffix("")

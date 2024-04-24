@@ -33,34 +33,62 @@ from .write.write_files import write_geometry
 
 class Geouned:
 
-    def __init__(self, title="Geouned conversion"):
-        """ """
-        self.__dict__ = dict()
-        self.__dict__["step_file"] = ""
-        self.__dict__["geometry_name"] = ""
-        self.__dict__["mat_file"] = ""
-        self.__dict__["out_format"] = ("mcnp",)
+    def __init__(
+        self,
+        title="Geouned conversion",
+        step_file = "",
+        geometry_name = "",
+        mat_file = "",
+        out_format = ("mcnp",),
+        void_gen = True,
+        debug = False,
+        comp_solids = True,
+        vol_sdef = False,
+        dummy_mat = False,
+        vol_card = True,
+        ucard = None,
+        simplify = "no",
+        cell_range = [],
+        export_solids = "",
+        min_void_size = 200,  # units mm
+        max_surf = 50,
+        max_bracket = 30,
+        void_mat = [],
+        void_exclude = [],
+        start_cell = 1,
+        start_surf = 1,
+        cell_comment_file = False,
+        cell_summary_file = True,
+        sort_enclosure = False,
+    ):
+
         self.title = title
-        self.__dict__["void_gen"] = True
-        self.__dict__["debug"] = False
-        self.__dict__["comp_solids"] = True
-        self.__dict__["vol_sdef"] = False
-        self.__dict__["dummyMat"] = False
-        self.__dict__["vol_card"] = True
-        self.__dict__["ucard"] = None
-        self.__dict__["simplify"] = "No"
-        self.__dict__["cell_range"] = []
-        self.__dict__["export_solids"] = ""
-        self.__dict__["min_void_size"] = 200  # units mm
-        self.__dict__["max_surf"] = 50
-        self.__dict__["max_bracket"] = 30
-        self.__dict__["void_mat"] = []
-        self.__dict__["void_exclude"] = []
-        self.__dict__["start_cell"] = 1
-        self.__dict__["start_surf"] = 1
-        self.__dict__["cell_comment_file"] = False
-        self.__dict__["cell_summary_file"] = True
-        self.__dict__["sort_enclosure"] = False
+        self.step_file = step_file
+        self.geometry_name = geometry_name
+        self.mat_file = mat_file
+        self.out_format = out_format
+        self.void_gen = void_gen
+        self.debug = debug
+        self.comp_solids = comp_solids
+        self.vol_sdef = vol_sdef
+        self.dummy_mat = dummy_mat
+        self.vol_card = vol_card
+        self.ucard = ucard
+        self.simplify = simplify
+        self.cell_range = cell_range
+        self.export_solids = export_solids
+        self.min_void_size = min_void_size
+        self.max_surf = max_surf
+        self.max_bracket = max_bracket
+        self.void_mat = void_mat
+        self.void_exclude = void_exclude
+        self.start_cell = start_cell
+        self.start_surf = start_surf
+        self.cell_comment_file = cell_comment_file
+        self.cell_summary_file = cell_summary_file
+        self.sort_enclosure = sort_enclosure
+
+    """"""
 
     def set_options(self):
         toleranceKwrd = (
@@ -97,7 +125,7 @@ class Geouned:
             "GQ_10",
         )
         tolKwrdEquiv = {
-            "relative_tolerance": "relativeTol",
+            "relative_tolerance": "relative_tol",
             "relative_precision": "relative_precision",
             "single_value": "value",
             "general_distance": "distance",
@@ -118,13 +146,13 @@ class Geouned:
         config.optionxform = str
         config.read(self.__dict__["title"])
         for section in config.sections():
-            if section == "Files":
-                for key in config["Files"].keys():
+            if section == "files":
+                for key in config["files"].keys():
                     if key in ("geometry_name", "mat_file", "title"):
-                        self.set(key, config.get("Files", key))
+                        self.set(key, config.get("files", key))
 
                     elif key == "step_file":
-                        value = config.get("Files", key).strip()
+                        value = config.get("files", key).strip()
                         lst = value.split()
                         if value[0] in ("(", "[") and value[-1] in ("]", ")"):
                             data = value[1:-1].split(",")
@@ -136,16 +164,16 @@ class Geouned:
                             self.set(key, value)
 
                     elif key == "out_format":
-                        raw = config.get("Files", key).strip()
+                        raw = config.get("files", key).strip()
                         values = tuple(x.strip() for x in raw.split(","))
                         out_format = []
                         for v in values:
                             if v.lower() == "mcnp":
                                 out_format.append("mcnp")
                             elif v.lower() == "openmc_xml":
-                                out_format.append("openMC_XML")
+                                out_format.append("openmc_xml")
                             elif v.lower() == "openmc_py":
-                                out_format.append("openMC_PY")
+                                out_format.append("openmc_py")
                             elif v.lower() == "serpent":
                                 out_format.append("serpent")
                             elif v.lower() == "phits":
@@ -196,31 +224,31 @@ class Geouned:
                         "quadric_py",
                         "facets",
                         "prnt3PPlane",
-                        "forceNoOverlap",
+                        "force_no_overlap",
                     ):
                         setattr(Options, key, config.getboolean("options", key))
                     elif key in ("enlargeBox", "n_plane_reverse", "split_tolerance"):
                         setattr(Options, key, config.getfloat("options", key))
 
-            elif section == "Tolerances":
-                for key in config["Tolerances"].keys():
+            elif section == "tolerances":
+                for key in config["tolerances"].keys():
                     if key == "relative_tolerance":
-                        setattr(Tolerances, key, config.getboolean("Tolerances", key))
+                        setattr(Tolerances, key, config.getboolean("tolerances", key))
                     elif key in toleranceKwrd:
                         setattr(
                             Tolerances,
                             tolKwrdEquiv[key],
-                            config.getfloat("Tolerances", key),
+                            config.getfloat("tolerances", key),
                         )
 
-            elif section == "mcnp_Numeric_Format":
+            elif section == "mcnp_numeric_format":
                 PdEntry = False
-                for key in config["mcnp_Numeric_Format"].keys():
+                for key in config["mcnp_numeric_format"].keys():
                     if key in numericKwrd:
                         setattr(
                             mcnp_numeric_format,
                             key,
-                            config.get("mcnp_Numeric_Format", key),
+                            config.get("mcnp_numeric_format", key),
                         )
                     if key == "P_d":
                         PdEntry = True
@@ -233,8 +261,6 @@ class Geouned:
 
         if Options.prnt3PPlane and not PdEntry:
             mcnp_numeric_format.P_d = "22.15e"
-
-        print(self.__dict__)
 
     def set(self, kwrd, value):
 
@@ -279,7 +305,7 @@ class Geouned:
             "void_gen",
             "debug",
             "comp_solids",
-            "simplifyCTable",
+            "simplify_c_table",
             "vol_sdef",
             "vol_card",
             "dummy_mat",
@@ -309,6 +335,7 @@ class Geouned:
         )
 
         code_setting = self.__dict__
+        print(code_setting)
         if code_setting is None:
             raise ValueError("Cannot run the code. Input are missing")
         if code_setting["step_file"] == "":
@@ -413,7 +440,7 @@ class Geouned:
                     print("none", j, m.__id__)
                     print(m.Definition)
 
-            if Options.forceNoOverlap:
+            if Options.force_no_overlap:
                 Conv.no_overlapping_cell(MetaList, Surfaces)
 
         else:
@@ -458,7 +485,7 @@ class Geouned:
                 MetaReduced, EnclosureList, Surfaces, UniverseBox, code_setting, init
             )
 
-        # if code_setting['simplify'] == 'full' and not Options.forceNoOverlap:
+        # if code_setting['simplify'] == 'full' and not Options.force_no_overlap:
         if code_setting["simplify"] == "full":
             Surfs = {}
             for lst in Surfaces.values():
@@ -566,28 +593,28 @@ def decompose_solids(MetaList, Surfaces, UniverseBox, setting, meta):
         comsolid, err = Decom.split_solid(Part.makeCompound(m.Solids), UniverseBox)
 
         if err != 0:
-            if not path.exists("Suspicious_solids"):
-                mkdir("Suspicious_solids")
+            if not path.exists("suspicious_solids"):
+                mkdir("suspicious_solids")
             if m.IsEnclosure:
                 Part.CompSolid(m.Solids).exportStep(
-                    "Suspicious_solids/Enclosure_original_{}.stp".format(i)
+                    "suspicious_solids/enclosure_original_{}.stp".format(i)
                 )
                 comsolid.exportStep(
-                    "Suspicious_solids/Enclosure_split_{}.stp".format(i)
+                    "suspicious_solids/enclosure_split_{}.stp".format(i)
                 )
             else:
                 Part.CompSolid(m.Solids).exportStep(
-                    "Suspicious_solids/Solid_original_{}.stp".format(i)
+                    "suspicious_solids/solid_original_{}.stp".format(i)
                 )
-                comsolid.exportStep("Suspicious_solids/Solid_split_{}.stp".format(i))
+                comsolid.exportStep("suspicious_solids/solid_split_{}.stp".format(i))
 
             warningSolids.append(i)
 
         if setting["debug"]:
             if m.IsEnclosure:
-                comsolid.exportStep("debug/compEnclosure_{}.stp".format(i))
+                comsolid.exportStep("debug/comp_enclosure_{}.stp".format(i))
             else:
-                comsolid.exportStep("debug/compSolid_{}.stp".format(i))
+                comsolid.exportStep("debug/comp_solid_{}.stp".format(i))
         Surfaces.extend(
             Decom.extract_surfaces(comsolid, "All", UniverseBox, MakeObj=True)
         )
@@ -652,7 +679,7 @@ def get_universe(MetaList):
 def print_warning_solids(warnSolids, warnEnclosures):
 
     if warnSolids or warnEnclosures:
-        fic = open("Warning_Solids_definition.txt", "w")
+        fic = open("warning_Solids_definition.txt", "w")
     else:
         return
 
