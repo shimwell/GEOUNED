@@ -28,7 +28,7 @@ def setInput(inName, inpDir, outDir):
 
     template = """[Files]
 title    = Input Test
-stepFile = {}
+step_file = {}
 geometryName = {}
 
 [Parameters]

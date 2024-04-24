@@ -10,8 +10,8 @@ import sys
 # sys.path.append(geo_path)
 # sys.path.append('C:\\Program Files\\FreeCAD 0.19\\bin...')
 
-import geouned
-from geouned.GEOReverse import reverse
+from geouned import Geouned
+from geouned.georeverse import reverse
 
 runReverse = False
 if len(sys.argv) < 2:
@@ -38,9 +38,9 @@ else:
     raise ValueError("Too many input arguments")
 
 if not runReverse:
-    GEO = GEOUNED.GEOUNED(inifile)
-    GEO.SetOptions()
-    GEO.Start()
+    GEO = Geouned(inifile)
+    GEO.set_options()
+    GEO.start()
 
 else:
     print(inifile)

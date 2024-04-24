@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from geouned import GEOUNED
+from geouned import Geouned
 
 path_to_cad = Path("testing/inputSTEP")
 step_files = list(path_to_cad.rglob("*.stp")) + list(path_to_cad.rglob("*.step"))
@@ -21,9 +21,9 @@ def test_conversion(input_step_file):
     template = (
         "[Files]\n"
         "title = 'Input Test'\n"
-        f"stepFile = {input_step_file.resolve()}\n"
+        f"step_file = {input_step_file.resolve()}\n"
         f"geometryName = {output_filename_stem.resolve()}\n"
-        "outFormat = ('mcnp', 'openMC_XML')\n"
+        "out_format = ('mcnp', 'openMC_XML')\n"
         "[Parameters]\n"
         "compSolids = False\n"
         "volCARD = False\n"
@@ -50,10 +50,10 @@ def test_conversion(input_step_file):
     output_filename_stem.with_suffix(".xml").unlink(missing_ok=True)
 
     inifile = f"{output_dir/'config.ini'}"
-    GEO = GEOUNED(inifile)
-    GEO.SetOptions()
-    GEO.outFormat = ("mcnp", "openMC_XML")
-    GEO.Start()
+    GEO = Geouned(inifile)
+    GEO.set_options()
+    GEO.out_format = ("mcnp", "openMC_XML")
+    GEO.start()
 
     assert output_filename_stem.with_suffix(".mcnp").exists()
     assert output_filename_stem.with_suffix(".xml").exists()
