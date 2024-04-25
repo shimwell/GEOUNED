@@ -18,12 +18,12 @@ from ..Write.Functions import MCNPSurface
 sameSurfFic = open("fuzzySurfaces", "w")
 
 
-def Fuzzy(index, dtype, surf1, surf2, val, tol):
+def Fuzzy(index, dtype, surf1, surf2, val, tol, tolerance):
 
     same = val <= tol
 
     if dtype == "plane":
-        p1str = MCNPSurface(index, "Plane", surf1)
+        p1str = MCNPSurface(index, "Plane", surf1, tolerance)
         p2str = MCNPSurface(0, "Plane", surf2)
         line = "Same surface : {}\nPlane distance / Tolerance : {} {}\n {}\n {}\n\n".format(
             same, val, tol, p1str, p2str
@@ -47,7 +47,7 @@ def Fuzzy(index, dtype, surf1, surf2, val, tol):
         sameSurfFic.write(line)
 
 
-def isSamePlane(p1, p2, dtol=1e-6, atol=1e-6, relTol=True, fuzzy=(False, 0)):
+def isSamePlane(p1, p2, dtol=1e-6, atol=1e-6, relTol=True, fuzzy=(False, 0), tolerance):
     if isParallel(p1.Axis, p2.Axis, atol):
         d1 = p1.Axis.dot(p1.Position)
         d2 = p2.Axis.dot(p2.Position)
@@ -61,7 +61,7 @@ def isSamePlane(p1, p2, dtol=1e-6, atol=1e-6, relTol=True, fuzzy=(False, 0)):
 
         isSame, isFuzzy = isInTolerance(d, tol, 0.5 * tol, 2 * tol)
         if isFuzzy and fuzzy[0]:
-            Fuzzy(fuzzy[1], "plane", p2, p1, d, tol)
+            Fuzzy(fuzzy[1], "plane", p2, p1, d, tol, tolerance)
         return isSame
     return False
 

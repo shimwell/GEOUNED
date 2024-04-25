@@ -438,7 +438,7 @@ class Surfaces_dict(dict):
         for s in surface["Tor"]:
             self.addTorus(s)
 
-    def addPlane(self, plane, fuzzy=False):
+    def addPlane(self, plane, tolerance, fuzzy=False):
         ex = FreeCAD.Vector(1, 0, 0)
         ey = FreeCAD.Vector(0, 1, 0)
         ez = FreeCAD.Vector(0, 0, 1)
@@ -453,6 +453,7 @@ class Surfaces_dict(dict):
                     atol=tol.pln_angle,
                     relTol=tol.relativeTol,
                     fuzzy=(fuzzy, p.Index),
+                    tolerance=tolerance
                 ):
                     addPlane = False
                     index = p.Index
