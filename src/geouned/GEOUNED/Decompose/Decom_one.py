@@ -14,7 +14,6 @@ from ..Utils import Geometry_GU as GU
 from ..Utils.BasicFunctions_part1 import isInLine, isInPlane, isParallel, isSameValue
 from ..Utils.BasicFunctions_part2 import isDuplicateInList
 from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
 
 twoPi = math.pi * 2
 
@@ -155,10 +154,10 @@ def CylBoundPlanes(face, boundBox):
     return planes
 
 
-def TorusBoundPlanes(face, boundBox):
+def TorusBoundPlanes(face, boundBox, tolerances):
     params = face.ParameterRange
     planes = []
-    if isSameValue(params[1] - params[0], twoPi, tol.value):
+    if isSameValue(params[1] - params[0], twoPi, tolerances.value):
         return planes
 
     Edges = face.OuterWire.Edges
@@ -171,7 +170,7 @@ def TorusBoundPlanes(face, boundBox):
 
         if curve[0:6] == "Circle":
             dir = e.Curve.Axis
-            if not isParallel(dir, face.Surface.Axis, tol.angle):
+            if not isParallel(dir, face.Surface.Axis, tolerances.angle):
                 center = e.Curve.Center
                 dim1 = e.Curve.Radius
                 dim2 = e.Curve.Radius
@@ -189,7 +188,7 @@ def TorusBoundPlanes(face, boundBox):
             planes.append(plane)
 
         elif curve == "<BSplineCurve object>":
-            planeParams = PlaneSplineCurve(e)
+            planeParams = PlaneSplineCurve(e, tolerances)
             if planeParams is not None:
                 plane = UF.GEOUNED_Surface(("Plane", planeParams), boundBox)
                 planes.append(plane)
@@ -197,14 +196,14 @@ def TorusBoundPlanes(face, boundBox):
     return planes
 
 
-def PlaneSplineCurve(edge):
+def PlaneSplineCurve(edge, tolerances):
 
     normal = edge.derivative1At(0).cross(edge.derivative1At(0.5))
     normal.normalize()
     curve2D = True
     for p in (0.25, 0.75, 1):
         # check if derivative orthogonal to curve normal vector
-        if abs(normal.dot(edge.derivative1At(p))) > tol.value:
+        if abs(normal.dot(edge.derivative1At(p))) > tolerances.value:
             curve2D = False
             break
 
@@ -215,7 +214,7 @@ def PlaneSplineCurve(edge):
         return None
 
 
-def ExtractSurfaces(solid, kind, UniverseBox, MakeObj=False):
+def ExtractSurfaces(solid, kind, UniverseBox, tolerances, MakeObj=False):
     if kind == "All":
         fuzzy = True
         solidParts = []
@@ -317,7 +316,7 @@ def ExtractSurfaces(solid, kind, UniverseBox, MakeObj=False):
                     Surfaces.addTorus(torus)
 
                 if kind in ["Planes", "All"]:
-                    for p in TorusBoundPlanes(face, UniverseBox):
+                    for p in TorusBoundPlanes(face, UniverseBox, tolerances):
                         if MakeObj:
                             p.buildSurface()
                         Surfaces.addPlane(p)
@@ -354,11 +353,11 @@ def isAlreadyInPlanes(plane, Array):
 #
 #   Check if to faces are joint
 #
-def ContiguousFace(face1, face2):
-    return face1.distToShape(face2)[0] < tol.distance
+def ContiguousFace(face1, face2, tolerances):
+    return face1.distToShape(face2)[0] < tolerances.distance
 
 
-def SameFaces(Faces):
+def SameFaces(Faces, tolerances):
     Connection = OrderedDict()
     if len(Faces) == 1:
         return []
@@ -368,7 +367,7 @@ def SameFaces(Faces):
         if not Faces[i + 1 :]:
             continue
         for j, face2 in enumerate(Faces[i + 1 :]):
-            if ContiguousFace(face1, face2):
+            if ContiguousFace(face1, face2, tolerances):
 
                 Couples.append(i + 1 + j)
 
@@ -398,7 +397,7 @@ def SameFaces(Faces):
 
 # Tolerance in this function are not the general once
 # function should be reviewed
-def GenPlaneCylinder(face, solid):
+def GenPlaneCylinder(face, solid, tolerances):
     Surf = face.Surface
     rad = Surf.Radius
     if face.Area < 1e-2:
@@ -435,7 +434,7 @@ def GenPlaneCylinder(face, solid):
 
     face_index = [face_index_0[0]]  # la face de entrada
 
-    for k in SameFaces(Faces_p):
+    for k in SameFaces(Faces_p, tolerances):
         face_index.append(face_index_0[k])
 
     # commented to let plane cut rounded corner
@@ -526,7 +525,7 @@ def GenPlaneCylinder(face, solid):
 
 # Tolerance in this function are not the general once
 # function should be reviewed
-def GenPlaneCone(face, solid):
+def GenPlaneCone(face, solid, tolerances):
 
     if face.Area < 1e-2:
         return None
@@ -561,7 +560,7 @@ def GenPlaneCone(face, solid):
 
     face_index = [face_index_0[0]]  # la face de entrada
 
-    for k in SameFaces(Faces_p):
+    for k in SameFaces(Faces_p, tolerances):
         face_index.append(face_index_0[k])
 
     # same as cylinder commennt
@@ -646,7 +645,7 @@ def GenPlaneCone(face, solid):
     return plane
 
 
-def Plane2ndOrder(solid_GU, face, flag_inv, convex=True):
+def Plane2ndOrder(solid_GU, face, flag_inv, tolerances, convex=True):
     planes = []
 
     if face is None:
@@ -663,9 +662,9 @@ def Plane2ndOrder(solid_GU, face, flag_inv, convex=True):
             if convex and orient == "Reversed":  # convex face condition
                 pp = None
                 if str(face.Surface) == "<Cylinder object>":
-                    pp = GenPlaneCylinder(face, solid_GU)
+                    pp = GenPlaneCylinder(face, solid_GU, tolerances)
                 elif str(face.Surface) == "<Cone object>":
-                    pp = GenPlaneCone(face, solid_GU)
+                    pp = GenPlaneCone(face, solid_GU, tolerances)
                 if pp is not None:
                     planes.append(pp)
             # elif str(face.Surface)[0:6] == 'Sphere':
@@ -683,23 +682,23 @@ def Plane2ndOrder(solid_GU, face, flag_inv, convex=True):
 
         if not convex and orient == "Forward":
             if str(face.Surface) == "<Cylinder object>":
-                pp = GenPlaneCylinder(face, solid_GU)
+                pp = GenPlaneCylinder(face, solid_GU, tolerances)
             elif str(face.Surface) == "<Cone object>":
-                pp = GenPlaneCone(face, solid_GU)
+                pp = GenPlaneCone(face, solid_GU, tolerances)
             if pp is not None:
                 planes.append(pp)
 
     return planes
 
 
-def SplitPlanes(Solids, UniverseBox, newVersion=True):
+def SplitPlanes(Solids, UniverseBox, tolerances, newVersion=True):
     if newVersion:
-        return SplitPlanes_new(Solids, UniverseBox)
+        return SplitPlanes_new(Solids, UniverseBox, tolerances)
     else:
-        return SplitPlanes_org(Solids, UniverseBox)
+        return SplitPlanes_org(Solids, UniverseBox, tolerances)
 
 
-def SplitPlanes_new(Solids, UniverseBox):
+def SplitPlanes_new(Solids, UniverseBox, tolerances):
     Bases = Solids[:]
     simpleSolid = []
 
@@ -707,7 +706,7 @@ def SplitPlanes_new(Solids, UniverseBox):
     while True:
         newBases = []
         for base in Bases:
-            cutSolids = splitPPlanes_new(base, UniverseBox)
+            cutSolids = splitPPlanes_new(base, UniverseBox, tolerances)
             if len(cutSolids) == 1:
                 simpleSolid.extend(cutSolids)
             else:
@@ -720,7 +719,7 @@ def SplitPlanes_new(Solids, UniverseBox):
     return simpleSolid, 0
 
 
-def SplitPlanes_org(Solids, UniverseBox):
+def SplitPlanes_org(Solids, UniverseBox, tolerances):
     Bases = []
     err = 0
     for sol in Solids:
@@ -737,7 +736,7 @@ def SplitPlanes_org(Solids, UniverseBox):
 
             base = item[0]
             index = item[1]
-            SPlanes = ExtractSurfaces(base, "Planes", UniverseBox, MakeObj=True)
+            SPlanes = ExtractSurfaces(base, "Planes", UniverseBox, tolerances, MakeObj=True)
             Planes = [SPlanes["PX"], SPlanes["PY"], SPlanes["PZ"]]
             for i in index:
                 del Planes[i]
@@ -757,7 +756,7 @@ def SplitPlanes_org(Solids, UniverseBox):
                 if len(comsolid.Solids) == 1:
                     if (
                         abs(comsolid.Solids[0].Volume - base.Volume) / base.Volume
-                        > tol.relativePrecision
+                        > tolerances.relativePrecision
                     ):
                         if opt.verbose:
                             print(
@@ -864,8 +863,8 @@ def sortPlanes(PlaneList, sortElements=False):
     return sortedPlanes
 
 
-def splitPPlanes_new(solid, UniverseBox):
-    SPlanes = ExtractSurfaces(solid, "Planes", UniverseBox)
+def splitPPlanes_new(solid, UniverseBox, tolerances):
+    SPlanes = ExtractSurfaces(solid, "Planes", UniverseBox, tolerances)
 
     Planes = []
     for P in ("PX", "PY", "PZ", "P"):
@@ -890,8 +889,8 @@ def splitPPlanes_new(solid, UniverseBox):
     return outSolid
 
 
-def splitPPlanes_org(solid, UniverseBox):
-    SPlanes = ExtractSurfaces(solid, "Planes", UniverseBox)
+def splitPPlanes_org(solid, UniverseBox, tolerances):
+    SPlanes = ExtractSurfaces(solid, "Planes", UniverseBox, tolerances)
 
     if len(SPlanes["P"]) == 0:
         return [solid]
@@ -905,7 +904,7 @@ def splitPPlanes_org(solid, UniverseBox):
     return outSolid
 
 
-def Split2ndOrder(Solids, UniverseBox):
+def Split2ndOrder(Solids, UniverseBox, tolerances):
     err = 0
     Base = Solids
     for kind in ["Cyl", "Cone", "Sph", "Tor"]:
@@ -913,7 +912,7 @@ def Split2ndOrder(Solids, UniverseBox):
         while True:
             cutBase = []
             for solid in Base:
-                Surfaces = ExtractSurfaces(solid, kind, UniverseBox)
+                Surfaces = ExtractSurfaces(solid, kind, UniverseBox, tolerances)
                 if len(Surfaces[kind]) == 0:
                     kindBase.append(solid)
                 else:
@@ -952,14 +951,14 @@ def Split2ndOrder(Solids, UniverseBox):
     return Base, err
 
 
-def Split2ndOrderPlanes(Solids):
+def Split2ndOrderPlanes(Solids, tolerances):
     err = 0
     simpleSolid = []
     Bases = Solids
     while True:
         newBases = []
         for base in Bases:
-            cutSolids, err = split2ndOPlane(base)
+            cutSolids, err = split2ndOPlane(base, tolerances)
             if len(cutSolids) == 1:
                 simpleSolid.extend(cutSolids)
             else:
@@ -972,12 +971,12 @@ def Split2ndOrderPlanes(Solids):
     return simpleSolid, err
 
 
-def split2ndOPlane(solid):
+def split2ndOPlane(solid, tolerances):
 
     err = 0
     flag_inv = CD.isInverted(solid)
     solid_GU = GU.solid_GU(solid)
-    planes = Plane2ndOrder(solid_GU, None, flag_inv, convex=True)
+    planes = Plane2ndOrder(solid_GU, None, flag_inv, tolerances, convex=True)
     if not planes:
         return [solid], err
 
@@ -1013,7 +1012,7 @@ def removeSolids(Solids):
     return Solids_Clean, err
 
 
-def splitComponent(solidShape, UniverseBox):
+def splitComponent(solidShape, UniverseBox, tolerances):
     err = 0
     err2 = 0
 
@@ -1021,13 +1020,13 @@ def splitComponent(solidShape, UniverseBox):
     Solids = solidShape.Solids
     # Split with explicit planes bounding the solid and
     # implicit planes interface of two 2nd order surfaces
-    split0, err = SplitPlanes(Solids, UniverseBox, opt.newSplitPlane)
+    split0, err = SplitPlanes(Solids, UniverseBox, tolerances, opt.newSplitPlane)
     # Split with explicit 2nd order surfaces bounding the solid
 
-    split1, err1 = Split2ndOrder(split0, UniverseBox)
+    split1, err1 = Split2ndOrder(split0, UniverseBox, tolerances)
     err += err1
 
-    split, err2 = Split2ndOrderPlanes(split1)
+    split, err2 = Split2ndOrderPlanes(split1, tolerances)
     err += err2
     Pieces = []
     for part in split:
@@ -1054,14 +1053,14 @@ def splitComponent(solidShape, UniverseBox):
     return comsolid, err
 
 
-def SplitSolid(solidShape, UniverseBox):
+def SplitSolid(solidShape, UniverseBox, tolerances):
 
     solidParts = []
 
     for solid in solidShape.Solids:
 
         explode = splitFullCylinder(solid)
-        piece, err = splitComponent(explode, UniverseBox)
+        piece, err = splitComponent(explode, UniverseBox, tolerances)
         solidParts.append(piece)
 
     return Part.makeCompound(solidParts), err

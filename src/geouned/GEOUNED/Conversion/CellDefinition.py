@@ -20,18 +20,17 @@ from ..Utils.booleanFunction import BoolSequence, insertInSequence
 from ..Utils.BooleanSolids import buildCTableFromSolids, removeExtraSurfaces
 from ..Utils.Functions import GEOUNED_Surface
 from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
 
 
-def getId(facein, Surfaces):
+def getId(facein, Surfaces, tolerances):
 
     surfin = str(facein)
     if surfin == "<Plane object>":
-        if isParallel(facein.Axis, FreeCAD.Vector(1, 0, 0), tol.pln_angle):
+        if isParallel(facein.Axis, FreeCAD.Vector(1, 0, 0), tolerances.pln_angle):
             P = "PX"
-        elif isParallel(facein.Axis, FreeCAD.Vector(0, 1, 0), tol.pln_angle):
+        elif isParallel(facein.Axis, FreeCAD.Vector(0, 1, 0), tolerances.pln_angle):
             P = "PY"
-        elif isParallel(facein.Axis, FreeCAD.Vector(0, 0, 1), tol.pln_angle):
+        elif isParallel(facein.Axis, FreeCAD.Vector(0, 0, 1), tolerances.pln_angle):
             P = "PZ"
         else:
             P = "P"
@@ -40,9 +39,9 @@ def getId(facein, Surfaces):
             if BF.isSamePlane(
                 facein,
                 s.Surf,
-                dtol=tol.pln_distance,
-                atol=tol.pln_angle,
-                relTol=tol.relativeTol,
+                dtol=tolerances.pln_distance,
+                atol=tolerances.pln_angle,
+                relTol=tolerances.relativeTol,
             ):
                 return s.Index
 
@@ -51,9 +50,9 @@ def getId(facein, Surfaces):
             if BF.isSameCylinder(
                 facein,
                 s.Surf,
-                dtol=tol.cyl_distance,
-                atol=tol.cyl_angle,
-                relTol=tol.relativeTol,
+                dtol=tolerances.cyl_distance,
+                atol=tolerances.cyl_angle,
+                relTol=tolerances.relativeTol,
             ):
                 return s.Index
 
@@ -62,16 +61,16 @@ def getId(facein, Surfaces):
             if BF.isSameCone(
                 facein,
                 s.Surf,
-                dtol=tol.kne_distance,
-                atol=tol.kne_angle,
-                relTol=tol.relativeTol,
+                dtol=tolerances.kne_distance,
+                atol=tolerances.kne_angle,
+                relTol=tolerances.relativeTol,
             ):
                 return s.Index
 
     elif surfin[0:6] == "Sphere":
         for s in Surfaces["Sph"]:
             if BF.isSameSphere(
-                facein, s.Surf, tol.sph_distance, relTol=tol.relativeTol
+                facein, s.Surf, tolerances.sph_distance, relTol=tolerances.relativeTol
             ):
                 return s.Index
 
@@ -80,9 +79,9 @@ def getId(facein, Surfaces):
             if BF.isSameTorus(
                 facein,
                 s.Surf,
-                dtol=tol.tor_distance,
-                atol=tol.tor_angle,
-                relTol=tol.relativeTol,
+                dtol=tolerances.tor_distance,
+                atol=tolerances.tor_angle,
+                relTol=tolerances.relativeTol,
             ):
                 return s.Index
 
@@ -149,12 +148,12 @@ def isInverted(solid):
     return False
 
 
-def GenPlane(face, solid):
+def GenPlane(face, solid, tolerances):
     """Generate an additional plane when convex surfaces of second order are presented as a face of the solid"""
 
     surf = face.Surface
     if str(surf) == "<Cylinder object>":
-        return GenPlaneCylinder(face, solid)
+        return GenPlaneCylinder(face, solid, tolerances)
     if str(surf) == "<Cone object>":
         return GenPlaneCone(face, solid)
     if str(surf) == "Sphere":
@@ -219,7 +218,7 @@ def getIntervals(UNodes):
             nxtInt = UNodes[i][1]
             if (
                 UNodes[posMin[nxtInt]][0] - x[0]
-            ) < 1e-5:  # x pos is > min boundary of the next inteval inside precision 1e-5
+            ) < 1e-5:  # x pos is > min boundary of the next interval inside precision 1e-5
                 iPos = posMax[nxtInt]
                 end = False
                 break
@@ -284,7 +283,7 @@ def GenPlaneSphere(face, solid):
     return Part.Plane(face.Surface.Center, normal).toShape()
 
 
-def GenPlaneCylinder(face, solid):
+def GenPlaneCylinder(face, solid, tolerances):
 
     Surf = face.Surface
     rad = Surf.Radius
@@ -296,10 +295,10 @@ def GenPlaneCylinder(face, solid):
     face_index = [myIndex]
 
     for i, face2 in enumerate(solid.Faces):
-        if face2.Area < tol.min_area:
+        if face2.Area < tolerances.min_area:
             if opt.verbose:
                 print(
-                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tol.min_area}) "
+                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tolerances.min_area}) "
                 )
             continue
         if str(face2.Surface) == "<Cylinder object>" and not (face2.isEqual(face)):
@@ -337,7 +336,7 @@ def GenPlaneCylinder(face, solid):
     return plane
 
 
-def GenPlaneCylinder_old(face, solid):
+def GenPlaneCylinder_old(face, solid, tolerances):
 
     Surf = face.Surface
     rad = Surf.Radius
@@ -348,10 +347,10 @@ def GenPlaneCylinder_old(face, solid):
     face_index = [solid.Faces.index(face)]
 
     for i, face2 in enumerate(solid.Faces):
-        if face2.Area < tol.min_area:
+        if face2.Area < tolerances.min_area:
             if opt.verbose:
                 print(
-                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tol.min_area}) "
+                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tolerances.min_area}) "
                 )
             continue
         if str(face2.Surface) == "<Cylinder object>" and not (face2.isEqual(face)):
@@ -429,7 +428,7 @@ def GenPlaneCylinder_old(face, solid):
     return plane
 
 
-def GenPlaneCone(face, solid):
+def GenPlaneCone(face, solid, tolerances):
 
     Surf = face.Surface
     if str(Surf) != "<Cone object>":
@@ -439,10 +438,10 @@ def GenPlaneCone(face, solid):
     face_index = [myIndex]
 
     for i, face2 in enumerate(solid.Faces):
-        if face2.Area < tol.min_area:
+        if face2.Area < tolerances.min_area:
             if opt.verbose:
                 print(
-                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tol.min_area}) "
+                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tolerances.min_area}) "
                 )
             continue
         if str(face2.Surface) == "<Cone object>" and not (face2.isEqual(face)):
@@ -476,7 +475,7 @@ def GenPlaneCone(face, solid):
     return plane
 
 
-def GenPlaneCone_old(face, solid):
+def GenPlaneCone_old(face, solid, tolerances):
 
     Surf = face.Surface
     if str(Surf) != "<Cone object>":
@@ -485,10 +484,10 @@ def GenPlaneCone_old(face, solid):
     face_index = [solid.Faces.index(face)]
 
     for i, face2 in enumerate(solid.Faces):
-        if face2.Area < tol.min_area:
+        if face2.Area < tolerances.min_area:
             if opt.verbose:
                 print(
-                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tol.min_area}) "
+                    f"Warning: {str(Surf)} surface removed from cell definition. Face area < Min area ({face2.Area} < {tolerances.min_area}) "
                 )
             continue
         if str(face2.Surface) == "<Cone object>" and not (face2.isEqual(face)):
@@ -562,13 +561,13 @@ def GenPlaneCone_old(face, solid):
     return plane
 
 
-def GenTorusAnnexUPlanes(face, Uparams):
+def GenTorusAnnexUPlanes(face, Uparams, tolerances):
 
-    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tol.tor_angle):
+    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(1, 0, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 1, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 0, 1)
 
     center = face.Surface.Center
@@ -576,7 +575,7 @@ def GenTorusAnnexUPlanes(face, Uparams):
     p2 = face.valueAt(Uparams[1], 0.0)
     pmid = face.valueAt(0.5 * (Uparams[0] + Uparams[1]), 0.0)
 
-    if isSameValue(abs(Uparams[1] - Uparams[0]), math.pi, tol.value):
+    if isSameValue(abs(Uparams[1] - Uparams[0]), math.pi, tolerances.value):
         d = axis.cross(p2 - p1)
         d.normalize()
         if d.dot(pmid - center) < 0:
@@ -613,13 +612,13 @@ def GenTorusAnnexUPlanes(face, Uparams):
         ), True  # (d1 : d2)
 
 
-def GenTorusAnnexUPlanes_org(face, Uparams):
+def GenTorusAnnexUPlanes_org(face, Uparams, tolerances):
 
-    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tol.tor_angle):
+    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(1, 0, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 1, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 0, 1)
 
     center = face.Surface.Center
@@ -627,7 +626,7 @@ def GenTorusAnnexUPlanes_org(face, Uparams):
     p2 = face.valueAt(Uparams[1], 0.0)
     pmid = face.valueAt(0.5 * (Uparams[0] + Uparams[1]), 0.0)
 
-    if isSameValue(abs(Uparams[1] - Uparams[0]), math.pi, tol.value):
+    if isSameValue(abs(Uparams[1] - Uparams[0]), math.pi, tolerances.value):
         d = axis.cross(p2 - p1)
         d.normalize()
         if pmid.dot(d) < 0:
@@ -657,12 +656,12 @@ def GenTorusAnnexUPlanes_org(face, Uparams):
             ), True  # (d1 : d2)
 
 
-def GenTorusAnnexVSurface(face, Vparams, forceCylinder=False):
-    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tol.tor_angle):
+def GenTorusAnnexVSurface(face, Vparams, tolerances, forceCylinder=False):
+    if isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(1, 0, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 1, 0)
-    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.tor_angle):
+    elif isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tolerances.tor_angle):
         axis = FreeCAD.Vector(0, 0, 1)
 
     p1 = face.valueAt(0.0, Vparams[0]) - face.Surface.Center
@@ -673,7 +672,7 @@ def GenTorusAnnexVSurface(face, Vparams, forceCylinder=False):
     z2 = p2.dot(axis)
     d2 = p2.cross(axis).Length
 
-    if isSameValue(z1, z2, tol.distance):
+    if isSameValue(z1, z2, tolerances.distance):
         surfType = "Plane"
         center = face.Surface.Center + z1 * axis
         Vmid = (Vparams[0] + Vparams[1]) * 0.5
@@ -688,11 +687,11 @@ def GenTorusAnnexVSurface(face, Vparams, forceCylinder=False):
             inSurf,
         )
 
-    elif isSameValue(d1, d2, tol.distance) or forceCylinder:
+    elif isSameValue(d1, d2, tolerances.distance) or forceCylinder:
         surfType = "Cylinder"
         radius = min(d1, d2)
         center = face.Surface.Center
-        if isSameValue(d1, face.Surface.MajorRadius, tol.distance):
+        if isSameValue(d1, face.Surface.MajorRadius, tolerances.distance):
             Vmid = (Vparams[0] + Vparams[1]) * 0.5
             pMid = face.valueAt(0, Vmid) - center
             if pMid.cross(axis).Length < face.Surface.MajorRadius:
@@ -735,7 +734,7 @@ def GenTorusAnnexVSurface(face, Vparams, forceCylinder=False):
         )
 
 
-def cellDef(metaObj, Surfaces, UniverseBox):
+def cellDef(metaObj, Surfaces, UniverseBox, tolerances):
 
     solids = metaObj.Solids
     delList = []
@@ -753,10 +752,10 @@ def cellDef(metaObj, Surfaces, UniverseBox):
         lastTorus = -1
         for iface, face in enumerate(solid_GU.Faces):
             surfaceType = str(face.Surface)
-            if abs(face.Area) < tol.min_area:
+            if abs(face.Area) < tolerances.min_area:
                 if opt.verbose:
                     print(
-                        f"Warning: {surfaceType} surface removed from cell definition. Face area < Min area ({face.Area} < {tol.min_area}) "
+                        f"Warning: {surfaceType} surface removed from cell definition. Face area < Min area ({face.Area} < {tolerances.min_area}) "
                     )
                 continue
             if face.Area < 0:
@@ -782,7 +781,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                 and orient == "Reversed"
             ):
                 # cone additional plane is added afterward
-                idFace = getId(face.Surface, Surfaces)
+                idFace = getId(face.Surface, Surfaces, tolerances)
                 if surfaceType == "<Cone object>":
                     cones.add(idFace)
                 if str(idFace) not in SurfPiece:
@@ -790,7 +789,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                     SurfObj.append(face)
 
                 try:
-                    plane = GenPlane(face, solid_GU)
+                    plane = GenPlane(face, solid_GU, tolerances)
                     if plane is not None:
                         plane = GU.Plane_GU(plane)
                 except:
@@ -809,7 +808,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                     sign = signPlane(face.CenterOfMass, p)
                     if exist:
                         pp = Surfaces.getSurface(id)
-                        if isOposite(p.Surf.Axis, pp.Surf.Axis, tol.angle):
+                        if isOposite(p.Surf.Axis, pp.Surf.Axis, tolerances.angle):
                             id = -id
                     id *= sign
 
@@ -824,12 +823,12 @@ def cellDef(metaObj, Surfaces, UniverseBox):
             elif surfaceType == "<Toroid object>":
 
                 if (
-                    isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tol.angle)
-                    or isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tol.angle)
-                    or isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tol.angle)
+                    isParallel(face.Surface.Axis, FreeCAD.Vector(1, 0, 0), tolerances.angle)
+                    or isParallel(face.Surface.Axis, FreeCAD.Vector(0, 1, 0), tolerances.angle)
+                    or isParallel(face.Surface.Axis, FreeCAD.Vector(0, 0, 1), tolerances.angle)
                 ):
 
-                    idT = getId(face.Surface, Surfaces)
+                    idT = getId(face.Surface, Surfaces, tolerances)
 
                     index, Uparams = solid_GU.TorusUParams[iface]
                     if index == lastTorus:
@@ -840,7 +839,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                     UClosed, UminMax = Uparams
                     # UClosed = True
                     if not UClosed:
-                        planes, ORop = GenTorusAnnexUPlanes(face, UminMax)
+                        planes, ORop = GenTorusAnnexUPlanes(face, UminMax, tolerances)
                         plane1, plane2 = planes
 
                         plane = GEOUNED_Surface(
@@ -849,7 +848,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                         id1, exist = Surfaces.addPlane(plane)
                         if exist:
                             p = Surfaces.getSurface(id1)
-                            if isOposite(plane.Surf.Axis, p.Surf.Axis, tol.pln_angle):
+                            if isOposite(plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle):
                                 id1 = -id1
 
                         if plane2 is None:
@@ -862,7 +861,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                             if exist:
                                 p = Surfaces.getSurface(id2)
                                 if isOposite(
-                                    plane.Surf.Axis, p.Surf.Axis, tol.pln_angle
+                                    plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle
                                 ):
                                     id2 = -id2
 
@@ -886,7 +885,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                             VVar = "%i" % idT
                         else:
                             surfParams, surfType, inSurf = GenTorusAnnexVSurface(
-                                face, VminMax, opt.forceCylinder
+                                face, VminMax, tolerances, opt.forceCylinder
                             )
 
                             if surfType == "Cone":
@@ -909,7 +908,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                                 if exist:
                                     p = Surfaces.getSurface(id2)
                                     if isOposite(
-                                        plane.Surf.Axis, p.Surf.Axis, tol.pln_angle
+                                        plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle
                                     ):
                                         id2 = -id2
 
@@ -925,7 +924,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
                             "Only Torus with axis along X, Y , Z axis can be reproduced"
                         )
             else:
-                id = getId(face.Surface, Surfaces)
+                id = getId(face.Surface, Surfaces, tolerances)
                 if surfaceType == "<Cone object>":
                     cones.add(-id)
 
@@ -971,7 +970,7 @@ def cellDef(metaObj, Surfaces, UniverseBox):
 
                 if surfaceType == "<Plane object>":
                     s = Surfaces.getSurface(id)
-                    if isOposite(face.Surface.Axis, s.Surf.Axis, tol.pln_angle):
+                    if isOposite(face.Surface.Axis, s.Surf.Axis, tolerances.pln_angle):
                         var = -var
 
                 if str(var) in SurfPiece:
@@ -1139,7 +1138,7 @@ def noOverlappingCell(metaList, Surfaces):
             m.Definition.levelUpdate()
 
 
-def ExtraPlaneCylFace(face, Box, Surfaces):
+def ExtraPlaneCylFace(face, Box, Surfaces, tolerances):
     wire = face.OuterWire
     planesId = []
     for e in wire.OrderedEdges:
@@ -1159,13 +1158,13 @@ def ExtraPlaneCylFace(face, Box, Surfaces):
             id, exist = Surfaces.addPlane(plane)
             if exist:
                 pp = Surfaces.getSurface(id)
-                if isOposite(plane.Surf.Axis, pp.Surf.Axis, tol.pln_angle):
+                if isOposite(plane.Surf.Axis, pp.Surf.Axis, tolerances.pln_angle):
                     id = -id
             planesId.append(id)
     return planesId
 
 
-def addConePlane(Definition, conesList, Surfaces, UniverseBox):
+def addConePlane(Definition, conesList, Surfaces, UniverseBox, tolerances):
     x_axis = FreeCAD.Vector(1, 0, 0)
     y_axis = FreeCAD.Vector(0, 1, 0)
     z_axis = FreeCAD.Vector(0, 0, 1)
@@ -1173,9 +1172,9 @@ def addConePlane(Definition, conesList, Surfaces, UniverseBox):
     for cid in conesList:
         cone = Surfaces.getSurface(abs(cid))
         if (
-            isParallel(cone.Surf.Axis, x_axis, tol.angle)
-            or isParallel(cone.Surf.Axis, y_axis, tol.angle)
-            or isParallel(cone.Surf.Axis, z_axis, tol.angle)
+            isParallel(cone.Surf.Axis, x_axis, tolerances.angle)
+            or isParallel(cone.Surf.Axis, y_axis, tolerances.angle)
+            or isParallel(cone.Surf.Axis, z_axis, tolerances.angle)
         ):
             continue
 
@@ -1186,7 +1185,7 @@ def addConePlane(Definition, conesList, Surfaces, UniverseBox):
 
         if exist:
             p = Surfaces.getSurface(pid)
-            if isOposite(plane.Surf.Axis, p.Surf.Axis, tol.pln_angle):
+            if isOposite(plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle):
                 pid = -pid
 
         if cid > 0:

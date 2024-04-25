@@ -7,7 +7,6 @@ from ..Utils import Geometry_GU as GU
 from ..Utils.BasicFunctions_part1 import isOposite, isParallel
 from ..Utils.booleanFunction import BoolSequence
 from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
 
 
 def commonEdge(face1, face2):
@@ -60,13 +59,13 @@ def isInverted(solid):
         return False
 
 
-def getId(facein, Surfaces):
+def getId(facein, Surfaces, tolerances):
 
-    if isParallel(facein.Axis, FreeCAD.Vector(1, 0, 0), tol.pln_angle):
+    if isParallel(facein.Axis, FreeCAD.Vector(1, 0, 0), tolerances.pln_angle):
         P = "PX"
-    elif isParallel(facein.Axis, FreeCAD.Vector(0, 1, 0), tol.pln_angle):
+    elif isParallel(facein.Axis, FreeCAD.Vector(0, 1, 0), tolerances.pln_angle):
         P = "PY"
-    elif isParallel(facein.Axis, FreeCAD.Vector(0, 0, 1), tol.pln_angle):
+    elif isParallel(facein.Axis, FreeCAD.Vector(0, 0, 1), tolerances.pln_angle):
         P = "PZ"
     else:
         P = "P"
@@ -75,16 +74,16 @@ def getId(facein, Surfaces):
         if BF.isSamePlane(
             facein,
             s.Surf,
-            dtol=tol.pln_distance,
-            atol=tol.pln_angle,
-            relTol=tol.relativeTol,
+            dtol=tolerances.pln_distance,
+            atol=tolerances.pln_angle,
+            relTol=tolerances.relativeTol,
         ):
             return s.Index
 
     return 0
 
 
-def translate(MetaList, Surfaces, UniverseBox, setting):
+def translate(MetaList, Surfaces, UniverseBox, setting, tolerances):
     totsolid = len(MetaList)
     for i, m in enumerate(MetaList):
         if m.IsEnclosure:
@@ -102,10 +101,10 @@ def translate(MetaList, Surfaces, UniverseBox, setting):
                 Part.makeCompound(m.Solids), "Plane3Pts", UniverseBox, MakeObj=False
             )
         )
-        setDefinition(m, Surfaces)
+        setDefinition(m, Surfaces, tolerances)
 
 
-def setDefinition(metaObj, Surfaces):
+def setDefinition(metaObj, Surfaces, tolerances):
     solids = metaObj.Solids
     sDef = BoolSequence(operator="OR")
 
@@ -127,9 +126,9 @@ def setDefinition(metaObj, Surfaces):
             if face.Orientation not in ("Forward", "Reversed"):
                 continue
 
-            id = getId(face.Surface, Surfaces)
+            id = getId(face.Surface, Surfaces, tolerances)
             s = Surfaces.getSurface(id)
-            if isOposite(face.Surface.Axis, s.Surf.Axis, tol.pln_angle):
+            if isOposite(face.Surface.Axis, s.Surf.Axis, tolerances.pln_angle):
                 id = -id
             if face.Orientation == "Forward":
                 id = -id

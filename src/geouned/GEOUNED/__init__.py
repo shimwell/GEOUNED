@@ -117,6 +117,9 @@ class GEOUNED:
         config = configparser.ConfigParser()
         config.optionxform = str
         config.read(self.__dict__["title"])
+
+        tolerances = Tolerances()
+
         for section in config.sections():
             if section == "Files":
                 for key in config["Files"].keys():
@@ -205,10 +208,10 @@ class GEOUNED:
             elif section == "Tolerances":
                 for key in config["Tolerances"].keys():
                     if key == "relativeTolerance":
-                        setattr(Tolerances, key, config.getboolean("Tolerances", key))
+                        setattr(tolerances, key, config.getboolean("Tolerances", key))
                     elif key in toleranceKwrd:
                         setattr(
-                            Tolerances,
+                            tolerances,
                             tolKwrdEquiv[key],
                             config.getfloat("Tolerances", key),
                         )
@@ -233,6 +236,8 @@ class GEOUNED:
 
         if Options.prnt3PPlane and not PdEntry:
             MCNP_numeric_format.P_d = "22.15e"
+
+        self.tolerances = tolerances
 
         print(self.__dict__)
 
@@ -386,13 +391,13 @@ class GEOUNED:
 
             # decompose all solids in elementary solids (convex ones)
             warningSolidList = DecomposeSolids(
-                MetaList, Surfaces, UniverseBox, code_setting, True
+                MetaList, Surfaces, UniverseBox, code_setting, True, self.tolerances
             )
 
             # decompose Enclosure solids
             if code_setting["voidGen"] and EnclosureList:
                 warningEnclosureList = DecomposeSolids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
+                    EnclosureList, Surfaces, UniverseBox, code_setting, False, self.tolerances
                 )
 
             print("End of decomposition phase")
@@ -403,7 +408,7 @@ class GEOUNED:
                 if m.IsEnclosure:
                     continue
                 print("Building cell: ", j + 1)
-                cones = Conv.cellDef(m, Surfaces, UniverseBox)
+                cones = Conv.cellDef(m, Surfaces, UniverseBox, self.tolerances)
                 if cones:
                     coneInfo[m.__id__] = cones
                 if j in warningSolidList:
@@ -420,7 +425,7 @@ class GEOUNED:
             # decompose Enclosure solids
             if code_setting["voidGen"] and EnclosureList:
                 warningEnclosureList = DecomposeSolids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
+                    EnclosureList, Surfaces, UniverseBox, code_setting, False, self.tolerances
                 )
 
         tempstr2 = str(datetime.now() - tempTime)
@@ -532,7 +537,7 @@ class GEOUNED:
         printWarningSolids(warnSolids, warnEnclosures)
 
         # add plane definition to cone
-        processCones(MetaList, coneInfo, Surfaces, UniverseBox)
+        processCones(MetaList, coneInfo, Surfaces, UniverseBox, self.tolerances)
 
         # write outputformat input
         writeGeometry(UniverseBox, MetaList, Surfaces, code_setting)
@@ -546,7 +551,7 @@ class GEOUNED:
         print("Translation time of void cells", tempTime2 - tempTime1)
 
 
-def DecomposeSolids(MetaList, Surfaces, UniverseBox, setting, meta):
+def DecomposeSolids(MetaList, Surfaces, UniverseBox, setting, meta, tolerances):
     totsolid = len(MetaList)
     warningSolids = []
     for i, m in enumerate(MetaList):
@@ -562,7 +567,7 @@ def DecomposeSolids(MetaList, Surfaces, UniverseBox, setting, meta):
             else:
                 m.Solids[0].exportStep("debug/origSolid_{}.stp".format(i))
 
-        comsolid, err = Decom.SplitSolid(Part.makeCompound(m.Solids), UniverseBox)
+        comsolid, err = Decom.SplitSolid(Part.makeCompound(m.Solids), UniverseBox, tolerances)
 
         if err != 0:
             if not path.exists("Suspicious_solids"):
@@ -588,7 +593,7 @@ def DecomposeSolids(MetaList, Surfaces, UniverseBox, setting, meta):
             else:
                 comsolid.exportStep("debug/compSolid_{}.stp".format(i))
         Surfaces.extend(
-            Decom.ExtractSurfaces(comsolid, "All", UniverseBox, MakeObj=True)
+            Decom.ExtractSurfaces(comsolid, "All", UniverseBox, tolerances, MakeObj=True)
         )
         m.setCADSolid()
         m.updateSolids(comsolid.Solids)
@@ -605,7 +610,7 @@ def updateComment(meta, idLabel):
     meta.setComments(Void.voidCommentLine((meta.__commentInfo__[0], newLabel)))
 
 
-def processCones(MetaList, coneInfo, Surfaces, UniverseBox):
+def processCones(MetaList, coneInfo, Surfaces, UniverseBox, tolerances):
     cellId = tuple(coneInfo.keys())
     for m in MetaList:
         if m.__id__ not in cellId and not m.Void:
@@ -618,9 +623,9 @@ def processCones(MetaList, coneInfo, Surfaces, UniverseBox):
             for Id in m.__commentInfo__[1]:
                 if Id in cellId:
                     cones.update(-x for x in coneInfo[Id])
-            Conv.addConePlane(m.Definition, cones, Surfaces, UniverseBox)
+            Conv.addConePlane(m.Definition, cones, Surfaces, UniverseBox, tolerances)
         elif not m.Void:
-            Conv.addConePlane(m.Definition, coneInfo[m.__id__], Surfaces, UniverseBox)
+            Conv.addConePlane(m.Definition, coneInfo[m.__id__], Surfaces, UniverseBox, tolerances)
 
 
 def getUniverse(MetaList):
