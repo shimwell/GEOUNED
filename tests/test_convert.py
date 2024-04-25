@@ -50,10 +50,47 @@ def test_conversion(input_step_file):
     output_filename_stem.with_suffix(".xml").unlink(missing_ok=True)
 
     inifile = f"{output_dir/'config.ini'}"
-    GEO = GEOUNED(inifile)
-    GEO.SetOptions()
-    GEO.outFormat = ("mcnp", "openMC_XML")
-    GEO.Start()
+    geo = GEOUNED(inifile)
+    geo.SetOptions()
+    geo.outFormat = ("mcnp", "openMC_XML")
+    geo.Start()
 
     assert output_filename_stem.with_suffix(".mcnp").exists()
     assert output_filename_stem.with_suffix(".xml").exists()
+
+
+def test_tolerances_are_no_persistant():
+    template1 = (
+        "[Files]\n"
+        "title = 'Input Test'\n"
+        f"stepFile = {step_files[2]}\n"
+    )
+
+    with open("config1.ini", mode="w") as file:
+        file.write(template1)
+
+    geo1 = GEOUNED('config1.ini')
+    geo1.SetOptions()  # this should set the default tolerances.relativePrecision
+
+    assert geo1.tolerances.relativePrecision == 1e-6
+
+    template2 = (
+        "[Files]\n"
+        "title = 'Input Test'\n"
+        f"stepFile = {step_files[2]}\n"
+        "[Tolerances]\n"
+        "relativePrecision = 2e-6"  # here we specify a new number for relativePrecision
+    )
+
+    with open("config2.ini", mode="w") as file:
+        file.write(template2)
+    geo2 = GEOUNED('config2.ini')
+    geo2.SetOptions()  # this should set 2e-6 as the tolerances.relativePrecision
+
+    assert geo2.tolerances.relativePrecision == 2e-6
+
+    geo3 = GEOUNED('config1.ini')
+    geo3.SetOptions()  # this does not change the relativePrecision back to the default
+    assert geo3.tolerances.relativePrecision == 1e-6
+    assert geo2.tolerances.relativePrecision == 2e-6
+    assert geo1.tolerances.relativePrecision == 1e-6
