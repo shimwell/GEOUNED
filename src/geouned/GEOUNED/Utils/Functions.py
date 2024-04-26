@@ -443,7 +443,7 @@ class Surfaces_dict(dict):
         ey = FreeCAD.Vector(0, 1, 0)
         ez = FreeCAD.Vector(0, 0, 1)
 
-        if isParallel(plane.Surf.Axis, ex, tol.pln_angle):
+        if isParallel(plane.Surf.axis, ex, tol.pln_angle):
             addPlane = True
             for i, p in enumerate(self["PX"]):
                 if BF.isSamePlane(
