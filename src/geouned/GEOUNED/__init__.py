@@ -7,6 +7,7 @@ import configparser
 import typing
 from datetime import datetime
 from os import mkdir, path
+from typing import get_type_hints
 
 import FreeCAD
 import Part
@@ -152,7 +153,6 @@ class CadToCsg:
         self.cellSummaryFile = cellSummaryFile
         self.sortEnclosure = sortEnclosure
 
-        Options.setDefaultAttribute()
         McnpNumericFormat.setDefaultAttribute()  
         Tolerances.setDefaultAttribute() 
 
@@ -233,12 +233,22 @@ class CadToCsg:
                         self.set(key, tuple(map(int, data)))
 
             elif section == "Options":
-                for key in config["Options"].keys():
-                    if key in Options.defaultValues.keys():
-                        if Options.typeDict[key] is bool :  
+                option_attribute_names_and_types = get_type_hints(Options)
+                for key, value in config["Options"].items():
+                    if key in option_attribute_names_and_types.keys():
+                        if option_attribute_names_and_types[key] is bool :  
                             Options.setAttribute(key,config.getboolean("Options", key))
-                        elif Options.typeDict[key] is float or Options.typeDict[key] is int:
+                        elif option_attribute_names_and_types[key] is float:
                             Options.setAttribute(key,config.getfloat("Options", key))
+                        elif option_attribute_names_and_types[key] is int:
+                            Options.setAttribute(key,config.getint("Options", key))
+                    else:
+                        msg = (
+                            f'{key} was found in the config Options section '
+                            'but is not an acceptable key name. Acceptable key '
+                            f'names are {option_attribute_names_and_types}'
+                        )
+                        raise ValueError(msg)
 
             elif section == "Tolerances":
                 for key in config["Tolerances"].keys():
