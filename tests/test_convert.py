@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from geouned import CadToCsg
+from geouned import CadToCsg, Options
 
 path_to_cad = Path("testing/inputSTEP")
 step_files = list(path_to_cad.rglob("*.stp")) + list(path_to_cad.rglob("*.step"))
@@ -19,35 +19,40 @@ def test_conversion(input_step_file):
 
     # creates the config file contents
     template = {
-        "title" : 'Input Test' ,
-        "stepFile" : f"{input_step_file.resolve()}" ,
-        "geometryName" : f"{output_filename_stem.resolve()}" ,
-        "outFormat" : ('mcnp', 'openMC_XML') ,
-        "compSolids" : False ,
-        "volCARD" : False ,
-        "volSDEF" : True ,
-        "voidGen" : True ,
-        "dummyMat" : True ,
-        "minVoidSize" : 100 ,
-        "cellSummaryFile" : False ,
-        "cellCommentFile" : False ,
-        "debug" : False ,
-        "simplify" : 'no' ,
-        "forceCylinder" :  False ,
-        "splitTolerance" : 0 ,
-        "newSplitPlane" : True ,
-        "nPlaneReverse" : 0 ,
+        "compSolids" : False , # Parameters
+        "volCARD" : False , # Parameters
+        "volSDEF" : True , # Parameters
+        "voidGen" : True , # Parameters
+        "dummyMat" : True , # Parameters
+        "minVoidSize" : 100 , # Parameters
+        "cellSummaryFile" : False , # Parameters
+        "cellCommentFile" : False , # Parameters
+        "debug" : False , # Parameters
+        "simplify" : 'no' , # Parameters
     }
+  
+    my_options = Options(
+      forceCylinder=False , # Options
+      splitTolerance=0 , # Options
+      newSplitPlane=True , # Options
+      nPlaneReverse=0 , # Options
+    )
 
-    # deletes the output openmc and mcnp output files if it already exists
-    output_filename_stem.with_suffix(".mcnp").unlink(missing_ok=True)
-    output_filename_stem.with_suffix(".xml").unlink(missing_ok=True)
-
-    GEO = CadToCsg('Input Test')
+    GEO = CadToCsg(
+        title= 'Input Test' ,
+        stepFile= f"{input_step_file.resolve()}" ,
+        geometryName= f"{output_filename_stem.resolve()}" ,
+        outFormat= ('mcnp', 'openMC_XML'),
+        options = my_options
+    )
 
     # set parameters values stored in template dictionary
     for key,value in template.items():
       GEO.set(key, value)
+
+    # deletes the output openmc and mcnp output files if it already exists
+    output_filename_stem.with_suffix(".mcnp").unlink(missing_ok=True)
+    output_filename_stem.with_suffix(".xml").unlink(missing_ok=True)
 
     GEO.Start()
 

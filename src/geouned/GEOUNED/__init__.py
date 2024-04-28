@@ -7,6 +7,7 @@ import configparser
 import typing
 from datetime import datetime
 from os import mkdir, path
+from typing import get_type_hints
 
 import FreeCAD
 import Part
@@ -53,6 +54,7 @@ class CadToCsg:
         cellCommentFile: bool = False,
         cellSummaryFile: bool = True,
         sortEnclosure: bool = False,
+        options: Options = Options()
     ):
         """Base class for the conversion of CAD to CSG models
 
@@ -125,6 +127,7 @@ class CadToCsg:
                 CAD models, the voids cells of the enclosure will be located in
                 the output file in the same location where the enclosure solid
                 is located in the CAD solid tree.. Defaults to False.
+            options (geouned.Options)
         """
         self.title = title
         self.stepFile = stepFile
@@ -152,9 +155,16 @@ class CadToCsg:
         self.cellSummaryFile = cellSummaryFile
         self.sortEnclosure = sortEnclosure
 
-        Options.setDefaultAttribute()
         McnpNumericFormat.setDefaultAttribute()  
-        Tolerances.setDefaultAttribute() 
+        Tolerances.setDefaultAttribute()
+    
+    @property
+    def options(self):
+        return self._options
+
+    @options.setter
+    def options(self, value):
+        self._options = value.upper()
 
     def SetConfiguration(self,configFile=None):
 
@@ -233,12 +243,24 @@ class CadToCsg:
                         self.set(key, tuple(map(int, data)))
 
             elif section == "Options":
-                for key in config["Options"].keys():
-                    if key in Options.defaultValues.keys():
-                        if Options.typeDict[key] is bool :  
-                            Options.setAttribute(key,config.getboolean("Options", key))
-                        elif Options.typeDict[key] is float or Options.typeDict[key] is int:
-                            Options.setAttribute(key,config.getfloat("Options", key))
+                option_attribute_names_and_types = get_type_hints(Options)
+                local_options = Options()
+                for key, value in config["Options"].items():
+                    if key in option_attribute_names_and_types.keys():
+                        if option_attribute_names_and_types[key] is bool : 
+                            setattr(local_options, key, config.getboolean("Options"))
+                        elif option_attribute_names_and_types[key] is float:
+                            setattr(local_options, key, config.getfloat("Options"))
+                        elif option_attribute_names_and_types[key] is int:
+                            setattr(local_options, key, config.getint("Options"))
+                    else:
+                        msg = (
+                            f'{key} was found in the config Options section '
+                            'but is not an acceptable key name. Acceptable key '
+                            f'names are {option_attribute_names_and_types}'
+                        )
+                        raise ValueError(msg)
+                self.options = local_options
 
             elif section == "Tolerances":
                 for key in config["Tolerances"].keys():

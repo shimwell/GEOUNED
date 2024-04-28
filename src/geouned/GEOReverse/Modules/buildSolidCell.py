@@ -21,7 +21,13 @@ def BuildSolid(cell, boundBox, mode="oneByOne", simplify=False):
     # cell.definition = BoolSequence(cell.definition.str)
     cell.cleanUndefined()
 
-    celParts = BuildDepth(cell, SplitBase(cutCell), mode, True, simplify)
+    celParts = BuildDepth(
+        cell,
+        SplitBase(cutCell),
+        mode,
+        True,
+        simplify
+    )
 
     celParts = getPart(celParts)
     # print('celparts',len(celParts))
@@ -38,15 +44,15 @@ def BuildSolid(cell, boundBox, mode="oneByOne", simplify=False):
     # return FuseSolid(shapeParts)
 
 
-def BuildDepth(cell, cutShape, mode, baseBox, simplify=False, loop=0):
+def BuildDepth(cell, cutShape, mode, baseBox, splitTolerance, simplify=False, loop=0):
 
     loop += 1
     seq = cell.definition
     if seq.level == 0:
         if baseBox:
-            cutShape, cut = BuildSolidParts(cell, cutShape, mode)
+            cutShape, cut = BuildSolidParts(cell, cutShape, mode, splitTolerance)
         else:
-            cutShape, cut = BuildSolidParts(cell, cutShape, "solids")
+            cutShape, cut = BuildSolidParts(cell, cutShape, "solids", splitTolerance)
         return cutShape
 
     if type(cutShape) is not list:
@@ -69,7 +75,7 @@ def BuildDepth(cell, cutShape, mode, baseBox, simplify=False, loop=0):
                 part = CS
                 for e in cell.definition.elements:
                     part = BuildDepth(
-                        cell.getSubCell(e), part, mode, cbaseBox, simplify, loop=loop
+                        cell.getSubCell(e), part, mode, cbaseBox, splitTolerance, simplify, loop=loop
                     )
                     cbaseBox = False
                 newCutShape.extend(part)
@@ -77,7 +83,7 @@ def BuildDepth(cell, cutShape, mode, baseBox, simplify=False, loop=0):
                 cellParts = []
                 for e in cell.definition.elements:
                     sub = cell.getSubCell(e)
-                    part = BuildDepth(sub, CS, mode, baseBox, simplify, loop=loop)
+                    part = BuildDepth(sub, CS, mode, baseBox, splitTolerance, simplify, loop=loop)
                     cellParts.extend(part)
 
                 JB = joinBase(cellParts)
@@ -91,14 +97,14 @@ def BuildDepth(cell, cutShape, mode, baseBox, simplify=False, loop=0):
     return cutShape
 
 
-def BuildSolidParts(cell, base, mode):
+def BuildSolidParts(cell, base, mode, splitTolerance):
 
     # part if several base in input
     if type(base) is list or type(base) is tuple:
         fullPart = []
         cutPart = []
         for b in base:
-            fullList, cutList = BuildSolidParts(cell, b, mode)
+            fullList, cutList = BuildSolidParts(cell, b, mode, splitTolerance)
             fullPart.extend(fullList)
             cutPart.extend(cutList)
         return fullPart, cutPart
@@ -131,10 +137,10 @@ def BuildSolidParts(cell, base, mode):
         return tuple(base.base), tuple()
     if mode == "solids":
         full, cut = SplitSolid(
-            base, surfaces, cell, solidTool=True, tolerance=Options.splitTolerance
+            base, surfaces, cell, solidTool=True, tolerance=splitTolerance
         )
     elif mode == "allSurfaces":
-        full, cut = SplitSolid(base, surfaces, cell, tolerance=Options.splitTolerance)
+        full, cut = SplitSolid(base, surfaces, cell, tolerance=splitTolerance)
 
     elif mode == "planeFirst":
         planes = []
@@ -149,7 +155,7 @@ def BuildSolidParts(cell, base, mode):
 
         if planes:
 
-            full, cut = SplitSolid(base, planes, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, planes, cell, tolerance=splitTolerance)
             # for i,s in enumerate(full):
             #    s.exportStep('fullplane_{}.stp'.format(i))
             # for i,s in enumerate(cut):
@@ -161,7 +167,7 @@ def BuildSolidParts(cell, base, mode):
             cut = base
 
         if others:
-            newf, cut = SplitSolid(cut, others, cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, others, cell, tolerance=splitTolerance)
             # print('others',newf)
             # print('others',cut)
         else:
@@ -179,7 +185,7 @@ def BuildSolidParts(cell, base, mode):
                 others.append(s)
 
         if others:
-            full, cut = SplitSolid(base, others, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, others, cell, tolerance=splitTolerance)
             # print('others',full)
             # print('others',cut)
         else:
@@ -187,7 +193,7 @@ def BuildSolidParts(cell, base, mode):
             cut = base
 
         if planes:
-            newf, cut = SplitSolid(cut, planes, cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, planes, cell, tolerance=splitTolerance)
             # print('planes',newf)
             # print('planes',cut)
 
@@ -206,14 +212,14 @@ def BuildSolidParts(cell, base, mode):
                 others.append(s)
 
         if planes:
-            full, cut = SplitSolid(base, planes, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, planes, cell, tolerance=splitTolerance)
         else:
             full = []
             cut = base
 
         # cut[0].base.exportStep('cutPlane.stp')
         for surf in others:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=splitTolerance)
             full.extend(newf)
 
     elif mode == "otherOneByOne":
@@ -228,11 +234,11 @@ def BuildSolidParts(cell, base, mode):
         cut = base
         full = []
         for surf in others:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=splitTolerance)
             full.extend(newf)
 
         for surf in planes:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=splitTolerance)
             full.extend(newf)
 
     return full, cut
