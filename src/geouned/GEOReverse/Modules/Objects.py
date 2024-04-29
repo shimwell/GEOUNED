@@ -148,7 +148,7 @@ class CadCell:
         cutShape = BuildSolid(self, boundBox, simplify=simplify)
 
         if fuse or True:
-            self.shape = FuseSolid(cutShape)
+            self.shape = fuse_solid(cutShape)
         else:
             self.shape = Part.makeCompound(cutShape)
 
@@ -692,7 +692,7 @@ class Undefined:
         return
 
 
-def FuseSolid(parts):
+def fuse_solid(parts):
     if (len(parts)) <= 1:
         if parts:
             solid = parts[0]

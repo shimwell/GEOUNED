@@ -30,12 +30,12 @@ def BuildSolid(cell, boundBox, mode="oneByOne", simplify=False):
         shapeParts.append(s.base)
         # s.base.exportStep('solid{}.stp'.format(i))
 
-    #   tt = FuseSolid(shapeParts)
+    #   tt = fuse_solid(shapeParts)
     #   tt = tt.removeSplitter()
     # tt=Part.makeCompound(shapeParts)
     # tt.exportStep('cell{}.stp'.format(cell.name))
     return shapeParts
-    # return FuseSolid(shapeParts)
+    # return fuse_solid(shapeParts)
 
 
 def BuildDepth(cell, cutShape, mode, baseBox, simplify=False, loop=0):
@@ -238,7 +238,7 @@ def BuildSolidParts(cell, base, mode):
     return full, cut
 
 
-def FuseSolid(parts):
+def fuse_solid(parts):
     if (len(parts)) <= 1:
         if parts:
             solid = parts[0]

@@ -1,18 +1,17 @@
 import BOPTools.SplitAPI
 
-from .buildSolidCell import FuseSolid
+from .buildSolidCell import fuse_solid
 from .Utils.booleanFunction import BoolSequence
 
 
-def buildCAD(UnivCell, data, config):
+def build_cad(univ_cell, data, config):
 
-    UniverseCut = True
     if "Ustart" not in config.keys():
         config["Ustart"] = 0
     if "levelMax" not in config.keys():
         config["levelMax"] = "all"
-    UnivCell.name = 0
-    UnivCell.Fill = config["Ustart"]
+    univ_cell.name = 0
+    univ_cell.Fill = config["Ustart"]
 
     # read all surfaces definition
     if config["format"] == "mcnp":
@@ -26,37 +25,24 @@ def buildCAD(UnivCell, data, config):
 
     # read Cells and group into universes
     print(config)
-    levels, UniverseCells, modelSurfaces = data.GetFilteredCells(modelSurfaces, config)
+    levels, universe_cells, modelSurfaces = data.GetFilteredCells(modelSurfaces, config)
 
     # assign to each cell the surfaces belonging to the cell
-    AssignSurfaceToCell(UniverseCells, modelSurfaces)
+    assign_surface_to_cell(universe_cells, modelSurfaces)
 
-    #    print(UniverseCells[0][120].definition.str)
-    #    print(UniverseCells[0][120].surfaces)
-    #    CT=buildCTableFromSolids(UnivCell.shape,UniverseCells[0][70],option='full')
-    #    print(CT)
-    #    simply = BoolSequence(UniverseCells[0][70].definition.str)
-    #    print('antesSimply',simply)
-    #    simply.simplify(CT)
-    #    print('despues',simply)
-    # exit()
-
-    # dictionnary of the cells filled with a given Universe U
-    # universeContainers = GetUniverseContainers(levels,UniverseCells)
-
-    UnivCell.level = None
-    levelMax = config["levelMax"]
-    Ustart = config["Ustart"]
-    if levelMax == "all":
-        levelMax = len(levels)
+    univ_cell.level = None
+    level_max = config["levelMax"]
+    u_start = config["Ustart"]
+    if level_max == "all":
+        level_max = len(levels)
 
     for lev, Univ in levels.items():
-        if Ustart in Univ:
-            UnivCell.level = lev - 1
+        if u_start in Univ:
+            univ_cell.level = lev - 1
             break
-    startInfo = (Ustart, levelMax)
+    start_info = (u_start, level_max)
 
-    return BuildUniverse(startInfo, UnivCell, UniverseCells, universeCut=UniverseCut)
+    return build_universe(start_info, univ_cell, universe_cells, universe_cut=True)
 
 
 def interferencia(container, cell, mode="slice"):
@@ -64,148 +50,148 @@ def interferencia(container, cell, mode="slice"):
     if mode == "common":
         return cell.shape.common(container.shape)
 
-    Base = cell.shape
-    Tool = (container.shape,)
+    base = cell.shape
+    tool = (container.shape,)
 
-    solids = BOPTools.SplitAPI.slice(Base, Tool, "Split", tolerance=0).Solids
-    cellParts = []
+    solids = BOPTools.SplitAPI.slice(base, tool, "Split", tolerance=0).Solids
+    cell_parts = []
     for s in solids:
         if container.shape.isInside(s.CenterOfMass, 0.0, False):
-            cellParts.append(s)
+            cell_parts.append(s)
 
-    if not cellParts:
+    if not cell_parts:
         return cell.shape
     else:
-        return FuseSolid(cellParts)
+        return fuse_solid(cell_parts)
 
 
-def AssignSurfaceToCell(UniverseCells, modelSurfaces):
+def assign_surface_to_cell(universe_cells, model_surfaces):
 
-    for Uid, uniCells in UniverseCells.items():
-        for cId, c in uniCells.items():
-            c.setSurfaces(modelSurfaces)
+    for _, uniCells in universe_cells.items():
+        for _, c in uniCells.items():
+            c.setSurfaces(model_surfaces)
 
 
-def GetUniverseContainers(levels, Universes):
-    Ucontainer = {}
+def get_universe_containers(levels, universes):
+    u_container = {}
     for lev in range(1, len(levels)):
         for U, name in levels[lev]:
-            UFILL = Universes[U][name].FILL
-            if UFILL in Ucontainer.keys():
-                Ucontainer[UFILL].append((U, name, lev))
+            u_fill = universes[U][name].FILL
+            if u_fill in u_container.keys():
+                u_container[u_fill].append((U, name, lev))
             else:
-                Ucontainer[UFILL] = [(U, name, lev)]
-    return Ucontainer
+                u_container[u_fill] = [(U, name, lev)]
+    return u_container
 
 
-def BuildUniverse(
-    startInfo, ContainerCell, AllUniverses, universeCut=True, duplicate=False
+def build_universe(
+    start_info, container_cell, all_universes, universe_cut=True, duplicate=False
 ):
-    CADUniverse = []
+    cad_universe = []
 
-    Ustart, levelMax = startInfo
-    Universe = AllUniverses[Ustart]
+    u_start, level_max = start_info
+    universe = all_universes[u_start]
 
     print(
         "Build Universe {} in container cell {}".format(
-            ContainerCell.FILL, ContainerCell.name
+            container_cell.FILL, container_cell.name
         )
     )
     fails = []
-    for NTcell in Universe.values():
+    for nt_cell in universe.values():
         if duplicate:
-            if NTcell.shape:
-                buildShape = False
-                if ContainerCell.CurrentTR:
-                    cell = NTcell.copy()
-                    cell.transformSolid(ContainerCell.CurrentTR)
+            if nt_cell.shape:
+                build_shape = False
+                if container_cell.CurrentTR:
+                    cell = nt_cell.copy()
+                    cell.transformSolid(container_cell.CurrentTR)
                 else:
-                    cell = NTcell
+                    cell = nt_cell
             else:
                 CTRF = None
-                buildShape = True
-                if ContainerCell.CurrentTR:
-                    CC = ContainerCell.copy()
+                build_shape = True
+                if container_cell.CurrentTR:
+                    CC = container_cell.copy()
                     CC.transformSolid(CC.CurrentTR, reverse=True)
                 else:
-                    CC = ContainerCell
+                    CC = container_cell
         else:
-            CTRF = ContainerCell.CurrentTR
-            CC = ContainerCell
-            buildShape = True
-            NTcell = NTcell.copy()
+            CTRF = container_cell.CurrentTR
+            CC = container_cell
+            build_shape = True
+            nt_cell = nt_cell.copy()
 
-        if buildShape:
-            print("Level :{}  build Cell {} ".format(CC.level + 1, NTcell.name))
-            if type(NTcell.definition) is not BoolSequence:
-                NTcell.definition = BoolSequence(NTcell.definition.str)
+        if build_shape:
+            print("Level :{}  build Cell {} ".format(CC.level + 1, nt_cell.name))
+            if type(nt_cell.definition) is not BoolSequence:
+                nt_cell.definition = BoolSequence(nt_cell.definition.str)
 
-            bBox = ContainerCell.shape.BoundBox
+            bBox = container_cell.shape.BoundBox
 
             debug = False
             if debug:
-                NTcell.buildShape(bBox, surfTR=CTRF, simplify=False)
+                nt_cell.buildShape(bBox, surfTR=CTRF, simplify=False)
             else:
                 try:
-                    NTcell.buildShape(bBox, surfTR=CTRF, simplify=False)
+                    nt_cell.buildShape(bBox, surfTR=CTRF, simplify=False)
                 except:
-                    print(f"fail converting cell {NTcell.name}")
-                    fails.append(NTcell.name)
+                    print(f"fail converting cell {nt_cell.name}")
+                    fails.append(nt_cell.name)
 
-            if NTcell.shape is None:
+            if nt_cell.shape is None:
                 continue
 
             if duplicate:
-                if ContainerCell.CurrentTR:
-                    cell = NTcell.copy()
-                    cell.transformSolid(ContainerCell.CurrentTR)
+                if container_cell.CurrentTR:
+                    cell = nt_cell.copy()
+                    cell.transformSolid(container_cell.CurrentTR)
                 else:
-                    cell = NTcell
+                    cell = nt_cell
             else:
-                cell = NTcell
+                cell = nt_cell
 
-        if universeCut and ContainerCell.shape:
-            cell.shape = interferencia(ContainerCell, cell)
+        if universe_cut and container_cell.shape:
+            cell.shape = interferencia(container_cell, cell)
 
-        if not cell.FILL or ContainerCell.level + 1 == levelMax:
-            CADUniverse.append(cell)
+        if not cell.FILL or container_cell.level + 1 == level_max:
+            cad_universe.append(cell)
         else:
-            if ContainerCell.CurrentTR:
-                cell.CurrentTR = ContainerCell.CurrentTR.multiply(cell.TRFL)
-            cell.level = ContainerCell.level + 1
-            univ, ff = BuildUniverse(
-                (cell.FILL, levelMax), cell, AllUniverses, universeCut=universeCut
+            if container_cell.CurrentTR:
+                cell.CurrentTR = container_cell.CurrentTR.multiply(cell.TRFL)
+            cell.level = container_cell.level + 1
+            univ, ff = build_universe(
+                (cell.FILL, level_max), cell, all_universes, universe_cut=universe_cut
             )
-            CADUniverse.append(univ)
+            cad_universe.append(univ)
             fails.extend(ff)
 
-    return ((ContainerCell.name, Ustart), CADUniverse), fails
+    return ((container_cell.name, u_start), cad_universe), fails
 
 
-def makeTree(CADdoc, CADCells):
+def makeTree(cad_doc, cad_cells):
 
-    label, universeCADCells = CADCells
-    groupObj = CADdoc.addObject("App::Part", "Materials")
+    label, universe_cad_cells = cad_cells
+    group_obj = cad_doc.addObject("App::Part", "Materials")
 
-    groupObj.Label = "Universe_{}_Container_{}".format(label[1], label[0])
+    group_obj.Label = "Universe_{}_Container_{}".format(label[1], label[0])
 
-    CADObj = {}
-    for i, c in enumerate(universeCADCells):
-        if type(c) is tuple:
-            groupObj.addObject(makeTree(CADdoc, c))
+    cad_obj = {}
+    for i, cell in enumerate(universe_cad_cells):
+        if type(cell) is tuple:
+            group_obj.addObject(makeTree(cad_doc, cell))
         else:
-            featObj = CADdoc.addObject("Part::FeaturePython", "solid{}".format(i))
-            featObj.Label = "Cell_{}_{}".format(c.name, c.MAT)
-            featObj.Shape = c.shape
-            if c.MAT not in CADObj.keys():
-                CADObj[c.MAT] = [featObj]
+            feat_obj = cad_doc.addObject("Part::FeaturePython", "solid{}".format(i))
+            feat_obj.Label = "Cell_{}_{}".format(cell.name, cell.MAT)
+            feat_obj.Shape = cell.shape
+            if cell.MAT not in cad_obj.keys():
+                cad_obj[cell.MAT] = [feat_obj]
             else:
-                CADObj[c.MAT].append(featObj)
+                cad_obj[cell.MAT].append(feat_obj)
 
-    for mat, matGroup in CADObj.items():
-        groupMatObj = CADdoc.addObject("App::Part", "Materials")
-        groupMatObj.Label = "Material_{}".format(mat)
-        groupMatObj.addObjects(matGroup)
-        groupObj.addObject(groupMatObj)
+    for mat, mat_group in cad_obj.items():
+        group_mat_obj = cad_doc.addObject("App::Part", "Materials")
+        group_mat_obj.Label = "Material_{}".format(mat)
+        group_mat_obj.addObjects(mat_group)
+        group_obj.addObject(group_mat_obj)
 
-    return groupObj
+    return group_obj

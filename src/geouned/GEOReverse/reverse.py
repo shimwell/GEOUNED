@@ -2,7 +2,7 @@ import FreeCAD
 import Import
 
 from .CodeVersion import *
-from .Modules.buildCAD import buildCAD, makeTree
+from .Modules.buildCAD import build_cad, makeTree
 from .Modules.MCNPinput import McnpInput
 from .Modules.Objects import CadCell
 from .Modules.processInp import setOptions
@@ -43,7 +43,7 @@ def reverse(optFile="configRevese.ini"):
         )
         raise ValueError(msg)
 
-    CADCells, fails = buildCAD(UnivCell, geom, CADselection)
+    CADCells, fails = build_cad(UnivCell, geom, CADselection)
 
     if fails:
         print("failed in conversion", fails)

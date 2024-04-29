@@ -30,7 +30,7 @@ def joinBase(baseList):
                     surf[k] = None
                     removedKeys.append(k)
 
-    newbase = FuseSolid(shape)
+    newbase = fuse_solid(shape)
     return SplitBase(newbase, surf)
 
 
@@ -392,7 +392,7 @@ def btwPPlanes(p, p0, v):
 # ************************************************
 
 
-def FuseSolid(parts):
+def fuse_solid(parts):
     if (len(parts)) <= 1:
         if parts:
             solid = parts[0]
