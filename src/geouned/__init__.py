@@ -8,4 +8,4 @@ except ImportError:
     pass
 
 from .GEOUNED import *
-from .GEOReverse import *
+from .GEOReverse.reverse import reverse
