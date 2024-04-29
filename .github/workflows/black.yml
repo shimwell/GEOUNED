@@ -8,7 +8,3 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: psf/black@stable
-      - name: Check code for formatting
-        run: |
-            black --diff
-            black --check
