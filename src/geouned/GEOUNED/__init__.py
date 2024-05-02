@@ -353,60 +353,21 @@ class CadToCsg:
 
     def start(self):
 
-        print("start")
-        FreeCAD_Version = "{V[0]:}.{V[1]:}.{V[2]:}".format(V=FreeCAD.Version())
-        print(
-            "GEOUNED version {} {} \nFreeCAD version {}".format(
-                GEOUNED_Version, GEOUNED_ReleaseDate, FreeCAD_Version
-            )
+        self.code_setting = self.__dict__
+
+        self.MetaList, self.EnclosureList = load_cad_and_mats(
+            step_file=self.stepFile,
+            cell_range=self.cellRange,
+            mat_file=self.matFile,
+            void_mat=self.voidMat,
+            comp_solids=self.compSolids
         )
-
-        code_setting = self.__dict__
-        if code_setting is None:
-            raise ValueError("Cannot run the code. Input are missing")
-        if self.stepFile == "":
-            raise ValueError("Cannot run the code. Step file name is missing")
-
-        if isinstance(self.stepFile, (tuple, list)):
-            for stp in self.stepFile:
-                if not path.isfile(stp):
-                    raise FileNotFoundError(f"Step file {stp} not found.\nStop.")
-        else:
-            if not path.isfile(self.stepFile):
-                raise FileNotFoundError(f"Step file {self.stepFile} not found.\nStop.")
-
-        startTime = datetime.now()
-
-        if isinstance(self.stepFile, (list, tuple)):
-            MetaChunk = []
-            EnclosureChunk = []
-            for stp in self.stepFile:
-                print(f"read step file : {stp}")
-                Meta, Enclosure = Load.load_cad(stp, self.matFile)
-                MetaChunk.append(Meta)
-                EnclosureChunk.append(Enclosure)
-            MetaList = join_meta_lists(MetaChunk)
-            EnclosureList = join_meta_lists(EnclosureChunk)
-        else:
-            print(f"read step file : {self.stepFile}")
-            MetaList, EnclosureList = Load.load_cad(
-                self.stepFile, self.matFile, self.voidMat, self.compSolids
-            )
-
-        print("End of loading phase")
-        tempstr1 = str(datetime.now() - startTime)
-        print(tempstr1)
-        tempTime = datetime.now()
-
-        # Select a specific solid range from original STEP solids
-        if self.cellRange:
-            MetaList = MetaList[self.cellRange[0] : self.cellRange[1]]
 
         # export in STEP format solids read from input file
         # terminate excution
         if self.exportSolids != "":
             solids = []
-            for m in MetaList:
+            for m in self.MetaList:
                 if m.IsEnclosure:
                     continue
                 solids.extend(m.Solids)
@@ -417,74 +378,23 @@ class CadToCsg:
             )
             raise ValueError(msg)
 
-        # set up Universe
-        if EnclosureList:
-            UniverseBox = get_universe(MetaList + EnclosureList)
-        else:
-            UniverseBox = get_universe(MetaList)
+        # set up Universe, EnclosureList is always a list but could be an empty list
+        self.UniverseBox = get_universe(self.MetaList + self.EnclosureList)
 
-        Surfaces = UF.SurfacesDict(offset=self.startSurf - 1)
+        self.Surfaces = UF.SurfacesDict(offset=self.startSurf - 1)
 
-        warnSolids = []
-        warnEnclosures = []
-        coneInfo = dict()
-        tempTime0 = datetime.now()
-        if not Options.Facets:
-
-            # decompose all solids in elementary solids (convex ones)
-            warningSolidList = decompose_solids(
-                MetaList, Surfaces, UniverseBox, code_setting, True
-            )
-
-            # decompose Enclosure solids
-            if self.voidGen and EnclosureList:
-                warningEnclosureList = decompose_solids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
-                )
-
-            print("End of decomposition phase")
-
-            # start Building CGS cells phase
-
-            for j, m in enumerate(MetaList):
-                if m.IsEnclosure:
-                    continue
-                print("Building cell: ", j + 1)
-                cones = Conv.cellDef(m, Surfaces, UniverseBox)
-                if cones:
-                    coneInfo[m.__id__] = cones
-                if j in warningSolidList:
-                    warnSolids.append(m)
-                if not m.Solids:
-                    print("none", j, m.__id__)
-                    print(m.Definition)
-
-            if Options.forceNoOverlap:
-                Conv.no_overlapping_cell(MetaList, Surfaces)
-
-        else:
-            translate(MetaList, Surfaces, UniverseBox, code_setting)
-            # decompose Enclosure solids
-            if self.voidGen and EnclosureList:
-                warningEnclosureList = decompose_solids(
-                    EnclosureList, Surfaces, UniverseBox, code_setting, False
-                )
-
-        tempstr2 = str(datetime.now() - tempTime)
-        print(tempstr2)
+        self.get_cone_info()
 
         #  building enclosure solids
 
-        if self.voidGen and EnclosureList:
-            for j, m in enumerate(EnclosureList):
+        if self.voidGen and self.EnclosureList:
+            for j, m in enumerate(self.EnclosureList):
                 print("Building Enclosure Cell: ", j + 1)
-                cones = Conv.cellDef(m, Surfaces, UniverseBox)
+                cones = Conv.cellDef(m, self.Surfaces, self.UniverseBox)
                 if cones:
-                    coneInfo[m.__id__] = cones
-                if j in warningEnclosureList:
-                    warnEnclosures.append(m)
-
-        tempTime1 = datetime.now()
+                    self.coneInfo[m.__id__] = cones
+                if j in self.warningEnclosureList:
+                    self.warnEnclosures.append(m)
 
         # void generation phase
         MetaVoid = []
@@ -497,17 +407,17 @@ class CadToCsg:
                 MetaReduced = exclude_cells(MetaList, self.voidExclude)
 
             if MetaList:
-                init = MetaList[-1].__id__ - len(EnclosureList)
+                init = MetaList[-1].__id__ - len(self.EnclosureList)
             else:
                 init = 0
             MetaVoid = Void.void_generation(
-                MetaReduced, EnclosureList, Surfaces, UniverseBox, code_setting, init
+                MetaReduced, self.EnclosureList, self.Surfaces, self.UniverseBox, code_setting, init
             )
 
         # if code_setting['simplify'] == 'full' and not Options.forceNoOverlap:
         if self.simplify == "full":
             Surfs = {}
-            for lst in Surfaces.values():
+            for lst in self.Surfaces.values():
                 for s in lst:
                     Surfs[s.Index] = s
 
@@ -524,13 +434,9 @@ class CadToCsg:
                         f"unexpected constant cell {c.__id__} :{c.Definition.elements}"
                     )
 
-        tempTime2 = datetime.now()
-        print("build Time:", tempTime2 - tempTime1)
-
-        print(datetime.now() - startTime)
 
         cellOffSet = self.startCell - 1
-        if EnclosureList and self.sort_enclosure:
+        if self.EnclosureList and self.sort_enclosure:
             # sort group solid cell / void cell sequence in each for each enclosure
             # if a solid belong to several enclosure, its definition will be written
             # for the highest enclosure level or if same enclosure level in the first
@@ -574,22 +480,65 @@ class CadToCsg:
 
             MetaList.extend(MetaVoid)
 
-        print_warning_solids(warnSolids, warnEnclosures)
+        
 
         # add plane definition to cone
         process_cones(MetaList, coneInfo, Surfaces, UniverseBox)
 
         # write outputformat input
-        write_geometry(UniverseBox, MetaList, Surfaces, code_setting)
+    
+    def export_csg(self):
+
+        write_geometry(self.UniverseBox, self.MetaList, self.Surfaces, self.code_setting)
 
         print("End of MCNP, OpenMC, Serpent and PHITS translation phase")
 
-        print("Process finished")
-        print(datetime.now() - startTime)
+    def get_cone_info(self):
+        self.warnSolids = []
+        self.warnEnclosures = []
+        self.coneInfo = dict()
 
-        print("Translation time of solid cells", tempTime1 - tempTime0)
-        print("Translation time of void cells", tempTime2 - tempTime1)
+        if not Options.Facets:
 
+            # decompose all solids in elementary solids (convex ones)
+            warningSolidList = decompose_solids(
+                self.MetaList, self.Surfaces, self.UniverseBox, self.code_setting, True
+            )
+
+            # decompose Enclosure solids
+            if self.voidGen and self.EnclosureList:
+                self.warningEnclosureList = decompose_solids(
+                    self.EnclosureList, self.Surfaces, self.UniverseBox, self.code_setting, False
+                )
+
+            print("End of decomposition phase")
+
+            # start Building CGS cells phase
+
+            for j, m in enumerate(self.MetaList):
+                if m.IsEnclosure:
+                    continue
+                print("Building cell: ", j + 1)
+                cones = Conv.cellDef(m, self.Surfaces, self.UniverseBox)
+                if cones:
+                    self.coneInfo[m.__id__] = cones
+                if j in warningSolidList:
+                    self.warnSolids.append(m)
+                if not m.Solids:
+                    print("none", j, m.__id__)
+                    print(m.Definition)
+
+            if Options.forceNoOverlap:
+                Conv.no_overlapping_cell(self.MetaList, self.Surfaces)
+
+        else:
+            translate(self.MetaList, self.Surfaces, self.UniverseBox, self.code_setting)
+            # decompose Enclosure solids
+            if self.voidGen and self.EnclosureList:
+                self.warningEnclosureList = decompose_solids(
+                    self.EnclosureList, self.Surfaces, self.UniverseBox, self.code_setting, False
+                )
+        print_warning_solids(self.warnSolids, self.warnEnclosures)
 
 def decompose_solids(MetaList, Surfaces, UniverseBox, setting, meta):
     totsolid = len(MetaList)
@@ -815,3 +764,38 @@ def sort_enclosure(MetaList, MetaVoid, offSet=0):
         update_comment(m, idLabel)
 
     return newMeta
+
+def load_cad_and_mats(step_file, cell_range=[], mat_file="", void_mat=[], comp_solids=True):
+
+    if step_file == "":
+        raise ValueError("Cannot run the code. Step file name is missing")
+
+    if isinstance(step_file, (tuple, list)):
+        for stp in step_file:
+            if not path.isfile(stp):
+                raise FileNotFoundError(f"Step file {stp} not found.\nStop.")
+    else:
+        if not path.isfile(step_file):
+            raise FileNotFoundError(f"Step file {step_file} not found.\nStop.")
+
+    if isinstance(step_file, (list, tuple)):
+        MetaChunk = []
+        EnclosureChunk = []
+        for stp in step_file:
+            print(f"read step file : {stp}")
+            Meta, Enclosure = Load.load_cad(stp, mat_file)
+            MetaChunk.append(Meta)
+            EnclosureChunk.append(Enclosure)
+        MetaList = join_meta_lists(MetaChunk)
+        EnclosureList = join_meta_lists(EnclosureChunk)
+    else:
+        print(f"read step file : {step_file}")
+        MetaList, EnclosureList = Load.load_cad(
+            step_file, mat_file, void_mat, comp_solids
+        )
+
+    # Select a specific solid range from original STEP solids
+    if cell_range:
+        MetaList = MetaList[cell_range[0] : cell_range[1]]
+
+    return MetaList, EnclosureList

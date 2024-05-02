@@ -23,6 +23,7 @@ from ..Utils.Options.Classes import Tolerances as tol
 
 twoPi = math.pi * 2
 
+print(opt.__dict__)
 
 def split_full_cylinder(solid):
     explode = []
