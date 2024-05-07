@@ -19,8 +19,8 @@ from ..Utils.BasicFunctions_part1 import (
 from ..Utils.booleanFunction import BoolSequence, insert_in_sequence
 from ..Utils.BooleanSolids import build_c_table_from_solids, remove_extra_surfaces
 from ..Utils.Functions import GeounedSurface
-from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
+from ..Utils.classes import Options as opt
+from ..Utils.classes import Tolerances as tol
 
 
 def get_id(facein, surfaces):

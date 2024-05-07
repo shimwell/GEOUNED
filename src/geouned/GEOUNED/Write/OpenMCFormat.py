@@ -6,7 +6,7 @@ import FreeCAD
 
 from ..CodeVersion import *
 from ..Utils.Functions import SurfacesDict
-from ..Utils.Options.Classes import Options as opt
+from ..Utils.classes import Options as opt
 from .Functions import open_mc_surface, change_surf_sign, write_openmc_region
 
 

@@ -18,8 +18,8 @@ from ..Utils.BasicFunctions_part1 import (
     is_same_value,
 )
 from ..Utils.BasicFunctions_part2 import is_duplicate_in_list
-from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
+from ..Utils.classes import Options as opt
+from ..Utils.classes import Tolerances as tol
 
 twoPi = math.pi * 2
 

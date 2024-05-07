@@ -5,9 +5,9 @@ import FreeCAD
 
 from ..Utils import Qform as Qform
 from ..Utils.BasicFunctions_part1 import is_opposite, is_parallel
-from ..Utils.Options.Classes import McnpNumericFormat as nf
-from ..Utils.Options.Classes import Options as opt
-from ..Utils.Options.Classes import Tolerances as tol
+from ..Utils.classes import NumericFormat as nf
+from ..Utils.classes import Options as opt
+from ..Utils.classes import Tolerances as tol
 from .StringFunctions import remove_redundant
 
 

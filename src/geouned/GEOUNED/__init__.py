@@ -18,7 +18,7 @@ from .Decompose import Decom_one as Decom
 from .LoadFile import LoadSTEP as Load
 from .Utils import Functions as UF
 from .Utils.BooleanSolids import build_c_table_from_solids
-from .Utils.Options.Classes import McnpNumericFormat, Options, Tolerances
+from .Utils.classes import NumericFormat, Options, Tolerances
 from .Void import Void as Void
 from .Write.Functions import write_mcnp_cell_def
 from .Write.WriteFiles import write_geometry
@@ -153,10 +153,6 @@ class CadToCsg:
         self.cellSummaryFile = cellSummaryFile
         self.sort_enclosure = sort_enclosure
 
-        Options.set_default_attribute()
-        McnpNumericFormat.set_default_attribute()
-        Tolerances.set_default_attribute()
-
     def set_configuration(self, configFile=None):
 
         if configFile is None:
@@ -262,8 +258,8 @@ class CadToCsg:
             elif section == "MCNP_Numeric_Format":
                 PdEntry = False
                 for key in config["MCNP_Numeric_Format"].keys():
-                    if key in McnpNumericFormat.default_values.keys():
-                        McnpNumericFormat.set_attribute(
+                    if key in NumericFormat.default_values.keys():
+                        NumericFormat.set_attribute(
                             key, config.get("MCNP_Numeric_Format", key)
                         )
                         if key == "P_d":
@@ -276,19 +272,19 @@ class CadToCsg:
             self.__dict__["geometryName"] = self.__dict__["stepFile"][:-4]
 
         if Options.prnt3PPlane and not PdEntry:
-            McnpNumericFormat.P_d = "22.15e"
+            NumericFormat.P_d = "22.15e"
 
         print(self.__dict__)
 
     def set(self, kwrd, value):
 
-        if kwrd in McnpNumericFormat.default_values.keys():
-            McnpNumericFormat.set_attribute(kwrd, value)
+        if kwrd in typing.get_type_hints(NumericFormat).keys():
+            NumericFormat.set_attribute(kwrd, value)
             return
-        elif kwrd in Tolerances.default_values.keys():
+        elif kwrd in typing.get_type_hints(Tolerances).keys():
             Tolerances.set_attribute(kwrd, value)
             return
-        elif kwrd in Options.default_values.keys():
+        elif kwrd in typing.get_type_hints(Options).keys():
             Options.set_attribute(kwrd, value)
             return
         elif kwrd not in self.__dict__.keys():

@@ -3,7 +3,7 @@ import re
 import FreeCAD
 
 from ..Utils.Functions import GeounedSolid
-from ..Utils.Options.Classes import Options as opt
+from ..Utils.classes import Options as opt
 
 
 def get_label(label):

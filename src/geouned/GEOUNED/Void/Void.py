@@ -5,7 +5,7 @@ from ..LoadFile import LoadFunctions as LF
 from ..Utils.BasicFunctions_part1 import is_opposite
 from ..Utils.booleanFunction import BoolSequence
 from ..Utils.Functions import GeounedSolid, GeounedSurface
-from ..Utils.Options.Classes import Options as opt
+from ..Utils.classes import Options as opt
 from ..Void import voidFunctions as VF
 from .VoidBoxClass import VoidBox
 
