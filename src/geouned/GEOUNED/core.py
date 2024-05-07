@@ -39,7 +39,7 @@ class CadToCsg:
 
     def __init__(
         self,
-        step_file: typing.Union[str, list[str]],
+        step_file: typing.Union[str, typing.Sequence[str]],
         settings=Settings(),
         options=Options(),
         numeric_format=NumericFormat(),
@@ -52,9 +52,14 @@ class CadToCsg:
         self.tolerances = tolerances
 
         # set internally by the class
-        self.UniverseBox = None
-        self.Surfaces = None
-        self.MetaList = None
+        self.UniverseBox = None  # freecad bounding vox for the full CAD model
+        self.Surfaces = None  # contains all the surfaces used in the model
+        self.MetaList = (
+            None  # contains void cells obtained after void generation process
+        )
+        self.EnclosureList = (
+            None  # list of GeounedSolids, these are enclosure cad shapes
+        )
 
     @classmethod
     def from_config(cls, filename: str = "config.json"):
@@ -84,8 +89,8 @@ class CadToCsg:
         csg_to_csg = cls(step_file=config["step_file"])
         for key in config.keys():
 
-            if key in ["step_file"]:
-                pass  # this has already been used when initializing csg_to_csg
+            if key in ["step_file", "export_csg"]:
+                pass  # these two keys are used before or after this loop
 
             elif key == "Tolerances":
                 csg_to_csg.tolerances = Tolerances(**config["Tolerances"])
@@ -150,10 +155,10 @@ class CadToCsg:
                 MetaChunk.append(Meta)
                 EnclosureChunk.append(Enclosure)
             self.MetaList = join_meta_lists(MetaChunk)
-            EnclosureList = join_meta_lists(EnclosureChunk)
+            self.EnclosureList = join_meta_lists(EnclosureChunk)
         else:
             print(f"reading step file : {self.step_file}")
-            self.MetaList, EnclosureList = Load.load_cad(
+            self.MetaList, self.EnclosureList = Load.load_cad(
                 filename=self.step_file,
                 mat_filename=self.settings.matFile,
                 default_mat=self.settings.voidMat,
@@ -188,8 +193,8 @@ class CadToCsg:
             raise ValueError(msg)
 
         # set up Universe
-        if EnclosureList:
-            self.UniverseBox = get_universe(self.MetaList + EnclosureList)
+        if self.EnclosureList:
+            self.UniverseBox = get_universe(self.MetaList + self.EnclosureList)
         else:
             self.UniverseBox = get_universe(self.MetaList)
 
@@ -214,9 +219,9 @@ class CadToCsg:
             )
 
             # decompose Enclosure solids
-            if self.settings.voidGen and EnclosureList:
+            if self.settings.voidGen and self.EnclosureList:
                 warningEnclosureList = decompose_solids(
-                    MetaList=EnclosureList,
+                    MetaList=self.EnclosureList,
                     Surfaces=self.Surfaces,
                     UniverseBox=self.UniverseBox,
                     debug=self.settings.debug,
@@ -235,6 +240,7 @@ class CadToCsg:
                     continue
                 if self.options.verbose:
                     print("Building cell: ", j + 1)
+                # gets all the boolean definitions of the cones
                 cones = Conv.cellDef(
                     meta_obj=m,
                     surfaces=self.Surfaces,
@@ -253,7 +259,9 @@ class CadToCsg:
                         print(m.Definition)
 
             if self.options.forceNoOverlap:
-                Conv.no_overlapping_cell(self.MetaList, self.Surfaces)
+                Conv.no_overlapping_cell(
+                    metaList=self.MetaList, surfaces=self.Surfaces, options=self.options
+                )
 
         else:
             translate(
@@ -264,9 +272,9 @@ class CadToCsg:
                 self.options.verbose,
             )
             # decompose Enclosure solids
-            if self.voidGen and EnclosureList:
+            if self.voidGen and self.EnclosureList:
                 warningEnclosureList = decompose_solids(
-                    MataList=EnclosureList,
+                    MataList=self.EnclosureList,
                     Surfaces=self.Surfaces,
                     UniverseBox=self.UniverseBox,
                     debug=self.debug,
@@ -281,8 +289,8 @@ class CadToCsg:
             print(f"CSG cells built, time = {tempstr2}")
 
         #  building enclosure solids
-        if self.settings.voidGen and EnclosureList:
-            for j, m in enumerate(EnclosureList):
+        if self.settings.voidGen and self.EnclosureList:
+            for j, m in enumerate(self.EnclosureList):
                 if self.options.verbose:
                     print("Building Enclosure Cell: ", j + 1)
                 cones = Conv.cellDef(
@@ -311,13 +319,13 @@ class CadToCsg:
                 MetaReduced = exclude_cells(self.MetaList, self.settings.voidExclude)
 
             if self.MetaList:
-                init = self.MetaList[-1].__id__ - len(EnclosureList)
+                init = self.MetaList[-1].__id__ - len(self.EnclosureList)
             else:
                 init = 0
             # TODO perhaps this method should be moved into the CsgToCsg class to avoid passing in so many args
             MetaVoid = Void.void_generation(
                 MetaList=MetaReduced,
-                EnclosureList=EnclosureList,
+                EnclosureList=self.EnclosureList,
                 Surfaces=self.Surfaces,
                 UniverseBox=self.UniverseBox,
                 init=init,
@@ -343,8 +351,7 @@ class CadToCsg:
                 CT = build_c_table_from_solids(
                     Box=Box,
                     SurfInfo=(c.Surfaces, Surfs),
-                    scale_up=self.options.scale_up,
-                    splitTolerance=self.options.splitTolerance,
+                    options=self.options,
                     option="full",
                 )
                 c.Definition.simplify(CT)
@@ -362,7 +369,7 @@ class CadToCsg:
             print(datetime.now() - startTime)
 
         cellOffSet = self.settings.startCell - 1
-        if EnclosureList and self.settings.sort_enclosure:
+        if self.EnclosureList and self.settings.sort_enclosure:
             # sort group solid cell / void cell sequence in each for each enclosure
             # if a solid belong to several enclosure, its definition will be written
             # for the highest enclosure level or if same enclosure level in the first
@@ -504,6 +511,7 @@ class CadToCsg:
 def decompose_solids(
     MetaList, Surfaces, UniverseBox, debug, meta, tolerances, options, numeric_format
 ):
+    """loops through all the solid CAD shapes and each time decomposes the solid making the"""
     totsolid = len(MetaList)
     warningSolids = []
     for i, m in enumerate(MetaList):
@@ -519,6 +527,7 @@ def decompose_solids(
             else:
                 m.Solids[0].exportStep(f"debug/origSolid_{i}.stp")
 
+        # obtains all the basic solids after decomposition
         comsolid, err = Decom.split_solid(
             solidShape=Part.makeCompound(m.Solids),
             universe_box=UniverseBox,
@@ -564,6 +573,7 @@ def decompose_solids(
             numeric_format=numeric_format,
         )
         m.set_cad_solid()
+        # adds the new decomposed solids to the list of solid CAD shapes
         m.update_solids(comsolid.Solids)
 
     return warningSolids
@@ -579,6 +589,7 @@ def update_comment(meta, idLabel):
 
 
 def process_cones(MetaList, coneInfo, Surfaces, UniverseBox, angle):
+    # adds surface to cones in certain situations, could do with a rewrite.
     cellId = tuple(coneInfo.keys())
     for m in MetaList:
         if m.__id__ not in cellId and not m.Void:
@@ -682,7 +693,7 @@ def exclude_cells(MetaList, labelList):
 
 
 def sort_enclosure(MetaList, MetaVoid, offSet=0):
-
+    """reorders all the voids in the same order as the enclosure label location in the CAD tree"""
     newList = {}
     for m in MetaVoid:
         if m.EnclosureID in newList.keys():

@@ -75,7 +75,10 @@ def get_id(facein, surfaces, tolerances, options, numeric_format):
     elif surfin[0:6] == "Sphere":
         for s in surfaces["Sph"]:
             if BF.is_same_sphere(
-                facein, s.Surf, tolerances.sph_distance, rel_tol=tolerances.relativeTol
+                sph1=facein,
+                sph2=s.Surf,
+                tolerance=tolerances.sph_distance,
+                rel_tol=tolerances.relativeTol,
             ):
                 return s.Index
 
@@ -872,7 +875,7 @@ def cellDef(meta_obj, surfaces, universe_box, options, tolerances, numeric_forma
                     # u_closed = True
                     if not u_closed:
                         planes, ORop = gen_torus_annex_u_planes(
-                            face, u_minMax, tolerances
+                            face=face, u_params=u_minMax, tolerances=tolerances
                         )
                         plane1, plane2 = planes
                         plane = GeounedSurface(
@@ -887,7 +890,9 @@ def cellDef(meta_obj, surfaces, universe_box, options, tolerances, numeric_forma
                         if exist:
                             p = surfaces.get_surface(id1)
                             if is_opposite(
-                                plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle
+                                vector_1=plane.Surf.Axis,
+                                vector_2=p.Surf.Axis,
+                                tolerance=tolerances.pln_angle,
                             ):
                                 id1 = -id1
 
@@ -901,7 +906,9 @@ def cellDef(meta_obj, surfaces, universe_box, options, tolerances, numeric_forma
                             if exist:
                                 p = surfaces.get_surface(id2)
                                 if is_opposite(
-                                    plane.Surf.Axis, p.Surf.Axis, tolerances.pln_angle
+                                    vector_1=plane.Surf.Axis,
+                                    vector_2=p.Surf.Axis,
+                                    tolerance=tolerances.pln_angle,
                                 ):
                                     id2 = -id2
 
@@ -1132,7 +1139,7 @@ def append_comp(new_cell, cell_def, cell_cad, meta_complementary):
         return append
 
 
-def no_overlapping_cell(metaList, surfaces, scale_up, splitTolerance):
+def no_overlapping_cell(metaList, surfaces, options):
 
     Surfs = {}
     for lst in surfaces.values():
@@ -1181,8 +1188,7 @@ def no_overlapping_cell(metaList, surfaces, scale_up, splitTolerance):
             CT = build_c_table_from_solids(
                 Box=box,
                 SurfInfo=(tuple(t_def.get_surfaces_numbers()), Surfs),
-                scale_up=scale_up,
-                splitTolerance=splitTolerance,
+                options=options,
                 option="diag",
             )
 
@@ -1192,8 +1198,7 @@ def no_overlapping_cell(metaList, surfaces, scale_up, splitTolerance):
             CT = build_c_table_from_solids(
                 Box=box,
                 SurfInfo=(tuple(new_def.get_surfaces_numbers()), Surfs),
-                scale_up=scale_up,
-                splitTolerance=splitTolerance,
+                options=options,
                 option="full",
             )
 
@@ -1248,9 +1253,9 @@ def add_cone_plane(definition, cones_list, surfaces, universe_box, angle):
     for cid in cones_list:
         cone = surfaces.get_surface(abs(cid))
         if (
-            is_parallel(cone.Surf.Axis, x_axis, angle)
-            or is_parallel(cone.Surf.Axis, y_axis, angle)
-            or is_parallel(cone.Surf.Axis, z_axis, angle)
+            is_parallel(vector_1=cone.Surf.Axis, vector_2=x_axis, tolerance=angle)
+            or is_parallel(vector_1=cone.Surf.Axis, vector_2=y_axis, tolerance=angle)
+            or is_parallel(vector_1=cone.Surf.Axis, vector_2=z_axis, tolerance=angle)
         ):
             continue
 
@@ -1263,7 +1268,9 @@ def add_cone_plane(definition, cones_list, surfaces, universe_box, angle):
 
         if exist:
             p = surfaces.get_surface(pid)
-            if is_opposite(plane.Surf.Axis, p.Surf.Axis, pln_angle):
+            if is_opposite(
+                vector_1=plane.Surf.Axis, vector_2=p.Surf.Axis, tolerance=pln_angle
+            ):
                 pid = -pid
 
         if cid > 0:

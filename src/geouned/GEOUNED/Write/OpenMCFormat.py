@@ -23,8 +23,9 @@ class OpenmcInput:
         self.Surfaces = self.__sorted_surfaces__(Surfaces)
         self.Materials = set()
 
-    def write_xml(self, filename):
-        print(f"write OpenMC xml file {filename}")
+    def write_xml(self, filename, verbose):
+        if verbose:
+            print(f"Writing OpenMC xml file {filename}")
         self.inpfile = open(filename, "w", encoding="utf-8")
         self.__write_xml_header__()
 
@@ -76,7 +77,7 @@ class OpenmcInput:
         """Write the surfaces in xml OpenMC format"""
 
         surfType, coeffs = open_mc_surface(
-            Type=surface.Type,
+            surface_type=surface.Type,
             surf=surface.Surf,
             tolerances=self.tolerances,
             numeric_format=self.numeric_format,
@@ -94,8 +95,9 @@ class OpenmcInput:
         self.inpfile.write(OMCsurf)
         return
 
-    def write_py(self, filename):
-        print(f"write OpenMC python script {filename}")
+    def write_py(self, filename, verbose):
+        if verbose:
+            print(f"write OpenMC python script {filename}")
 
         # get all the materials present in the model
         for cell in self.Cells:
@@ -156,7 +158,7 @@ import openmc
         """Write the surfaces in python OpenMC format"""
 
         surfType, coeffs = open_mc_surface(
-            Type=surface.Type,
+            surface_type=surface.Type,
             surf=surface.Surf,
             tolerances=self.tolerances,
             numeric_format=self.numeric_format,
@@ -270,7 +272,7 @@ import openmc
 
         if p.Index not in self.surfaceTable.keys():
             print(
-                f"{p.Type} Surface {p.Index} not used in cell definition)",
+                f"{p.surface_type} Surface {p.Index} not used in cell definition)",
                 p.Surf.Axis,
                 p.Surf.Position,
             )

@@ -26,7 +26,7 @@ my_settings = geouned.Settings(
 )
 
 geo = geouned.CadToCsg(
-    stepFile=f"{input_step_file.resolve()}", settings=my_settings, options=my_options
+    step_file=f"{input_step_file.resolve()}", settings=my_settings, options=my_options
 )
 
 geo.start()

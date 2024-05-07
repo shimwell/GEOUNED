@@ -80,6 +80,9 @@ def make_plane(Plane, Boxin):
 
 
 class GeounedSolid:
+    """Gathers all the information on each CAD solid, material, density (both from label)
+    definition of the cell, type of cell (void, enclosure, material solid).
+    """
 
     def __init__(self, id, comsolid=None):
         refine = True
@@ -373,6 +376,8 @@ class GeounedSurface:
 
 
 class SurfacesDict(dict):
+    """Used to store all the surfaces found in the model. When adding a new surface it checks the surface doesn't already exist"""
+
     def __init__(self, surfaces=None, offset=0):
         self.IndexOffset = offset
         surfname = ["PX", "PY", "PZ", "P", "Cyl", "Cone", "Sph", "Tor"]
@@ -615,7 +620,9 @@ class SurfacesDict(dict):
     def add_sphere(self, sph, sph_distance, relativeTol):
         sphere_added = True
         for i, s in enumerate(self["Sph"]):
-            if BF.is_same_sphere(sph.Surf, s.Surf, sph_distance, rel_tol=relativeTol):
+            if BF.is_same_sphere(
+                sph1=sph.Surf, sph2=s.Surf, tolerance=sph_distance, rel_tol=relativeTol
+            ):
                 sphere_added = False
                 index = s.Index
                 self.__last_obj__ = ("Sph", i)
@@ -655,28 +662,26 @@ class SurfacesDict(dict):
             return index, True
 
 
-def split_bop(solid, tools, splitTolerance, scale_up, scale=0.1):
+def split_bop(solid, tools, tolerance, options, scale=0.1):
 
-    if splitTolerance >= 0.1:
-        compSolid = BOPTools.SplitAPI.slice(
-            solid, tools, "Split", tolerance=splitTolerance
-        )
+    if tolerance >= 0.1:
+        compSolid = BOPTools.SplitAPI.slice(solid, tools, "Split", tolerance=tolerance)
 
-    elif splitTolerance < 1e-12:
-        if scale_up:
-            tol = 1e-13 if splitTolerance == 0 else splitTolerance
-            compSolid = split_bop(solid, tools, tol / scale, scale_up, 1.0 / scale)
+    elif tolerance < 1e-12:
+        if options.scale_up:
+            tol = 1e-13 if options.splitTolerance == 0 else options.splitTolerance
+            compSolid = split_bop(solid, tools, tol / scale, 1.0 / scale)
         else:
             compSolid = BOPTools.SplitAPI.slice(
-                solid, tools, "Split", tolerance=splitTolerance
+                solid, tools, "Split", tolerance=tolerance
             )
 
     else:
         try:
             compSolid = BOPTools.SplitAPI.slice(
-                solid, tools, "Split", tolerance=splitTolerance
+                solid, tools, "Split", tolerance=tolerance
             )
         except:
-            compSolid = split_bop(solid, tools, splitTolerance * scale, scale_up, scale)
+            compSolid = split_bop(solid, tools, tolerance * scale, scale)
 
     return compSolid
