@@ -267,11 +267,6 @@ class CadToCsg:
                         setattr(tolerances_from_config, key, value)
 
             elif section == "NumericFormat":
-                print('found NumericFormat')
-                print('found NumericFormat')
-                print('found NumericFormat')
-                print('found NumericFormat')
-                print('found NumericFormat')
                 attributes_and_types = get_type_hints(NumericFormat())
                 print('attributes_and_types',attributes_and_types)
                 PdEntry = False
