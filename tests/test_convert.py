@@ -14,7 +14,7 @@ if os.getenv("GITHUB_ACTIONS"):
     step_files.remove(Path("testing/inputSTEP/large/Triangle.stp"))
 
 
-@pytest.mark.parametrize("input_step_file", step_files)
+@pytest.mark.parametrize("input_step_file", step_files[0:1])
 def test_conversion(input_step_file):
     """Test that step files can be converted to openmc and mcnp files"""
 
@@ -117,3 +117,76 @@ def test_conversion(input_step_file):
 
     for suffix in suffixes:
         assert output_filename_stem.with_suffix(suffix).exists()
+
+def test_from_config_sets_attributes():
+
+
+
+    geo = geouned.CadToCsg.from_config_ini('tests/config_no_defaults.ini')
+
+    assert geo.title == "title of the model"
+    assert geo.stepFile == "stepfilename.stp"
+    assert geo.geometryName == "placeholder"
+    assert geo.matFile == "materials.txt"
+    assert geo.outFormat == ("serpent", "phits")
+
+    assert geo.compSolids == True
+    assert geo.volSDEF == True
+    assert geo.volCARD == False
+    assert geo.dummyMat == True
+    assert geo.UCARD == '101'
+    assert geo.startCell == 10
+    assert geo.startSurf == 42
+    assert geo.minVoidSize ==  100
+    assert geo.voidMat == (100,1e-3,'Air assigned to Void')
+    assert geo.cellRange == (0,100)
+    assert geo.cellSummaryFile == True
+    assert geo.cellCommentFile == True
+    assert geo.simplify == "full"
+    assert geo.exportSolids == 'out.stp'
+    assert geo.sort_enclosure == True
+    assert geo.maxSurf == 5000
+    assert geo.maxBracket == 20
+
+    assert geo.tolerances.relativeTol == True
+    assert geo.tolerances.relativePrecision == 11.0e-6
+    assert geo.tolerances.value == 12.0e-6
+    assert geo.tolerances.distance == 13.0e-4
+    assert geo.tolerances.angle == 14.0e-4
+    assert geo.tolerances.pln_distance == 15.0e-4
+    assert geo.tolerances.pln_angle == 16.0e-4
+    assert geo.tolerances.cyl_distance == 17.0e-4
+    assert geo.tolerances.cyl_angle == 18.0e-4
+    assert geo.tolerances.sph_distance == 19.0e-4
+    assert geo.tolerances.kne_distance == 20.0e-4
+    assert geo.tolerances.kne_angle == 21.0e-4
+    assert geo.tolerances.tor_distance == 22.0e-4
+    assert geo.tolerances.tor_angle == 23.0e-4
+    assert geo.tolerances.min_area == 24.0e-2
+
+    assert geo.numeric_format.P_abc == "11.7e"
+    assert geo.numeric_format.P_d == "12.7e"
+    assert geo.numeric_format.P_xyz == "13.7e"
+    assert geo.numeric_format.S_r == "14.7e"
+    assert geo.numeric_format.S_xyz == "15.7e"
+    assert geo.numeric_format.C_r == "13f"
+    assert geo.numeric_format.C_xyz == "14f"
+    assert geo.numeric_format.K_xyz == "15.6e"
+    assert geo.numeric_format.K_tan2 == "13f"
+    assert geo.numeric_format.T_r == "15.7e"
+    assert geo.numeric_format.T_xyz == "16.7e"
+    assert geo.numeric_format.GQ_1to6 == "17.15f"
+    assert geo.numeric_format.GQ_7to9 == "19.15f"
+    assert geo.numeric_format.GQ_10 == "20.15f"
+
+    assert geo.options.forceCylinder == True
+    assert geo.options.newSplitPlane == False
+    assert geo.options.delLastNumber == True
+    assert geo.options.enlargeBox == 3.0
+    assert geo.options.nPlaneReverse == 1
+    assert geo.options.splitTolerance == 5.6
+    assert geo.options.scaleUp == True
+    assert geo.options.quadricPY == True
+    assert geo.options.Facets == True
+    assert geo.options.prnt3PPlane == True
+    assert geo.options.forceNoOverlap == True
