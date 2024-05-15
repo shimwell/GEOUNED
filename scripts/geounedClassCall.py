@@ -16,11 +16,11 @@ stepFileName = "placa.stp"
 
 GEO = CadToCsg("Conversion Example")
 
-GEO.set("stepFile", stepFileName)
+GEO.set("step_filename", stepFileName)
 GEO.set("geometryName", "Placa")
 GEO.set("outFormat", ("mcnp", "openmc_xml"))
 GEO.set("planeDistance", 0.05)
-GEO.set("quadricPY", True)
-GEO.set("P_abc", "12f")
-GEO.set("P_d", "12f")
+GEO.set("quadric_py", True)
+GEO.set("p_abc", "12f")
+GEO.set("p_d", "12f")
 GEO.Start()

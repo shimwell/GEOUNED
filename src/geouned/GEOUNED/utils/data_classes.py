@@ -5,10 +5,10 @@ class Options:
     """A class for containing conversion options
 
     Args:
-        forceCylinder (bool, optional): Use cylinder (instead of cones) as
+        force_cylinder (bool, optional): Use cylinder (instead of cones) as
             ancillary surface where unclosed torus surfaces are involved in
             the solid definition. Defaults to False.
-        newSplitPlane (bool, optional): New method to consider plane as
+        new_split_plane (bool, optional): New method to consider plane as
             cutting surface during the decomposition process. Former method
             split first planes perpendicular to X,Y,Z axis and then the
             other planes involved in the solid definition. New method group
@@ -16,30 +16,30 @@ class Options:
             along X,Y,Z axes, and start the decomposition process cutting
             first with the group having the highest number of parallel
             planes. Defaults to True.
-        delLastNumber (bool, optional): Deleting the last word in the
+        del_last_number (bool, optional): Deleting the last word in the
             comment if it is a number. Defaults to False.
-        enlargeBox (Real, optional): Enlarge box boundary when evaluating
+        enlarge_box (Real, optional): Enlarge box boundary when evaluating
             the constraint table during the simplification of the void cell
             definition. (unit is millimeter). Defaults to 2.
-        nPlaneReverse (int, optional): Threshold value to determine whether
+        n_plane_reverse (int, optional): Threshold value to determine whether
             cut with parallel planes should be carried out first. Defaults
             to 0.
-        splitTolerance (Real, optional): Fuzzy tolerance value used in the
+        split_tolerance (Real, optional): Fuzzy tolerance value used in the
             FreeCAD function “BOPTools.SplitAPI.slice”. This function is
             used during the solid decomposition process. Defaults to 0.
-        scaleUp (bool, optional): Scale up Fuzzy tolerance once get below
+        scale_up (bool, optional): Scale up Fuzzy tolerance once get below
             1e-12. Defaults to True.
-        quadricPY (bool, optional): In openMC python script format, the
+        quadric_py (bool, optional): In openMC python script format, the
             cones or cylinders no aligned with the X,Y, or Z axis can be
             defined using the openmc.Cone or open.Cylinder methods but can
             also be defined with their quadric parameter. If “quadricPY” is
             11 True then all cones and cylinders will be defined in the
             openMC python script format under their quadric form. Defaults
             to False.
-        Facets (bool, optional): use alternative conversion module when
+        facets (bool, optional): use alternative conversion module when
             geometry is defined by cells compound by only triangular plane
             faces. Defaults to False.
-        prnt3PPlane (bool, optional): print 3 point plane definition in
+        prnt_3p_plane (bool, optional): print 3 point plane definition in
             output as 3 points coordinates. Defaults to False.
         forceNoOverlap (bool, optional): force no overlaping cell
             definition. Adjacent cell definition are rested from current
@@ -48,133 +48,133 @@ class Options:
 
     def __init__(
         self,
-        forceCylinder: bool = False,
-        newSplitPlane: bool = True,
-        delLastNumber: bool = False,
-        enlargeBox: Real = 2.0,
-        nPlaneReverse: int = 0,
-        splitTolerance: Real = 0.0,
-        scaleUp: bool = True,
-        quadricPY: bool = False,
-        Facets: bool = False,
-        prnt3PPlane: bool = False,
+        force_cylinder: bool = False,
+        new_split_plane: bool = True,
+        del_last_number: bool = False,
+        enlarge_box: Real = 2.0,
+        n_plane_reverse: int = 0,
+        split_tolerance: Real = 0.0,
+        scale_up: bool = True,
+        quadric_py: bool = False,
+        facets: bool = False,
+        prnt_3p_plane: bool = False,
         forceNoOverlap: bool = False,
     ):
 
-        self.forceCylinder = forceCylinder
-        self.newSplitPlane = newSplitPlane
-        self.delLastNumber = delLastNumber
-        self.enlargeBox = enlargeBox
-        self.nPlaneReverse = nPlaneReverse
-        self.splitTolerance = splitTolerance
-        self.scaleUp = scaleUp
-        self.quadricPY = quadricPY
-        self.Facets = Facets
-        self.prnt3PPlane = prnt3PPlane
+        self.force_cylinder = force_cylinder
+        self.new_split_plane = new_split_plane
+        self.del_last_number = del_last_number
+        self.enlarge_box = enlarge_box
+        self.n_plane_reverse = n_plane_reverse
+        self.split_tolerance = split_tolerance
+        self.scale_up = scale_up
+        self.quadric_py = quadric_py
+        self.facets = facets
+        self.prnt_3p_plane = prnt_3p_plane
         self.forceNoOverlap = forceNoOverlap
 
     @property
-    def forceCylinder(self):
+    def force_cylinder(self):
         return self._forceCylinder
 
-    @forceCylinder.setter
-    def forceCylinder(self, value: bool):
+    @force_cylinder.setter
+    def force_cylinder(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.forceCylinder should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.force_cylinder should be a bool, not a {type(value)}")
         self._forceCylinder = value
 
     @property
-    def newSplitPlane(self):
+    def new_split_plane(self):
         return self._newSplitPlane
 
-    @newSplitPlane.setter
-    def newSplitPlane(self, value: bool):
+    @new_split_plane.setter
+    def new_split_plane(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.newSplitPlane should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.new_split_plane should be a bool, not a {type(value)}")
         self._newSplitPlane = value
 
     @property
-    def delLastNumber(self):
+    def del_last_number(self):
         return self._delLastNumber
 
-    @delLastNumber.setter
-    def delLastNumber(self, value: bool):
+    @del_last_number.setter
+    def del_last_number(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.delLastNumber should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.del_last_number should be a bool, not a {type(value)}")
         self._delLastNumber = value
 
     @property
-    def enlargeBox(self):
+    def enlarge_box(self):
         return self._enlargeBox
 
-    @enlargeBox.setter
-    def enlargeBox(self, value: Real):
+    @enlarge_box.setter
+    def enlarge_box(self, value: Real):
         if not isinstance(value, Real):
-            raise TypeError(f"geouned.Options.enlargeBox should be a Real, not a {type(value)}")
+            raise TypeError(f"geouned.Options.enlarge_box should be a Real, not a {type(value)}")
         if value < 0:
-            raise ValueError(f"geouned.Options.enlargeBox should be above 0, not {value}")
+            raise ValueError(f"geouned.Options.enlarge_box should be above 0, not {value}")
         self._enlargeBox = value
 
     @property
-    def nPlaneReverse(self):
+    def n_plane_reverse(self):
         return self._nPlaneReverse
 
-    @nPlaneReverse.setter
-    def nPlaneReverse(self, value: int):
+    @n_plane_reverse.setter
+    def n_plane_reverse(self, value: int):
         if not isinstance(value, int):
-            raise TypeError(f"geouned.Options.nPlaneReverse should be a int, not a {type(value)}")
+            raise TypeError(f"geouned.Options.n_plane_reverse should be a int, not a {type(value)}")
         self._nPlaneReverse = value
 
     @property
-    def splitTolerance(self):
+    def split_tolerance(self):
         return self._splitTolerance
 
-    @splitTolerance.setter
-    def splitTolerance(self, value: Real):
+    @split_tolerance.setter
+    def split_tolerance(self, value: Real):
         if not isinstance(value, Real):
-            raise TypeError(f"geouned.Options.splitTolerance should be a Real, not a {type(value)}")
+            raise TypeError(f"geouned.Options.split_tolerance should be a Real, not a {type(value)}")
         if value < 0:
-            raise ValueError(f"geouned.Options.splitTolerance should be above 0, not {value}")
+            raise ValueError(f"geouned.Options.split_tolerance should be above 0, not {value}")
         self._splitTolerance = value
 
     @property
-    def scaleUp(self):
+    def scale_up(self):
         return self._scaleUp
 
-    @scaleUp.setter
-    def scaleUp(self, value: bool):
+    @scale_up.setter
+    def scale_up(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.scaleUp should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.scale_up should be a bool, not a {type(value)}")
         self._scaleUp = value
 
     @property
-    def quadricPY(self):
+    def quadric_py(self):
         return self._quadricPY
 
-    @quadricPY.setter
-    def quadricPY(self, value: bool):
+    @quadric_py.setter
+    def quadric_py(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.quadricPY should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.quadric_py should be a bool, not a {type(value)}")
         self._quadricPY = value
 
     @property
-    def Facets(self):
+    def facets(self):
         return self._Facets
 
-    @Facets.setter
-    def Facets(self, value: bool):
+    @facets.setter
+    def facets(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.Facets should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.facets should be a bool, not a {type(value)}")
         self._Facets = value
 
     @property
-    def prnt3PPlane(self):
+    def prnt_3p_plane(self):
         return self._prnt3PPlane
 
-    @prnt3PPlane.setter
-    def prnt3PPlane(self, value: bool):
+    @prnt_3p_plane.setter
+    def prnt_3p_plane(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Options.prnt3PPlane should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Options.prnt_3p_plane should be a bool, not a {type(value)}")
         self._prnt3PPlane = value
 
     @property
@@ -192,8 +192,8 @@ class Tolerances:
     """A class for containing tolerances values
 
     Args:
-        relativeTol (bool, optional): _description_. Defaults to False.
-        relativePrecision (float, optional): relative precision. Defaults to 1.0e-6.
+        relative_tol (bool, optional): _description_. Defaults to False.
+        relative_precision (float, optional): relative precision. Defaults to 1.0e-6.
         value (float, optional): Tolerance in single value comparison. Defaults to 1.0e-6.
         distance (float, optional): General Distance Tolerance. Defaults to 1.0e-4.
         angle (float, optional): General Angle Tolerance. Defaults to 1.0e-4.
@@ -211,8 +211,8 @@ class Tolerances:
 
     def __init__(
         self,
-        relativeTol: bool = False,
-        relativePrecision: float = 1.0e-6,
+        relative_tol: bool = False,
+        relative_precision: float = 1.0e-6,
         value: float = 1.0e-6,
         distance: float = 1.0e-4,
         angle: float = 1.0e-4,
@@ -228,8 +228,8 @@ class Tolerances:
         min_area: float = 1.0e-2,
     ):
 
-        self.relativeTol = relativeTol
-        self.relativePrecision = relativePrecision
+        self.relative_tol = relative_tol
+        self.relative_precision = relative_precision
         self.value = value
         self.distance = distance
         self.angle = angle
@@ -245,23 +245,23 @@ class Tolerances:
         self.min_area = min_area
 
     @property
-    def relativeTol(self):
+    def relative_tol(self):
         return self._relativeTol
 
-    @relativeTol.setter
-    def relativeTol(self, value: bool):
+    @relative_tol.setter
+    def relative_tol(self, value: bool):
         if not isinstance(value, bool):
-            raise TypeError(f"geouned.Tolerances.relativeTol should be a bool, not a {type(value)}")
+            raise TypeError(f"geouned.Tolerances.relative_tol should be a bool, not a {type(value)}")
         self._relativeTol = value
 
     @property
-    def relativePrecision(self):
+    def relative_precision(self):
         return self._relativePrecision
 
-    @relativePrecision.setter
-    def relativePrecision(self, value: float):
+    @relative_precision.setter
+    def relative_precision(self, value: float):
         if not isinstance(value, float):
-            raise TypeError(f"geouned.Tolerances.relativePrecision should be a float, not a {type(value)}")
+            raise TypeError(f"geouned.Tolerances.relative_precision should be a float, not a {type(value)}")
         self._relativePrecision = value
 
     @property
@@ -399,213 +399,213 @@ class NumericFormat:
     """Numerical format options for each of the surface types.
 
     Args:
-        P_abc (str, optional): Plane general a,b,c params. Defaults to "14.7e".
-        P_d (str, optional): Plane general d params. Defaults to "14.7e".
-        P_xyz (str, optional): PX/PY/PZ params. Defaults to "14.7e".
-        S_r (str, optional): SO/SX/SY/SZ/S radius. Defaults to "14.7e".
-        S_xyz (str, optional): SO/SX/SY/SZ/S center. Defaults to "14.7e".
-        C_r (str, optional): Cylinder radius. Defaults to "12f".
-        C_xyz (str, optional): Cylinder center. Defaults to "12f".
-        K_xyz (str, optional): Cone apex. Defaults to "13.6e".
-        K_tan2 (str, optional): Cone tan^2 value. Defaults to "12f".
-        T_r (str, optional): Torus radii. Defaults to "14.7e".
-        T_xyz (str, optional): Torus center. Defaults to "14.7e".
-        GQ_1to6 (str, optional): GQ 1 to 6 coefficients (order 2 x2,y2,z2,xy,...). Defaults to "18.15f".
-        GQ_7to9 (str, optional): GQ 7 to 9 coefficients (order 1 x,y,z). Defaults to "18.15f".
-        GQ_10 (str, optional): GQ 10 coefficient. Defaults to "18.15f".
+        p_abc (str, optional): Plane general a,b,c params. Defaults to "14.7e".
+        p_d (str, optional): Plane general d params. Defaults to "14.7e".
+        p_xyz (str, optional): PX/PY/PZ params. Defaults to "14.7e".
+        s_r (str, optional): SO/SX/SY/SZ/S radius. Defaults to "14.7e".
+        s_xyz (str, optional): SO/SX/SY/SZ/S center. Defaults to "14.7e".
+        c_r (str, optional): Cylinder radius. Defaults to "12f".
+        c_xyz (str, optional): Cylinder center. Defaults to "12f".
+        k_xyz (str, optional): Cone apex. Defaults to "13.6e".
+        k_tan2 (str, optional): Cone tan^2 value. Defaults to "12f".
+        t_r (str, optional): Torus radii. Defaults to "14.7e".
+        t_xyz (str, optional): Torus center. Defaults to "14.7e".
+        gq_1_to_6 (str, optional): GQ 1 to 6 coefficients (order 2 x2,y2,z2,xy,...). Defaults to "18.15f".
+        gq_7_to_9 (str, optional): GQ 7 to 9 coefficients (order 1 x,y,z). Defaults to "18.15f".
+        gq_10 (str, optional): GQ 10 coefficient. Defaults to "18.15f".
     """
 
     def __init__(
         self,
-        P_abc: str = "14.7e",
-        P_d: str = "14.7e",
-        P_xyz: str = "14.7e",
-        S_r: str = "14.7e",
-        S_xyz: str = "14.7e",
-        C_r: str = "12f",
-        C_xyz: str = "12f",
-        K_xyz: str = "13.6e",
-        K_tan2: str = "12f",
-        T_r: str = "14.7e",
-        T_xyz: str = "14.7e",
-        GQ_1to6: str = "18.15f",
-        GQ_7to9: str = "18.15f",
-        GQ_10: str = "18.15f",
+        p_abc: str = "14.7e",
+        p_d: str = "14.7e",
+        p_xyz: str = "14.7e",
+        s_r: str = "14.7e",
+        s_xyz: str = "14.7e",
+        c_r: str = "12f",
+        c_xyz: str = "12f",
+        k_xyz: str = "13.6e",
+        k_tan2: str = "12f",
+        t_r: str = "14.7e",
+        t_xyz: str = "14.7e",
+        gq_1_to_6: str = "18.15f",
+        gq_7_to_9: str = "18.15f",
+        gq_10: str = "18.15f",
     ):
 
-        self.P_abc = P_abc
-        self.P_d = P_d
-        self.P_xyz = P_xyz
-        self.S_r = S_r
-        self.S_xyz = S_xyz
-        self.C_r = C_r
-        self.C_xyz = C_xyz
-        self.K_xyz = K_xyz
-        self.K_tan2 = K_tan2
-        self.T_r = T_r
-        self.T_xyz = T_xyz
-        self.GQ_1to6 = GQ_1to6
-        self.GQ_7to9 = GQ_7to9
-        self.GQ_10 = GQ_10
+        self.p_abc = p_abc
+        self.p_d = p_d
+        self.p_xyz = p_xyz
+        self.s_r = s_r
+        self.s_xyz = s_xyz
+        self.c_r = c_r
+        self.c_xyz = c_xyz
+        self.k_xyz = k_xyz
+        self.k_tan2 = k_tan2
+        self.t_r = t_r
+        self.t_xyz = t_xyz
+        self.gq_1_to_6 = gq_1_to_6
+        self.gq_7_to_9 = gq_7_to_9
+        self.gq_10 = gq_10
 
     @property
-    def P_abc(self):
-        return self._P_abc
+    def p_abc(self):
+        return self._p_abc
 
-    @P_abc.setter
-    def P_abc(self, P_abc: str):
-        if not isinstance(P_abc, str):
-            raise TypeError(f"geouned.Tolerances.P_abc should be a str, not a {type(P_abc)}")
-        self._P_abc = P_abc
-
-    @property
-    def P_d(self):
-        return self._P_d
-
-    @P_d.setter
-    def P_d(self, P_d: str):
-        if not isinstance(P_d, str):
-            raise TypeError(f"geouned.Tolerances.P_d should be a str, not a {type(P_d)}")
-        self._P_d = P_d
+    @p_abc.setter
+    def p_abc(self, p_abc: str):
+        if not isinstance(p_abc, str):
+            raise TypeError(f"geouned.Tolerances.p_abc should be a str, not a {type(p_abc)}")
+        self._p_abc = p_abc
 
     @property
-    def P_xyz(self):
-        return self._P_xyz
+    def p_d(self):
+        return self._p_d
 
-    @P_xyz.setter
-    def P_xyz(self, P_xyz: str):
-        if not isinstance(P_xyz, str):
-            raise TypeError(f"geouned.Tolerances.P_xyz should be a str, not a {type(P_xyz)}")
-        self._P_xyz = P_xyz
-
-    @property
-    def S_r(self):
-        return self._S_r
-
-    @S_r.setter
-    def S_r(self, S_r: str):
-        if not isinstance(S_r, str):
-            raise TypeError(f"geouned.Tolerances.S_r should be a str, not a {type(S_r)}")
-        self._S_r = S_r
+    @p_d.setter
+    def p_d(self, p_d: str):
+        if not isinstance(p_d, str):
+            raise TypeError(f"geouned.Tolerances.p_d should be a str, not a {type(p_d)}")
+        self._p_d = p_d
 
     @property
-    def S_xyz(self):
-        return self._S_xyz
+    def p_xyz(self):
+        return self._p_xyz
 
-    @S_xyz.setter
-    def S_xyz(self, S_xyz: str):
-        if not isinstance(S_xyz, str):
-            raise TypeError(f"geouned.Tolerances.S_xyz should be a str, not a {type(S_xyz)}")
-        self._S_xyz = S_xyz
-
-    @property
-    def C_r(self):
-        return self._C_r
-
-    @C_r.setter
-    def C_r(self, C_r: str):
-        if not isinstance(C_r, str):
-            raise TypeError(f"geouned.Tolerances.C_r should be a str, not a {type(C_r)}")
-        self._C_r = C_r
+    @p_xyz.setter
+    def p_xyz(self, p_xyz: str):
+        if not isinstance(p_xyz, str):
+            raise TypeError(f"geouned.Tolerances.p_xyz should be a str, not a {type(p_xyz)}")
+        self._p_xyz = p_xyz
 
     @property
-    def C_xyz(self):
-        return self._C_xyz
+    def s_r(self):
+        return self._s_r
 
-    @C_xyz.setter
-    def C_xyz(self, C_xyz: str):
-        if not isinstance(C_xyz, str):
-            raise TypeError(f"geouned.Tolerances.C_xyz should be a str, not a {type(C_xyz)}")
-        self._C_xyz = C_xyz
-
-    @property
-    def K_xyz(self):
-        return self._K_xyz
-
-    @K_xyz.setter
-    def K_xyz(self, K_xyz: str):
-        if not isinstance(K_xyz, str):
-            raise TypeError(f"geouned.Tolerances.K_xyz should be a str, not a {type(K_xyz)}")
-        self._K_xyz = K_xyz
+    @s_r.setter
+    def s_r(self, s_r: str):
+        if not isinstance(s_r, str):
+            raise TypeError(f"geouned.Tolerances.s_r should be a str, not a {type(s_r)}")
+        self._s_r = s_r
 
     @property
-    def K_tan2(self):
-        return self._K_tan2
+    def s_xyz(self):
+        return self._s_xyz
 
-    @K_tan2.setter
-    def K_tan2(self, K_tan2: str):
-        if not isinstance(K_tan2, str):
-            raise TypeError(f"geouned.Tolerances.K_tan2 should be a str, not a {type(K_tan2)}")
-        self._K_tan2 = K_tan2
-
-    @property
-    def T_r(self):
-        return self._T_r
-
-    @T_r.setter
-    def T_r(self, T_r: str):
-        if not isinstance(T_r, str):
-            raise TypeError(f"geouned.Tolerances.T_r should be a str, not a {type(T_r)}")
-        self._T_r = T_r
+    @s_xyz.setter
+    def s_xyz(self, s_xyz: str):
+        if not isinstance(s_xyz, str):
+            raise TypeError(f"geouned.Tolerances.s_xyz should be a str, not a {type(s_xyz)}")
+        self._s_xyz = s_xyz
 
     @property
-    def T_xyz(self):
-        return self._T_xyz
+    def c_r(self):
+        return self._c_r
 
-    @T_xyz.setter
-    def T_xyz(self, T_xyz: str):
-        if not isinstance(T_xyz, str):
-            raise TypeError(f"geouned.Tolerances.T_xyz should be a str, not a {type(T_xyz)}")
-        self._T_xyz = T_xyz
-
-    @property
-    def GQ_1to6(self):
-        return self._GQ_1to6
-
-    @GQ_1to6.setter
-    def GQ_1to6(self, GQ_1to6: str):
-        if not isinstance(GQ_1to6, str):
-            raise TypeError(f"geouned.Tolerances.GQ_1to6 should be a str, not a {type(GQ_1to6)}")
-        self._GQ_1to6 = GQ_1to6
+    @c_r.setter
+    def c_r(self, c_r: str):
+        if not isinstance(c_r, str):
+            raise TypeError(f"geouned.Tolerances.c_r should be a str, not a {type(c_r)}")
+        self._c_r = c_r
 
     @property
-    def GQ_7to9(self):
-        return self._GQ_7to9
+    def c_xyz(self):
+        return self._c_xyz
 
-    @GQ_7to9.setter
-    def GQ_7to9(self, GQ_7to9: str):
-        if not isinstance(GQ_7to9, str):
-            raise TypeError(f"geouned.Tolerances.GQ_7to9 should be a str, not a {type(GQ_7to9)}")
-        self._GQ_7to9 = GQ_7to9
+    @c_xyz.setter
+    def c_xyz(self, c_xyz: str):
+        if not isinstance(c_xyz, str):
+            raise TypeError(f"geouned.Tolerances.c_xyz should be a str, not a {type(c_xyz)}")
+        self._c_xyz = c_xyz
 
     @property
-    def GQ_10(self):
-        return self._GQ_10
+    def k_xyz(self):
+        return self._k_xyz
 
-    @GQ_10.setter
-    def GQ_10(self, GQ_10: str):
-        if not isinstance(GQ_10, str):
-            raise TypeError(f"geouned.Tolerances.GQ_10 should be a str, not a {type(GQ_10)}")
-        self._GQ_10 = GQ_10
+    @k_xyz.setter
+    def k_xyz(self, k_xyz: str):
+        if not isinstance(k_xyz, str):
+            raise TypeError(f"geouned.Tolerances.k_xyz should be a str, not a {type(k_xyz)}")
+        self._k_xyz = k_xyz
+
+    @property
+    def k_tan2(self):
+        return self._k_tan2
+
+    @k_tan2.setter
+    def k_tan2(self, k_tan2: str):
+        if not isinstance(k_tan2, str):
+            raise TypeError(f"geouned.Tolerances.k_tan2 should be a str, not a {type(k_tan2)}")
+        self._k_tan2 = k_tan2
+
+    @property
+    def t_r(self):
+        return self._t_r
+
+    @t_r.setter
+    def t_r(self, t_r: str):
+        if not isinstance(t_r, str):
+            raise TypeError(f"geouned.Tolerances.t_r should be a str, not a {type(t_r)}")
+        self._t_r = t_r
+
+    @property
+    def t_xyz(self):
+        return self._t_xyz
+
+    @t_xyz.setter
+    def t_xyz(self, t_xyz: str):
+        if not isinstance(t_xyz, str):
+            raise TypeError(f"geouned.Tolerances.t_xyz should be a str, not a {type(t_xyz)}")
+        self._t_xyz = t_xyz
+
+    @property
+    def gq_1_to_6(self):
+        return self._gq_1_to_6
+
+    @gq_1_to_6.setter
+    def gq_1_to_6(self, gq_1_to_6: str):
+        if not isinstance(gq_1_to_6, str):
+            raise TypeError(f"geouned.Tolerances.gq_1_to_6 should be a str, not a {type(gq_1_to_6)}")
+        self._gq_1_to_6 = gq_1_to_6
+
+    @property
+    def gq_7_to_9(self):
+        return self._gq_7_to_9
+
+    @gq_7_to_9.setter
+    def gq_7_to_9(self, gq_7_to_9: str):
+        if not isinstance(gq_7_to_9, str):
+            raise TypeError(f"geouned.Tolerances.gq_7_to_9 should be a str, not a {type(gq_7_to_9)}")
+        self._gq_7_to_9 = gq_7_to_9
+
+    @property
+    def gq_10(self):
+        return self._gq_10
+
+    @gq_10.setter
+    def gq_10(self, gq_10: str):
+        if not isinstance(gq_10, str):
+            raise TypeError(f"geouned.Tolerances.gq_10 should be a str, not a {type(gq_10)}")
+        self._gq_10 = gq_10
 
 
 class Settings:
     """Settings for changing the way the CAD to CSG conversion is done
 
     Args:
-        stepFile (str, optional): Name of the CAD file (in STEP format) to
+        step_filename (str, optional): Name of the CAD file (in STEP format) to
             be converted. Defaults to "".
-        matFile (str, optional): _description_. Defaults to "".
-        voidGen (bool, optional): Generate voids of the geometry. Defaults
+        mat_file (str, optional): _description_. Defaults to "".
+        void_gen (bool, optional): Generate voids of the geometry. Defaults
             to True.
         debug (bool, optional): Write step files of original and decomposed
             solids, for each solid in the STEP file. Defaults to False.
-        compSolids (bool, optional): Join subsolids of STEP file as a single
+        comp_solids (bool, optional): Join subsolids of STEP file as a single
             compound solid. Step files generated with SpaceClaim have not
             exactly the same level of solids as FreeCAD. It may a happened
             that solids defined has separated solids are read by FreeCAD
             as a single compound solid (and will produce only one MCNP
-            cell). In this case compSolids should be set to False. Defaults
+            cell). In this case comp_solids should be set to False. Defaults
             to True.
         simplify (str, optional): Simplify the cell definition considering
             relative surfaces position and using Boolean logics. Available
@@ -615,25 +615,25 @@ class Settings:
             most optimal algorithm. The time of the conversion can be
             multiplied by 5 or more. "full" : all the cells (solids and
             voids) are simplified. Defaults to "No".
-        cellRange (list, optional): Range of cell to be converted (only one
+        cell_range (list, optional): Range of cell to be converted (only one
             range is allowed, e.g [100,220]). Default all solids are
             converted. Defaults to [].
-        exportSolids (str, optional): Export CAD solid after reading.
+        export_solids (str, optional): Export CAD solid after reading.
             The execution is stopped after export, the translation is not
             carried out. Defaults to "".
-        minVoidSize (float, optional): Minimum size of the edges of the
+        min_void_size (float, optional): Minimum size of the edges of the
             void cell. Units are in mm. Defaults to 200.0.
-        maxSurf (int, optional): #TODO
-        maxBracket (int, optional): Maximum number of brackets (solid
+        max_surf (int, optional): #TODO
+        max_bracket (int, optional): Maximum number of brackets (solid
             complementary) allowed in void cell definition. Defaults to 30.
-        voidMat (list, optional): Assign a material defined by the user
+        void_mat (list, optional): Assign a material defined by the user
             instead of void for cells without material definition and the
             cells generated in the automatic void generation. The format
             is a 3 valued tuple (mat_label, mat_density, mat_description).
             Example (100,1e-3,'Air assigned to Void'). Defaults to [].
-        voidExclude (list, optional): #TODO see issue 87. Defaults to [].
-        startCell (int, optional): Starting cell numbering label. Defaults to 1.
-        startSurf (int, optional): Starting surface numbering label. Defaults to 1.
+        void_exclude (list, optional): #TODO see issue 87. Defaults to [].
+        start_cell (int, optional): Starting cell numbering label. Defaults to 1.
+        start_surface (int, optional): Starting surface numbering label. Defaults to 1.
         sort_enclosure (bool, optional): If enclosures are defined in the
             CAD models, the voids cells of the enclosure will be located in
             the output file in the same location where the enclosure solid
@@ -642,58 +642,58 @@ class Settings:
 
     def __init__(
         self,
-        matFile: str = "",
-        voidGen: bool = True,
+        mat_file: str = "",
+        void_gen: bool = True,
         debug: bool = False,
-        compSolids: bool = True,
+        comp_solids: bool = True,
         simplify: str = "no",
-        cellRange: list = [],
-        exportSolids: str = "",
-        minVoidSize: float = 200.0,  # units mm
-        maxSurf: int = 50,
-        maxBracket: int = 30,
-        voidMat: list = [],
-        voidExclude: list = [],
-        startCell: int = 1,
-        startSurf: int = 1,
+        cell_range: list = [],
+        export_solids: str = "",
+        min_void_size: float = 200.0,  # units mm
+        max_surf: int = 50,
+        max_bracket: int = 30,
+        void_mat: list = [],
+        void_exclude: list = [],
+        start_cell: int = 1,
+        start_surface: int = 1,
         sort_enclosure: bool = False,
     ):
 
-        self.matFile = matFile
-        self.voidGen = voidGen
+        self.mat_file = mat_file
+        self.void_gen = void_gen
         self.debug = debug
-        self.compSolids = compSolids
+        self.comp_solids = comp_solids
         self.simplify = simplify
-        self.cellRange = cellRange
-        self.exportSolids = exportSolids
-        self.minVoidSize = minVoidSize
-        self.maxSurf = maxSurf
-        self.maxBracket = maxBracket
-        self.voidMat = voidMat
-        self.voidExclude = voidExclude
-        self.startCell = startCell
-        self.startSurf = startSurf
+        self.cell_range = cell_range
+        self.export_solids = export_solids
+        self.min_void_size = min_void_size
+        self.max_surf = max_surf
+        self.max_bracket = max_bracket
+        self.void_mat = void_mat
+        self.void_exclude = void_exclude
+        self.start_cell = start_cell
+        self.start_surface = start_surface
         self.sort_enclosure = sort_enclosure
 
     @property
-    def matFile(self):
-        return self._matFile
+    def mat_file(self):
+        return self._mat_file
 
-    @matFile.setter
-    def matFile(self, matFile: str):
-        if not isinstance(matFile, str):
-            raise TypeError(f"geouned.Tolerances.matFile should be a str, not a {type(matFile)}")
-        self._matFile = matFile
+    @mat_file.setter
+    def mat_file(self, mat_file: str):
+        if not isinstance(mat_file, str):
+            raise TypeError(f"geouned.Tolerances.mat_file should be a str, not a {type(mat_file)}")
+        self._mat_file = mat_file
 
     @property
-    def voidGen(self):
-        return self._voidGen
+    def void_gen(self):
+        return self._void_gen
 
-    @voidGen.setter
-    def voidGen(self, voidGen: bool):
-        if not isinstance(voidGen, bool):
-            raise TypeError(f"geouned.Tolerances.voidGen should be a bool, not a {type(voidGen)}")
-        self._voidGen = voidGen
+    @void_gen.setter
+    def void_gen(self, void_gen: bool):
+        if not isinstance(void_gen, bool):
+            raise TypeError(f"geouned.Tolerances.void_gen should be a bool, not a {type(void_gen)}")
+        self._void_gen = void_gen
 
     @property
     def debug(self):
@@ -706,14 +706,14 @@ class Settings:
         self._debug = debug
 
     @property
-    def compSolids(self):
-        return self._compSolids
+    def comp_solids(self):
+        return self._comp_solids
 
-    @compSolids.setter
-    def compSolids(self, compSolids: bool):
-        if not isinstance(compSolids, bool):
-            raise TypeError(f"geouned.Tolerances.compSolids should be a bool, not a {type(compSolids)}")
-        self._compSolids = compSolids
+    @comp_solids.setter
+    def comp_solids(self, comp_solids: bool):
+        if not isinstance(comp_solids, bool):
+            raise TypeError(f"geouned.Tolerances.comp_solids should be a bool, not a {type(comp_solids)}")
+        self._comp_solids = comp_solids
 
     @property
     def simplify(self):
@@ -726,103 +726,103 @@ class Settings:
         self._simplify = simplify
 
     @property
-    def cellRange(self):
-        return self._cellRange
+    def cell_range(self):
+        return self._cell_range
 
-    @cellRange.setter
-    def cellRange(self, cellRange: list):
-        if not isinstance(cellRange, list):
-            raise TypeError(f"geouned.Tolerances.cellRange should be a list, not a {type(cellRange)}")
-        for entry in cellRange:
+    @cell_range.setter
+    def cell_range(self, cell_range: list):
+        if not isinstance(cell_range, list):
+            raise TypeError(f"geouned.Tolerances.cell_range should be a list, not a {type(cell_range)}")
+        for entry in cell_range:
             if not isinstance(entry, int):
-                raise TypeError(f"geouned.Tolerances.cellRange should be a list of ints, not a {type(entry)}")
-        self._cellRange = cellRange
+                raise TypeError(f"geouned.Tolerances.cell_range should be a list of ints, not a {type(entry)}")
+        self._cell_range = cell_range
 
     @property
-    def exportSolids(self):
-        return self._exportSolids
+    def export_solids(self):
+        return self._export_solids
 
-    @exportSolids.setter
-    def exportSolids(self, exportSolids: str):
-        if not isinstance(exportSolids, str):
-            raise TypeError(f"geouned.Tolerances.exportSolids should be a str, not a {type(exportSolids)}")
-        self._exportSolids = exportSolids
-
-    @property
-    def minVoidSize(self):
-        return self._minVoidSize
-
-    @minVoidSize.setter
-    def minVoidSize(self, minVoidSize: float):
-        if not isinstance(minVoidSize, float):
-            raise TypeError(f"geouned.Tolerances.minVoidSize should be a float, not a {type(minVoidSize)}")
-        self._minVoidSize = minVoidSize
+    @export_solids.setter
+    def export_solids(self, export_solids: str):
+        if not isinstance(export_solids, str):
+            raise TypeError(f"geouned.Tolerances.export_solids should be a str, not a {type(export_solids)}")
+        self._export_solids = export_solids
 
     @property
-    def maxSurf(self):
-        return self._maxSurf
+    def min_void_size(self):
+        return self._min_void_size
 
-    @maxSurf.setter
-    def maxSurf(self, maxSurf: int):
-        if not isinstance(maxSurf, int):
-            raise TypeError(f"geouned.Tolerances.maxSurf should be a int, not a {type(maxSurf)}")
-        self._maxSurf = maxSurf
-
-    @property
-    def maxBracket(self):
-        return self._maxBracket
-
-    @maxBracket.setter
-    def maxBracket(self, maxBracket: int):
-        if not isinstance(maxBracket, int):
-            raise TypeError(f"geouned.Tolerances.maxBracket should be a int, not a {type(maxBracket)}")
-        self._maxBracket = maxBracket
+    @min_void_size.setter
+    def min_void_size(self, min_void_size: float):
+        if not isinstance(min_void_size, float):
+            raise TypeError(f"geouned.Tolerances.min_void_size should be a float, not a {type(min_void_size)}")
+        self._min_void_size = min_void_size
 
     @property
-    def voidMat(self):
-        return self._voidMat
+    def max_surf(self):
+        return self._max_surf
 
-    @voidMat.setter
-    def voidMat(self, voidMat: list):
-        if not isinstance(voidMat, list):
-            raise TypeError(f"geouned.Tolerances.voidMat should be a list, not a {type(voidMat)}")
-        for entry in voidMat:
+    @max_surf.setter
+    def max_surf(self, max_surf: int):
+        if not isinstance(max_surf, int):
+            raise TypeError(f"geouned.Tolerances.max_surf should be a int, not a {type(max_surf)}")
+        self._max_surf = max_surf
+
+    @property
+    def max_bracket(self):
+        return self._max_bracket
+
+    @max_bracket.setter
+    def max_bracket(self, max_bracket: int):
+        if not isinstance(max_bracket, int):
+            raise TypeError(f"geouned.Tolerances.max_bracket should be a int, not a {type(max_bracket)}")
+        self._max_bracket = max_bracket
+
+    @property
+    def void_mat(self):
+        return self._void_mat
+
+    @void_mat.setter
+    def void_mat(self, void_mat: list):
+        if not isinstance(void_mat, list):
+            raise TypeError(f"geouned.Tolerances.void_mat should be a list, not a {type(void_mat)}")
+        for entry in void_mat:
             if not isinstance(entry, int):
-                raise TypeError(f"geouned.Tolerances.voidMat should be a list of ints, not a {type(entry)}")
-        self._voidMat = voidMat
+                raise TypeError(f"geouned.Tolerances.void_mat should be a list of ints, not a {type(entry)}")
+        self._void_mat = void_mat
 
     @property
-    def voidExclude(self):
-        return self._voidExclude
+    def void_exclude(self):
+        return self._void_exclude
 
-    @voidExclude.setter
-    def voidExclude(self, voidExclude: list):
-        if not isinstance(voidExclude, list):
-            raise TypeError(f"geouned.Tolerances.voidExclude should be a list, not a {type(voidExclude)}")
-        for entry in voidExclude:
+    @void_exclude.setter
+    def void_exclude(self, void_exclude: list):
+        if not isinstance(void_exclude, list):
+            raise TypeError(f"geouned.Tolerances.void_exclude should be a list, not a {type(void_exclude)}")
+        for entry in void_exclude:
             if not isinstance(entry, int):
-                raise TypeError(f"geouned.Tolerances.voidExclude should be a list of ints, not a {type(entry)}")
-        self._voidExclude = voidExclude
+                raise TypeError(f"geouned.Tolerances.void_exclude should be a list of ints, not a {type(entry)}")
+        self._void_exclude = void_exclude
 
     @property
-    def startCell(self):
-        return self._startCell
+    def start_cell(self):
+        return self._start_cell
 
-    @startCell.setter
-    def startCell(self, startCell: int):
-        if not isinstance(startCell, int):
-            raise TypeError(f"geouned.Tolerances.startCell should be a int, not a {type(startCell)}")
-        self._startCell = startCell
+    @start_cell.setter
+    def start_cell(self, start_cell: int):
+        if not isinstance(start_cell, int):
+            raise TypeError(f"geouned.Tolerances.start_cell should be a int, not a {type(start_cell)}")
+        self._start_cell = start_cell
 
     @property
-    def startSurf(self):
-        return self._startSurf
+    def start_surface(self):
+        return self._start_surface
 
-    @startSurf.setter
-    def startSurf(self, startSurf: int):
-        if not isinstance(startSurf, int):
-            raise TypeError(f"geouned.Tolerances.startSurf should be a int, not a {type(startSurf)}")
-        self._startSurf = startSurf
+    @start_surface.setter
+    def start_surface(self, start_surface: int):
+        if not isinstance(start_surface, int):
+            raise TypeError(f"geouned.Tolerances.start_surface should be a int, not a {type(start_surface)}")
+        self._start_surface = start_surface
 
     @property
     def sort_enclosure(self):

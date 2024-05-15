@@ -29,22 +29,22 @@ def test_conversion(input_step_file):
         output_filename_stem.with_suffix(suffix).unlink(missing_ok=True)
 
     my_options = geouned.Options(
-        forceCylinder=False,
-        newSplitPlane=True,
-        delLastNumber=False,
-        enlargeBox=2,
-        nPlaneReverse=0,
-        splitTolerance=0,
-        scaleUp=True,
-        quadricPY=False,
-        Facets=False,
-        prnt3PPlane=False,
+        force_cylinder=False,
+        new_split_plane=True,
+        del_last_number=False,
+        enlarge_box=2,
+        n_plane_reverse=0,
+        split_tolerance=0,
+        scale_up=True,
+        quadric_py=False,
+        facets=False,
+        prnt_3p_plane=False,
         forceNoOverlap=False,
     )
 
     my_tolerances = geouned.Tolerances(
-        relativeTol=False,
-        relativePrecision=0.000001,
+        relative_tol=False,
+        relative_precision=0.000001,
         value=0.000001,
         distance=0.0001,
         angle=0.0001,
@@ -61,42 +61,42 @@ def test_conversion(input_step_file):
     )
 
     my_numeric_format = geouned.NumericFormat(
-        P_abc="14.7e",
-        P_d="14.7e",
-        P_xyz="14.7e",
-        S_r="14.7e",
-        S_xyz="14.7e",
-        C_r="12f",
-        C_xyz="12f",
-        K_xyz="13.6e",
-        K_tan2="12f",
-        T_r="14.7e",
-        T_xyz="14.7e",
-        GQ_1to6="18.15f",
-        GQ_7to9="18.15f",
-        GQ_10="18.15f",
+        p_abc="14.7e",
+        p_d="14.7e",
+        p_xyz="14.7e",
+        s_r="14.7e",
+        s_xyz="14.7e",
+        c_r="12f",
+        c_xyz="12f",
+        k_xyz="13.6e",
+        k_tan2="12f",
+        t_r="14.7e",
+        t_xyz="14.7e",
+        gq_1_to_6="18.15f",
+        gq_7_to_9="18.15f",
+        gq_10="18.15f",
     )
 
     my_settings = geouned.Settings(
-        matFile="",
-        voidGen=True,
+        mat_file="",
+        void_gen=True,
         debug=False,
-        compSolids=True,
+        comp_solids=True,
         simplify="no",
-        cellRange=[],
-        exportSolids="",
-        minVoidSize=200.0,  # units mm
-        maxSurf=50,
-        maxBracket=30,
-        voidMat=[],
-        voidExclude=[],
-        startCell=1,
-        startSurf=1,
+        cell_range=[],
+        export_solids="",
+        min_void_size=200.0,  # units mm
+        max_surf=50,
+        max_bracket=30,
+        void_mat=[],
+        void_exclude=[],
+        start_cell=1,
+        start_surface=1,
         sort_enclosure=False,
     )
 
     geo = geouned.CadToCsg(
-        stepFile=f"{input_step_file.resolve()}",
+        step_filename=f"{input_step_file.resolve()}",
         options=my_options,
         settings=my_settings,
         tolerances=my_tolerances,
@@ -140,11 +140,11 @@ def test_cad_to_csg_from_json_with_defaults(input_json_file):
     my_cad_to_csg = geouned.CadToCsg.from_json(input_json_file)
     assert isinstance(my_cad_to_csg, geouned.CadToCsg)
 
-    assert my_cad_to_csg.stepFile == "testing/inputSTEP/BC.stp"
-    assert my_cad_to_csg.options.forceCylinder == False
-    assert my_cad_to_csg.tolerances.relativeTol == False
-    assert my_cad_to_csg.numeric_format.P_abc == "14.7e"
-    assert my_cad_to_csg.settings.matFile == ""
+    assert my_cad_to_csg.step_filename == "testing/inputSTEP/BC.stp"
+    assert my_cad_to_csg.options.force_cylinder == False
+    assert my_cad_to_csg.tolerances.relative_tol == False
+    assert my_cad_to_csg.numeric_format.p_abc == "14.7e"
+    assert my_cad_to_csg.settings.mat_file == ""
 
     for suffix in suffixes:
         assert Path("csg").with_suffix(suffix).exists()
@@ -166,11 +166,11 @@ def test_cad_to_csg_from_json_with_non_defaults():
     my_cad_to_csg = geouned.CadToCsg.from_json("tests/config_non_defaults.json")
     assert isinstance(my_cad_to_csg, geouned.CadToCsg)
 
-    assert my_cad_to_csg.stepFile == "testing/inputSTEP/BC.stp"
-    assert my_cad_to_csg.options.forceCylinder == True
-    assert my_cad_to_csg.tolerances.relativePrecision == 2e-6
-    assert my_cad_to_csg.numeric_format.P_abc == "15.7e"
-    assert my_cad_to_csg.settings.matFile == "non default"
+    assert my_cad_to_csg.step_filename == "testing/inputSTEP/BC.stp"
+    assert my_cad_to_csg.options.force_cylinder == True
+    assert my_cad_to_csg.tolerances.relative_precision == 2e-6
+    assert my_cad_to_csg.numeric_format.p_abc == "15.7e"
+    assert my_cad_to_csg.settings.mat_file == "non default"
 
     for suffix in suffixes:
         assert Path("csg").with_suffix(suffix).exists()
@@ -186,7 +186,7 @@ def test_cad_to_csg_from_json_with_non_defaults():
 def test_writing_to_new_folders():
     """Checks that a folder is created prior to writing output files"""
 
-    geo = geouned.CadToCsg(stepFile="testing/inputSTEP/BC.stp")
+    geo = geouned.CadToCsg(step_filename="testing/inputSTEP/BC.stp")
     geo.start()
 
     for outformat in ["mcnp", "phits", "serpent", "openmc_xml", "openmc_py"]:
@@ -216,12 +216,12 @@ def test_with_relative_tol_true():
     # more details https://github.com/GEOUNED-org/GEOUNED/issues/154
 
     geo = geouned.CadToCsg(
-        stepFile=f"{step_files[1].resolve()}",
-        tolerances=geouned.Tolerances(relativeTol=False),
+        step_filename=f"{step_files[1].resolve()}",
+        tolerances=geouned.Tolerances(relative_tol=False),
     )
     geo.start()
     geo = geouned.CadToCsg(
-        stepFile=f"{step_files[1].resolve()}",
-        tolerances=geouned.Tolerances(relativeTol=True),
+        step_filename=f"{step_files[1].resolve()}",
+        tolerances=geouned.Tolerances(relative_tol=True),
     )
     geo.start()

@@ -30,7 +30,7 @@ class McnpInput:
         volCARD,
         UCARD,
         dummyMat,
-        stepFile,
+        step_filename,
     ):
         self.Title = title
         self.VolSDEF = volSDEF
@@ -48,9 +48,9 @@ class McnpInput:
         }
         self.part = "P"
 
-        self.StepFile = stepFile
-        if isinstance(self.StepFile, (tuple, list)):
-            self.StepFile = "; ".join(self.StepFile)
+        self.step_filename = step_filename
+        if isinstance(self.step_filename, (tuple, list)):
+            self.step_filename = "; ".join(self.step_filename)
 
         self.__get_surface_table__()
         self.__simplify_planes__(Surfaces)
@@ -121,7 +121,7 @@ C FreeCAD Version : {freeCAD_Version}
 
         Information = f"""C
 C *************************************************************
-C Original Step file : {self.StepFile}
+C Original Step file : {self.step_filename}
 C
 C Creation Date : {datetime.now()}
 C Solid Cells   : {self.__solidCells__}
@@ -178,7 +178,7 @@ C **************************************************************
     def __write_surfaces__(self, surface):
         """Write the surfaces in MCNP format"""
 
-        MCNP_def = mcnp_surface(
+        MCNp_def = mcnp_surface(
             surface.Index,
             surface.Type,
             surface.Surf,
@@ -186,9 +186,9 @@ C **************************************************************
             self.tolerances,
             self.numeric_format,
         )
-        if MCNP_def:
-            MCNP_def += "\n"
-            self.inpfile.write(MCNP_def)
+        if MCNp_def:
+            MCNp_def += "\n"
+            self.inpfile.write(MCNp_def)
         else:
             logger.info(f"Surface {surface.Type} cannot be written in MCNP input")
         return
@@ -328,7 +328,7 @@ C **************************************************************
                 p.Surf.Axis = FreeCAD.Vector(0, 0, 1)
                 self.__change_surf_sign__(p)
 
-        if self.options.prnt3PPlane:
+        if self.options.prnt_3p_plane:
             for p in Surfaces["P"]:
                 if p.Surf.pointDef:
                     axis, d = points_to_coeffs(p.Surf.Points)

@@ -130,9 +130,9 @@ def BuildSolidParts(cell, base, mode):
         print("not cutting surfaces")
         return tuple(base.base), tuple()
     if mode == "solids":
-        full, cut = SplitSolid(base, surfaces, cell, solidTool=True, tolerance=Options.splitTolerance)
+        full, cut = SplitSolid(base, surfaces, cell, solidTool=True, tolerance=Options.split_tolerance)
     elif mode == "allSurfaces":
-        full, cut = SplitSolid(base, surfaces, cell, tolerance=Options.splitTolerance)
+        full, cut = SplitSolid(base, surfaces, cell, tolerance=Options.split_tolerance)
 
     elif mode == "planeFirst":
         planes = []
@@ -147,7 +147,7 @@ def BuildSolidParts(cell, base, mode):
 
         if planes:
 
-            full, cut = SplitSolid(base, planes, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, planes, cell, tolerance=Options.split_tolerance)
             # for i,s in enumerate(full):
             #    s.exportStep('fullplane_{}.stp'.format(i))
             # for i,s in enumerate(cut):
@@ -159,7 +159,7 @@ def BuildSolidParts(cell, base, mode):
             cut = base
 
         if others:
-            newf, cut = SplitSolid(cut, others, cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, others, cell, tolerance=Options.split_tolerance)
             # print('others',newf)
             # print('others',cut)
         else:
@@ -177,7 +177,7 @@ def BuildSolidParts(cell, base, mode):
                 others.append(s)
 
         if others:
-            full, cut = SplitSolid(base, others, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, others, cell, tolerance=Options.split_tolerance)
             # print('others',full)
             # print('others',cut)
         else:
@@ -185,7 +185,7 @@ def BuildSolidParts(cell, base, mode):
             cut = base
 
         if planes:
-            newf, cut = SplitSolid(cut, planes, cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, planes, cell, tolerance=Options.split_tolerance)
             # print('planes',newf)
             # print('planes',cut)
 
@@ -204,14 +204,14 @@ def BuildSolidParts(cell, base, mode):
                 others.append(s)
 
         if planes:
-            full, cut = SplitSolid(base, planes, cell, tolerance=Options.splitTolerance)
+            full, cut = SplitSolid(base, planes, cell, tolerance=Options.split_tolerance)
         else:
             full = []
             cut = base
 
         # cut[0].base.exportStep('cutPlane.stp')
         for surf in others:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.split_tolerance)
             full.extend(newf)
 
     elif mode == "otherOneByOne":
@@ -226,11 +226,11 @@ def BuildSolidParts(cell, base, mode):
         cut = base
         full = []
         for surf in others:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.split_tolerance)
             full.extend(newf)
 
         for surf in planes:
-            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.splitTolerance)
+            newf, cut = SplitSolid(cut, (surf,), cell, tolerance=Options.split_tolerance)
             full.extend(newf)
 
     return full, cut

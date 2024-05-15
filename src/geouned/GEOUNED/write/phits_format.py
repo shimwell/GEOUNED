@@ -44,31 +44,31 @@ class PhitsInput:
         volCARD,
         UCARD,
         dummyMat,
-        stepFile,
-        matFile,
-        voidMat,
-        startCell,
+        step_filename,
+        mat_file,
+        void_mat,
+        start_cell,
     ):
         self.Title = title
         self.VolSDEF = volSDEF
         self.VolCARD = volCARD
         self.U0CARD = UCARD
         self.DummyMat = dummyMat
-        self.Matfile = matFile
-        self.voidMat = voidMat
-        self.startCell = startCell
+        self.Matfile = mat_file
+        self.void_mat = void_mat
+        self.start_cell = start_cell
         self.Cells = Meta
         self.tolerances = tolerances
         self.numeric_format = numeric_format
         self.options = options
         self.Options = {"Volume": self.VolCARD, "Universe": self.U0CARD}
 
-        self.StepFile = stepFile
-        if isinstance(self.StepFile, (tuple, list)):
-            self.StepFile = "; ".join(self.StepFile)
+        self.step_filename = step_filename
+        if isinstance(self.step_filename, (tuple, list)):
+            self.step_filename = "; ".join(self.step_filename)
 
         if self.Title == "":
-            self.Title = self.StepFile
+            self.Title = self.step_filename
 
         self.__get_surface_table__()
         self.__simplify_planes__(Surfaces)
@@ -162,7 +162,7 @@ $ PHITSFormat Version :  0.0.2.3     06/03/2024\n""".format(
 
         Information = f"""$
 $ *************************************************************
-$ Original Step file : {self.StepFile}
+$ Original Step file : {self.step_filename}
 $
 $ Creation Date : {datetime.now()}
 $ Solid Cells   : {self.__solidCells__}
@@ -182,7 +182,7 @@ $ **************************************************************
     def __write_phits_cell_block__(self):
 
         enclenvChk = []
-        enclenvChk = self.__stepfile_label_chk__(self.StepFile)
+        enclenvChk = self.__stepfile_label_chk__(self.step_filename)
 
         if enclenvChk:
             logger.info("Unified the inner void cell(s) definition")
@@ -228,12 +228,12 @@ $ **************************************************************
 
             elif cell.MatInfo == "Graveyard_in":
                 cell.MatInfo = "Inner void"
-                if self.voidMat != []:
-                    self.Materials.add(self.voidMat[0])
-                    if abs(self.voidMat[1]) < 1e-2:
-                        cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(index, self.voidMat[0], self.voidMat[1])
+                if self.void_mat != []:
+                    self.Materials.add(self.void_mat[0])
+                    if abs(self.void_mat[1]) < 1e-2:
+                        cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(index, self.void_mat[0], self.void_mat[1])
                     else:
-                        cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(index, self.voidMat[0], self.voidMat[1])
+                        cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(index, self.void_mat[0], self.void_mat[1])
                 else:
                     cellHeader = f"{index:<5d} {0:<5d}  "
 
@@ -289,13 +289,13 @@ $ **************************************************************
                 cell.Definition.elements = newInnerVoidCell
 
                 inclSolidCells = ""
-                startVoidIndex = self.__solidCells__ + self.startCell
-                eliminated_endVoidIndex = self.__cells__ + self.startCell - 3
+                startVoidIndex = self.__solidCells__ + self.start_cell
+                eliminated_endVoidIndex = self.__cells__ + self.start_cell - 3
 
-                if self.startCell == startVoidIndex - 1:
-                    inclSolidCells = f"{'':1s}#{self.startCell}"
+                if self.start_cell == startVoidIndex - 1:
+                    inclSolidCells = f"{'':1s}#{self.start_cell}"
                 else:
-                    for i in range(self.startCell, startVoidIndex):
+                    for i in range(self.start_cell, startVoidIndex):
                         inclSolidCells += f"{'':1s}#{i}"
 
                 if startVoidIndex == eliminated_endVoidIndex:
@@ -304,12 +304,12 @@ $ **************************************************************
                 else:
                     some_mervoid_str = "VOID CELLs {}-{} merged, so the auto-genarated void definitions are eliminated\n"
                     cell.Comments = some_mervoid_str.format(startVoidIndex, eliminated_endVoidIndex)
-                if self.voidMat != []:
-                    self.Materials.add(self.voidMat[0])
-                    if abs(self.voidMat[1]) < 1e-2:
-                        cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(index, self.voidMat[0], self.voidMat[1])
+                if self.void_mat != []:
+                    self.Materials.add(self.void_mat[0])
+                    if abs(self.void_mat[1]) < 1e-2:
+                        cellHeader = "{:<5d} {:<5d} {:11.4e} ".format(index, self.void_mat[0], self.void_mat[1])
                     else:
-                        cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(index, self.voidMat[0], self.voidMat[1])
+                        cellHeader = "{:<5d} {:<5d} {:11.7f} ".format(index, self.void_mat[0], self.void_mat[1])
                 else:
                     cellHeader = f"{index:<5d} {0:<5d}  "
 
@@ -408,11 +408,11 @@ $ **************************************************************
 
         vol = f"{'':5s}reg{'':5s}vol\n"
 
-        startVoidIndex = self.__solidCells__ + self.startCell
-        eliminated_endVoidIndex = self.__cells__ + self.startCell - 3
+        startVoidIndex = self.__solidCells__ + self.start_cell
+        eliminated_endVoidIndex = self.__cells__ + self.start_cell - 3
 
         enclenvChk = []
-        enclenvChk = self.__stepfile_label_chk__(self.StepFile)
+        enclenvChk = self.__stepfile_label_chk__(self.step_filename)
 
         if enclenvChk and self.Options["Volume"]:
             for i, cell in enumerate(self.Cells):
@@ -546,7 +546,7 @@ $ **************************************************************
                 p.Surf.Axis = FreeCAD.Vector(0, 0, 1)
                 self.__change_surf_sign__(p)
 
-        if self.options.prnt3PPlane:
+        if self.options.prnt_3p_plane:
             for p in Surfaces["P"]:
                 if p.Surf.pointDef:
                     axis, d = points_to_coeffs(p.Surf.Points)

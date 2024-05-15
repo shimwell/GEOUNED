@@ -180,7 +180,7 @@ class VoidBox:
                 else:
                     boxDef.elements.append(-id)
                 enclosure = False
-            d = options.enlargeBox
+            d = options.enlarge_box
 
         else:
             UniverseBox = self.PieceEnclosure.BoundBox
@@ -219,7 +219,7 @@ class VoidBox:
             boxDef = TempPieceEnclosure.Definition
             bBox = self.PieceEnclosure.BoundBox
             enclosure = True
-            d = max(options.enlargeBox, 2)
+            d = max(options.enlarge_box, 2)
 
         Box = Part.makeBox(
             bBox.XLength + 2 * d,

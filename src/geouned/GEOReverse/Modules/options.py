@@ -1,2 +1,2 @@
 class Options:
-    splitTolerance = 1.0e-2
+    split_tolerance = 1.0e-2

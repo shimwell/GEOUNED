@@ -66,13 +66,13 @@ def get_id(facein, surfaces, options, tolerances, numeric_format):
                 s.Surf,
                 dtol=tolerances.kne_distance,
                 atol=tolerances.kne_angle,
-                rel_tol=tolerances.relativeTol,
+                rel_tol=tolerances.relative_tol,
             ):
                 return s.Index
 
     elif surfin[0:6] == "Sphere":
         for s in surfaces["Sph"]:
-            if BF.is_same_sphere(facein, s.Surf, tolerances.sph_distance, rel_tol=tolerances.relativeTol):
+            if BF.is_same_sphere(facein, s.Surf, tolerances.sph_distance, rel_tol=tolerances.relative_tol):
                 return s.Index
 
     elif surfin == "<Toroid object>":
@@ -82,7 +82,7 @@ def get_id(facein, surfaces, options, tolerances, numeric_format):
                 s.Surf,
                 dtol=tolerances.tor_distance,
                 atol=tolerances.tor_angle,
-                rel_tol=tolerances.relativeTol,
+                rel_tol=tolerances.relative_tol,
             ):
                 return s.Index
 
@@ -847,7 +847,7 @@ def cellDef(meta_obj, surfaces, universe_box, options, tolerances, numeric_forma
                             v_var = "%i" % idT
                         else:
                             surf_params, surf_type, in_surf = gen_torus_annex_v_surface(
-                                face, VminMax, tolerances, options.forceCylinder
+                                face, VminMax, tolerances, options.force_cylinder
                             )
 
                             if surf_type == "Cone":

@@ -20,7 +20,7 @@ Modification in 0.9.7 Release Date 06/12/2022
   - fix bugs several additional planes for the same reversed surface
   - new module for plane splitting in decomposition modules. All planes are considerer equivalent (PX,PY,PZ,P), parallel planes are grouped together. 
     Decomposition is performed by splitting first with group of parallel planes with lowest number of elements. 
-    Old version module is still available by switching the option keyword "newSplitPlane" to False. 
+    Old version module is still available by switching the option keyword "new_split_plane" to False. 
   - New option added when enclosure are used. The option "sort_enclosure" True (Default False) will produce output file where solids and void of an enclosure
     are grouped together (first solid cell of the enclosure, then voids)
   - Options has been added to enlarge Box dimension when Constraint table is evaluated
@@ -42,7 +42,7 @@ Modification in 0.9.7 Release Date 06/12/2022
     mncp input file will have ".mcnp" extension and openMC XML the ".xml" extension.
   - new entry "outFormat" is added in FILES section. "outFormat" is used to select the output geometry format (mcnp and/or openMC_xml). 
     Default value is only mcnp
-  - new entry splitTolerance. Change the Tolerance value of the FreeCAD function split. Default Value  0.
+  - new entry split_tolerance. Change the Tolerance value of the FreeCAD function split. Default Value  0.
   - new entry Verbose. Print on screen warning. Default False.
 
  new in version 1.0.1

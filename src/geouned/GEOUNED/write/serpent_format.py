@@ -28,7 +28,7 @@ class SerpentInput:
         volCARD,
         UCARD,
         dummyMat,
-        stepFile,
+        step_filename,
     ):
         self.options = options
         self.tolerances = tolerances
@@ -46,9 +46,9 @@ class SerpentInput:
         }
         self.part = "p"
 
-        self.StepFile = stepFile
-        if isinstance(self.StepFile, (tuple, list)):
-            self.StepFile = "; ".join(self.StepFile)
+        self.step_filename = step_filename
+        if isinstance(self.step_filename, (tuple, list)):
+            self.step_filename = "; ".join(self.step_filename)
 
         self.__get_surface_table__()
         self.__simplify_planes__(Surfaces)
@@ -115,7 +115,7 @@ class SerpentInput:
 
         Information = f"""%
 % *************************************************************
-% Original Step file : {self.StepFile}
+% Original Step file : {self.step_filename}
 %
 % Creation Date : {datetime.now()}
 % Solid Cells   : {self.__solidCells__}
@@ -339,7 +339,7 @@ class SerpentInput:
                 p.Surf.Axis = FreeCAD.Vector(0, 0, 1)
                 self.__change_surf_sign__(p)
 
-        if self.options.prnt3PPlane:
+        if self.options.prnt_3p_plane:
             for p in Surfaces["P"]:
                 if p.Surf.pointDef:
                     axis, d = points_to_coeffs(p.Surf.Points)

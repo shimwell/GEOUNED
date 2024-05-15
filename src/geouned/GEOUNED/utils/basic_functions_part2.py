@@ -51,7 +51,7 @@ def is_same_plane(p1, p2, options, tolerances, numeric_format, fuzzy=(False, 0))
         if is_opposite(p1.Axis, p2.Axis, tolerances.pln_angle):
             d2 = -d2
         d = abs(d1 - d2)
-        if tolerances.relativeTol:
+        if tolerances.relative_tol:
             tol = tolerances.pln_distance * max(p2.dimL1, p2.dimL2)
         else:
             tol = tolerances.pln_distance
@@ -71,7 +71,7 @@ def is_same_cylinder(
     numeric_format,
     fuzzy=(False, 0),
 ):
-    if tolerances.relativeTol:
+    if tolerances.relative_tol:
         rtol = tolerances.cyl_distance * max(cyl2.Radius, cyl1.Radius)
     else:
         rtol = tolerances.cyl_distance
@@ -95,7 +95,7 @@ def is_same_cylinder(
             c12 = cyl1.Center - cyl2.Center
             d = cyl1.Axis.cross(c12).Length
 
-            if tolerances.relativeTol:
+            if tolerances.relative_tol:
                 tol = tolerances.cyl_distance * max(cyl1.Center.Length, cyl2.Center.Length)
             else:
                 tol = tolerances.cyl_distance

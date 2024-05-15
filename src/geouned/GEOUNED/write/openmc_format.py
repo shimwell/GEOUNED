@@ -157,7 +157,7 @@ import openmc
             self.tolerances,
             self.numeric_format,
             out_xml=False,
-            quadricForm=self.options.quadricPY,
+            quadricForm=self.options.quadric_py,
         )
 
         if not boundary:

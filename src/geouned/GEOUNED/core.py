@@ -30,7 +30,7 @@ class CadToCsg:
     """Base class for the conversion of CAD to CSG models
 
     Args:
-        stepFile (str, optional): Name of the CAD file (in STEP format) to
+        step_filename (str, optional): Name of the CAD file (in STEP format) to
             be converted. Defaults to "".
         options (geouned.Options, optional): An instance of a geouned.Options
             class with the attributes set for the desired conversion. Defaults
@@ -51,14 +51,14 @@ class CadToCsg:
 
     def __init__(
         self,
-        stepFile: str = "",
+        step_filename: str = "",
         options: Options = Options(),
         tolerances: Tolerances = Tolerances(),
         numeric_format: NumericFormat = NumericFormat(),
         settings: Settings = Settings(),
     ):
 
-        self.stepFile = stepFile
+        self.step_filename = step_filename
         self.options = options
         self.tolerances = tolerances
         self.numeric_format = numeric_format
@@ -144,7 +144,7 @@ class CadToCsg:
             volCARD=volCARD,
             UCARD=UCARD,
             dummyMat=dummyMat,
-            stepFile=self.stepFile,
+            step_filename=self.step_filename,
         )
 
         logger.info("End of Monte Carlo code translation phase")
@@ -173,10 +173,10 @@ class CadToCsg:
         with open(filename) as f:
             config = json.load(f)
 
-        cad_to_csg = cls(stepFile=config["stepFile"])
+        cad_to_csg = cls(step_filename=config["step_filename"])
         for key in config.keys():
 
-            if key in ["stepFile", "export_csg"]:
+            if key in ["step_filename", "export_csg"]:
                 pass  # these two keys are used before or after this loop
 
             elif key == "Tolerances":
@@ -193,7 +193,7 @@ class CadToCsg:
 
             else:
                 raise ValueError(
-                    f"Invalid key '{key}' found in config file {filename}. Acceptable key names are 'stepFile', 'export_csg', 'Settings', 'Parameters', 'Tolerances' and 'NumericFormat'"
+                    f"Invalid key '{key}' found in config file {filename}. Acceptable key names are 'step_filename', 'export_csg', 'Settings', 'Parameters', 'Tolerances' and 'NumericFormat'"
                 )
 
         cad_to_csg.start()
@@ -215,10 +215,10 @@ class CadToCsg:
         for section in config.sections():
             if section == "Files":
                 for key in config["Files"].keys():
-                    if key in ("geometryName", "matFile", "title"):
+                    if key in ("geometryName", "mat_file", "title"):
                         self.set(key, config.get("Files", key))
 
-                    elif key == "stepFile":
+                    elif key == "step_filename":
                         value = config.get("Files", key).strip()
                         lst = value.split()
                         if value[0] in ("(", "[") and value[-1] in ("]", ")"):
@@ -250,9 +250,9 @@ class CadToCsg:
             elif section == "Parameters":
                 for key in config["Parameters"].keys():
                     if key in (
-                        "voidGen",
+                        "void_gen",
                         "debug",
-                        "compSolids",
+                        "comp_solids",
                         "volSDEF",
                         "volCARD",
                         "dummyMat",
@@ -262,16 +262,16 @@ class CadToCsg:
                     ):
                         self.set(key, config.getboolean("Parameters", key))
                     elif key in (
-                        "minVoidSize",
-                        "maxSurf",
-                        "maxBracket",
-                        "startCell",
-                        "startSurf",
+                        "min_void_size",
+                        "max_surf",
+                        "max_bracket",
+                        "start_cell",
+                        "start_surface",
                     ):
                         self.set(key, config.getint("Parameters", key))
-                    elif key in ("exportSolids", "UCARD", "simplify"):
+                    elif key in ("export_solids", "UCARD", "simplify"):
                         self.set(key, config.get("Parameters", key))
-                    elif key == "voidMat":
+                    elif key == "void_mat":
                         value = config.get("Parameters", key).strip()
                         data = value[1:-1].split(",")
                         self.set(key, (int(data[0]), float(data[1]), data[2]))
@@ -307,25 +307,25 @@ class CadToCsg:
                     if key in attributes_and_types.keys():
                         value = config.get("MCNP_Numeric_Format", key)
                         setattr(self.numeric_format, key, value)
-                        if key == "P_d":
+                        if key == "p_d":
                             PdEntry = True
 
             else:
                 logger.info(f"bad section name : {section}")
 
         if self.__dict__["geometryName"] == "":
-            self.__dict__["geometryName"] = self.__dict__["stepFile"][:-4]
+            self.__dict__["geometryName"] = self.__dict__["step_filename"][:-4]
 
         # TODO see if we can find another way to do this
-        if self.options.prnt3PPlane and not PdEntry:
-            self.NumericFormat.P_d = "22.15e"
+        if self.options.prnt_3p_plane and not PdEntry:
+            self.NumericFormat.p_d = "22.15e"
 
         logger.info(self.__dict__)
 
     # TODO add tests as set is not currently tested
     def set(self, kwrd, value):
 
-        if kwrd == "stepFile":
+        if kwrd == "step_filename":
             if isinstance(value, (list, tuple)):
                 for v in value:
                     if not isinstance(v, str):
@@ -346,22 +346,22 @@ class CadToCsg:
         elif kwrd == "outFormat":
             if len(value) == 0:
                 return
-        elif kwrd in ("geometryName", "matFile", "exportSolids"):
+        elif kwrd in ("geometryName", "mat_file", "export_solids"):
             if not isinstance(value, str):
                 logger.info(f"{kwrd} value should be str instance")
                 return
-        elif kwrd in ("cellRange", "voidMat", "voidExclude"):
+        elif kwrd in ("cell_range", "void_mat", "void_exclude"):
             if not isinstance(value, (list, tuple)):
                 logger.info(f"{kwrd} value should be list or tuple")
                 return
-        elif kwrd in ("minVoidSize", "maxSurf", "maxBracket", "startCell", "startSurf"):
+        elif kwrd in ("min_void_size", "max_surf", "max_bracket", "start_cell", "start_surface"):
             if not isinstance(value, int):
                 logger.info(f"{kwrd} value should be integer")
                 return
         elif kwrd in (
-            "voidGen",
+            "void_gen",
             "debug",
-            "compSolids",
+            "comp_solids",
             "simplifyCTable",
             "volSDEF",
             "volCARD",
@@ -375,7 +375,7 @@ class CadToCsg:
                 return
 
         self.__dict__[kwrd] = value
-        if kwrd == "stepFile" and self.__dict__["geometryName"] == "":
+        if kwrd == "step_filename" and self.__dict__["geometryName"] == "":
             if isinstance(value, (tuple, list)):
                 self.__dict__["geometryName"] == "joined_step_files"
             else:
@@ -387,23 +387,23 @@ class CadToCsg:
         freecad_version = ".".join(FreeCAD.Version()[:3])
         logger.info(f"GEOUNED version {GEOUNED_Version} {GEOUNED_ReleaseDate} \nFreeCAD version {freecad_version}")
 
-        if self.stepFile == "":
+        if self.step_filename == "":
             raise ValueError("Cannot run the code. Step file name is missing")
 
-        if isinstance(self.stepFile, (tuple, list)):
-            for stp in self.stepFile:
+        if isinstance(self.step_filename, (tuple, list)):
+            for stp in self.step_filename:
                 if not path.isfile(stp):
                     raise FileNotFoundError(f"Step file {stp} not found.\nStop.")
         else:
-            if not path.isfile(self.stepFile):
-                raise FileNotFoundError(f"Step file {self.stepFile} not found.\nStop.")
+            if not path.isfile(self.step_filename):
+                raise FileNotFoundError(f"Step file {self.step_filename} not found.\nStop.")
 
         startTime = datetime.now()
 
-        if isinstance(self.stepFile, (list, tuple)):
-            step_files = self.stepFile
+        if isinstance(self.step_filename, (list, tuple)):
+            step_files = self.step_filename
         else:
-            step_files = [self.stepFile]
+            step_files = [self.step_filename]
         MetaChunk = []
         EnclosureChunk = []
         for stp in tqdm(step_files, desc="Loading CAD files"):
@@ -420,19 +420,19 @@ class CadToCsg:
         tempTime = datetime.now()
 
         # Select a specific solid range from original STEP solids
-        if self.settings.cellRange:
-            self.MetaList = self.MetaList[self.settings.cellRange[0] : self.settings.cellRange[1]]
+        if self.settings.cell_range:
+            self.MetaList = self.MetaList[self.settings.cell_range[0] : self.settings.cell_range[1]]
 
         # export in STEP format solids read from input file
         # terminate excution
-        if self.settings.exportSolids != "":
+        if self.settings.export_solids != "":
             solids = []
             for m in self.MetaList:
                 if m.IsEnclosure:
                     continue
                 solids.extend(m.Solids)
-            Part.makeCompound(solids).exportStep(self.settings.exportSolids)
-            msg = f"Solids exported in file {self.settings.exportSolids}\n" "GEOUNED Finish. No solid translation performed."
+            Part.makeCompound(solids).exportStep(self.settings.export_solids)
+            msg = f"Solids exported in file {self.settings.export_solids}\n" "GEOUNED Finish. No solid translation performed."
             raise ValueError(msg)
 
         # set up Universe
@@ -441,13 +441,13 @@ class CadToCsg:
         else:
             self.UniverseBox = get_universe(self.MetaList)
 
-        self.Surfaces = UF.SurfacesDict(offset=self.settings.startSurf - 1)
+        self.Surfaces = UF.SurfacesDict(offset=self.settings.start_surface - 1)
 
         warnSolids = []
         warnEnclosures = []
         coneInfo = dict()
         tempTime0 = datetime.now()
-        if not self.options.Facets:
+        if not self.options.facets:
 
             # decompose all solids in elementary solids (convex ones)
             warningSolidList = decompose_solids(
@@ -463,7 +463,7 @@ class CadToCsg:
             )
 
             # decompose Enclosure solids
-            if self.settings.voidGen and EnclosureList:
+            if self.settings.void_gen and EnclosureList:
                 warningEnclosureList = decompose_solids(
                     EnclosureList,
                     self.Surfaces,
@@ -513,7 +513,7 @@ class CadToCsg:
                 self.tolerances,
             )
             # decompose Enclosure solids
-            if self.settings.voidGen and EnclosureList:
+            if self.settings.void_gen and EnclosureList:
                 warningEnclosureList = decompose_solids(
                     EnclosureList,
                     self.Surfaces,
@@ -531,7 +531,7 @@ class CadToCsg:
 
         #  building enclosure solids
 
-        if self.settings.voidGen and EnclosureList:
+        if self.settings.void_gen and EnclosureList:
             for j, m in enumerate(EnclosureList):
                 logger.info(f"Building Enclosure Cell: {j + 1}")
                 cones = Conv.cellDef(
@@ -551,13 +551,13 @@ class CadToCsg:
 
         # void generation phase
         MetaVoid = []
-        if self.settings.voidGen:
+        if self.settings.void_gen:
             logger.info("Build Void")
-            logger.info(self.settings.voidExclude)
-            if not self.settings.voidExclude:
+            logger.info(self.settings.void_exclude)
+            if not self.settings.void_exclude:
                 MetaReduced = self.MetaList
             else:
-                MetaReduced = exclude_cells(self.MetaList, self.settings.voidExclude)
+                MetaReduced = exclude_cells(self.MetaList, self.settings.void_exclude)
 
             if self.MetaList:
                 init = self.MetaList[-1].__id__ - len(EnclosureList)
@@ -598,7 +598,7 @@ class CadToCsg:
 
         logger.info(datetime.now() - startTime)
 
-        cellOffSet = self.settings.startCell - 1
+        cellOffSet = self.settings.start_cell - 1
         if EnclosureList and self.settings.sort_enclosure:
             # sort group solid cell / void cell sequence in each for each enclosure
             # if a solid belong to several enclosure, its definition will be written

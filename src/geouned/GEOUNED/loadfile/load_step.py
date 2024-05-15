@@ -40,11 +40,11 @@ def load_cad(filename, settings, options):
     cad_simplificado_doc = FreeCAD.newDocument("CAD_simplificado")
     Import.insert(filename, "CAD_simplificado")
 
-    if settings.matFile != "":
-        if os.path.exists(settings.matFile):
-            m_dict = extract_materials(settings.matFile)
+    if settings.mat_file != "":
+        if os.path.exists(settings.mat_file):
+            m_dict = extract_materials(settings.mat_file)
         else:
-            logger.info(f"Material definition file {settings.matFile} does not exist.")
+            logger.info(f"Material definition file {settings.mat_file} does not exist.")
             m_dict = {}
     else:
         m_dict = {}
@@ -116,7 +116,7 @@ def load_cad(filename, settings, options):
 
                 # compSolid Diferent solid of the same cell are stored in the same metaObject (compSolid)
                 # enclosures and envelopes are always stored as compound
-                if settings.compSolids or encl_label or envel_label:
+                if settings.comp_solids or encl_label or envel_label:
 
                     init = i_solid
                     end = i_solid + len(elem.Shape.Solids)
@@ -145,8 +145,8 @@ def load_cad(filename, settings, options):
                                 missing_mat.add(mat_label)
                     else:
                         # logger.warning('No material label associated to solid {}.\nDefault material used instead.'.format(comment))
-                        if settings.voidMat:
-                            meta_list[i_solid].set_material(*settings.voidMat)
+                        if settings.void_mat:
+                            meta_list[i_solid].set_material(*settings.void_mat)
                     if tempre_dil:
                         meta_list[i_solid].set_dilution(float(tempre_dil.group("dil")))
 

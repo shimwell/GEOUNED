@@ -384,7 +384,7 @@ def split_solid_fast(solid, surf, box, options):
 
     if box:
         if surf.shape:
-            comsolid = split_bop(solid, [surf.shape], options.splitTolerance, options)
+            comsolid = split_bop(solid, [surf.shape], options.split_tolerance, options)
         else:
             return check_sign(solid, surf), None
 

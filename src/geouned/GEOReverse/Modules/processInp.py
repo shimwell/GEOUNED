@@ -194,7 +194,7 @@ def getRangeData(rawData):
 def setSecOptions(config):
 
     for key in config["Options"].keys():
-        if key == "splitTolerance":
+        if key == "split_tolerance":
             tolerance = config.getfloat("Options", key)
             setattr(Options, key, tolerance)
         else:

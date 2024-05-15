@@ -28,26 +28,26 @@ def setInput(inName, inpDir, outDir):
 
     template = """[Files]
 title    = Input Test
-stepFile = {}
+step_filename = {}
 geometryName = {}
 
 [Parameters]
-compSolids = False
+comp_solids = False
 volCARD    = False
 volSDEF    = True
-voidGen    = True
+void_gen    = True
 dummyMat    = True
-minVoidSize =  100
+min_void_size =  100
 cellSummaryFile = False
 cellCommentFile = False
 debug       = False
 simplify   = full
 
 [Options]
-forceCylinder = False
-splitTolerance = 0
-newSplitPlane = True
-nPlaneReverse = 0
+force_cylinder = False
+split_tolerance = 0
+new_split_plane = True
+n_plane_reverse = 0
 """.format(
         inName, outName
     )

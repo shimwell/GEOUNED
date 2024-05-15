@@ -1,15 +1,15 @@
 {
-    "stepFile": "testing/inputSTEP/BC.stp",
+    "step_filename": "testing/inputSTEP/BC.stp",
     "Options": {
-        "forceCylinder": true 
+        "force_cylinder": true 
     },
     "Tolerances": {
-        "relativePrecision": 2e-6
+        "relative_precision": 2e-6
     },
     "NumericFormat": {
-        "P_abc": "15.7e"
+        "p_abc": "15.7e"
     },
     "Settings": {
-        "matFile": "non default"
+        "mat_file": "non default"
     }
 }

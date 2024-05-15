@@ -25,7 +25,7 @@ from . import basic_functions_part2 as BF
 
 def get_box(comp, options):
     bb = FreeCAD.BoundBox(comp.BoundBox)
-    bb.enlarge(options.enlargeBox)
+    bb.enlarge(options.enlarge_box)
     xMin, yMin, zMin = bb.XMin, bb.YMin, bb.ZMin
     xLength, yLength, zLength = bb.XLength, bb.YLength, bb.ZLength
 
@@ -567,7 +567,7 @@ class SurfacesDict(dict):
                 c.Surf,
                 dtol=tolerances.kne_distance,
                 atol=tolerances.kne_angle,
-                rel_tol=tolerances.relativeTol,
+                rel_tol=tolerances.relative_tol,
             ):
                 cone_added = False
                 index = c.Index
@@ -590,7 +590,7 @@ class SurfacesDict(dict):
                 sph.Surf,
                 s.Surf,
                 tolerances.sph_distance,
-                rel_tol=tolerances.relativeTol,
+                rel_tol=tolerances.relative_tol,
             ):
                 sphere_added = False
                 index = s.Index
@@ -614,7 +614,7 @@ class SurfacesDict(dict):
                 s.Surf,
                 dtol=tolerances.tor_distance,
                 atol=tolerances.tor_angle,
-                rel_tol=tolerances.relativeTol,
+                rel_tol=tolerances.relative_tol,
             ):
                 add_torus = False
                 index = s.Index
@@ -637,8 +637,8 @@ def split_bop(solid, tools, tolerance, options, scale=0.1):
         compSolid = BOPTools.SplitAPI.slice(solid, tools, "Split", tolerance=tolerance)
 
     elif tolerance < 1e-12:
-        if options.scaleUp:
-            tol = 1e-13 if options.splitTolerance == 0 else options.splitTolerance
+        if options.scale_up:
+            tol = 1e-13 if options.split_tolerance == 0 else options.split_tolerance
             compSolid = split_bop(solid, tools, tol / scale, options, 1.0 / scale)
         else:
             compSolid = BOPTools.SplitAPI.slice(solid, tools, "Split", tolerance=tolerance)

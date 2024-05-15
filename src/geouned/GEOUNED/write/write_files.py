@@ -22,7 +22,7 @@ def write_geometry(
     volCARD,
     UCARD,
     dummyMat,
-    stepFile,
+    step_filename,
 ):
 
     supported_mc_codes = ("mcnp", "openmc_xml", "openmc_py", "serpent", "phits")
@@ -47,7 +47,7 @@ def write_geometry(
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if settings.voidGen:
+        if settings.void_gen:
             outSphere = (Surfaces["Sph"][-1].Index, Surfaces["Sph"][-1].Surf.Radius)
         else:
             outSphere = None
@@ -63,7 +63,7 @@ def write_geometry(
             volCARD,
             UCARD,
             dummyMat,
-            stepFile,
+            step_filename,
         )
         MCNPfile.set_sdef((outSphere, outBox))
         MCNPfile.write_input(mcnpFilename)
@@ -89,7 +89,7 @@ def write_geometry(
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if settings.voidGen:
+        if settings.void_gen:
             outSphere = (Surfaces["Sph"][-1].Index, Surfaces["Sph"][-1].Surf.Radius)
         else:
             outSphere = None
@@ -105,7 +105,7 @@ def write_geometry(
             volCARD,
             UCARD,
             dummyMat,
-            stepFile,
+            step_filename,
         )
         # Serpentfile.set_sdef((outSphere,outBox))
         Serpentfile.write_input(serpentFilename)
@@ -120,7 +120,7 @@ def write_geometry(
             UniverseBox.ZMin,
             UniverseBox.ZMax,
         )
-        if settings.voidGen:
+        if settings.void_gen:
             PHITS_outSphere = (
                 Surfaces["Sph"][-1].Index,
                 Surfaces["Sph"][-1].Surf.Radius,
@@ -139,10 +139,10 @@ def write_geometry(
             volCARD,
             UCARD,
             dummyMat,
-            stepFile,
-            matFile=settings.matFile,
-            voidMat=settings.voidMat,
-            startCell=settings.startCell,
+            step_filename,
+            mat_file=settings.mat_file,
+            void_mat=settings.void_mat,
+            start_cell=settings.start_cell,
         )
         # PHITSfile.setSDEF_PHITS((PHITS_outSphere,PHITS_outBox))
         PHITSfile.write_phits(phitsFilename)

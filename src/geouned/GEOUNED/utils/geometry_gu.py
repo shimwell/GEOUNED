@@ -138,7 +138,7 @@ class SolidGu:
                     self.Faces[j].Surface,
                     dtol=self.tolerances.tor_distance,
                     atol=self.tolerances.tor_angle,
-                    rel_tol=self.tolerances.relativeTol,
+                    rel_tol=self.tolerances.relative_tol,
                 ):
                     current.append(j)
             for c in current:
@@ -207,17 +207,17 @@ class SolidGu:
         params.sort()
         V0 = params[0][0]
         V1 = params[-1][1]
-        if arcLength >= two_pi * (1.0 - self.tolerances.relativePrecision):
+        if arcLength >= two_pi * (1.0 - self.tolerances.relative_precision):
             mergedParams = (True, (V0, V0 + two_pi))
         else:
-            if is_same_value(V0, 0.0, self.tolerances.relativePrecision) and is_same_value(
-                V1, two_pi, self.tolerances.relativePrecision
+            if is_same_value(V0, 0.0, self.tolerances.relative_precision) and is_same_value(
+                V1, two_pi, self.tolerances.relative_precision
             ):
                 for i in range(len(params) - 1):
                     if not is_same_value(
                         params[i][1],
                         params[i + 1][0],
-                        self.tolerances.relativePrecision,
+                        self.tolerances.relative_precision,
                     ):
                         break
                 v_min = params[i + 1][0] - two_pi

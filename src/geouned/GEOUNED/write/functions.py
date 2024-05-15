@@ -247,14 +247,14 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
     mcnp_def = ""
 
     if Type == "Plane":
-        if surf.pointDef and options.prnt3PPlane:
+        if surf.pointDef and options.prnt_3p_plane:
             P1 = surf.Points[0]
             P2 = surf.Points[1]
             P3 = surf.Points[2]
             mcnp_def = """{:<6d} P   {P1[0]:{d}} {P1[1]:{d}} {P1[2]:{d}} 
            {P2[0]:{d}} {P2[1]:{d}} {P2[2]:{d}}
            {P3[0]:{d}} {P3[1]:{d}} {P3[2]:{d}}""".format(
-                id, P1=P1 / 10, P2=P2 / 10, P3=P3 / 10, d=numeric_format.P_d
+                id, P1=P1 / 10, P2=P2 / 10, P3=P3 / 10, d=numeric_format.p_d
             )
         else:
             A = surf.Axis.x
@@ -262,11 +262,11 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
             C = surf.Axis.z
             D = surf.Axis.dot(surf.Position)
             if surf.Axis.isEqual(FreeCAD.Vector(1, 0, 0), tolerances.pln_angle):
-                mcnp_def = "{:<6d} PX  {:{x}}".format(id, D / 10.0, x=numeric_format.P_xyz)
+                mcnp_def = "{:<6d} PX  {:{x}}".format(id, D / 10.0, x=numeric_format.p_xyz)
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 1, 0), tolerances.pln_angle):
-                mcnp_def = "{:<6d} PY  {:{y}}".format(id, D / 10.0, y=numeric_format.P_xyz)
+                mcnp_def = "{:<6d} PY  {:{y}}".format(id, D / 10.0, y=numeric_format.p_xyz)
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 0, 1), tolerances.pln_angle):
-                mcnp_def = "{:<6d} PZ  {:{z}}".format(id, D / 10.0, z=numeric_format.P_xyz)
+                mcnp_def = "{:<6d} PZ  {:{z}}".format(id, D / 10.0, z=numeric_format.p_xyz)
             else:
                 mcnp_def = "{:<6d} P   {:{abc}} {:{abc}} {:{abc}} {:{d}}".format(
                     id,
@@ -274,8 +274,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     B,
                     C,
                     D / 10.0,
-                    abc=numeric_format.P_abc,
-                    d=numeric_format.P_d,
+                    abc=numeric_format.p_abc,
+                    d=numeric_format.p_d,
                 )
 
     elif Type == "Cylinder":
@@ -285,24 +285,24 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
         rad = surf.Radius * 0.1
         if is_parallel(Dir, FreeCAD.Vector(1, 0, 0), tolerances.angle):
             if Pos.y == 0.0 and Pos.z == 0.0:
-                mcnp_def = "{:<6d} CX  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                mcnp_def = "{:<6d} CX  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 mcnp_def = "{:<6d} C/X  {:{yz}} {:{yz}} {:{r}}".format(
-                    id, Pos.y, Pos.z, rad, yz=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.y, Pos.z, rad, yz=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerances.angle):
             if Pos.x == 0.0 and Pos.z == 0.0:
-                mcnp_def = "{:<6d} CY  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                mcnp_def = "{:<6d} CY  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 mcnp_def = "{:<6d} C/Y  {:{xz}} {:{xz}} {:{r}}".format(
-                    id, Pos.x, Pos.z, rad, xz=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.x, Pos.z, rad, xz=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerances.angle):
             if Pos.y == 0.0 and Pos.x == 0.0:
-                mcnp_def = "{:<6d} CZ  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                mcnp_def = "{:<6d} CZ  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 mcnp_def = "{:<6d} C/Z  {:{xy}} {:{xy}} {:{r}}".format(
-                    id, Pos.x, Pos.y, rad, xy=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.x, Pos.y, rad, xy=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         else:
             # Is not still working fine
@@ -314,9 +314,9 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
           {v[9]:{j}} """.format(
                 id,
                 v=Q,
-                aTof=numeric_format.GQ_1to6,
-                gToi=numeric_format.GQ_7to9,
-                j=numeric_format.GQ_10,
+                aTof=numeric_format.gq_1_to_6,
+                gToi=numeric_format.gq_7_to_9,
+                j=numeric_format.gq_10,
             )
 
         # Si se quiere rcc en vez de Q form
@@ -348,8 +348,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.x,
                     tan**2,
                     sheet,
-                    x=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    x=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 mcnp_def = "{:<6d} K/X  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -359,8 +359,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         elif is_parallel(Dir, Y_dir, tolerances.angle):
             sheet = 1
@@ -372,8 +372,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.y,
                     tan**2,
                     sheet,
-                    y=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    y=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 mcnp_def = "{:<6d} K/Y  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -383,8 +383,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         elif is_parallel(Dir, Z_dir, tolerances.angle):
             sheet = 1
@@ -396,8 +396,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    z=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    z=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 mcnp_def = "{:<6d} K/Z  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -407,8 +407,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         else:
             Q = q_form.q_form_cone(Dir, Apex, tan)
@@ -419,9 +419,9 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
           {v[9]:{j}} """.format(
                 id,
                 v=Q,
-                aTof=numeric_format.GQ_1to6,
-                gToi=numeric_format.GQ_7to9,
-                j=numeric_format.GQ_10,
+                aTof=numeric_format.gq_1_to_6,
+                gToi=numeric_format.gq_7_to_9,
+                j=numeric_format.gq_10,
             )
 
     elif Type == "Sphere":
@@ -429,7 +429,7 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
         rad = surf.Radius * 0.1
         pnt = surf.Center * 0.1
         if pnt.isEqual(FreeCAD.Vector(0, 0, 0), tolerances.sph_distance):
-            mcnp_def = "{:<6d} SO  {:{r}}".format(id, rad, r=numeric_format.S_r)
+            mcnp_def = "{:<6d} SO  {:{r}}".format(id, rad, r=numeric_format.s_r)
         else:
             mcnp_def = "{:<6d} S  {:{xyz}} {:{xyz}} {:{xyz}} {:{r}}".format(
                 id,
@@ -437,8 +437,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                 pnt.y,
                 pnt.z,
                 rad,
-                xyz=numeric_format.S_xyz,
-                r=numeric_format.S_r,
+                xyz=numeric_format.s_xyz,
+                r=numeric_format.s_r,
             )
 
     elif Type == "Torus":
@@ -458,8 +458,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerances.angle):
             mcnp_def = """\
@@ -472,8 +472,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerances.angle):
             mcnp_def = """\
@@ -486,8 +486,8 @@ def mcnp_surface(id, Type, surf, options, tolerances, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
 
     return trim(mcnp_def, 80)
@@ -502,7 +502,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         if surf.Axis.isEqual(FreeCAD.Vector(1, 0, 0), tolerances.pln_angle):
             if out_xml:
                 omc_surf = "x-plane"
-                coeffs = "{:{x}}".format(D, x=numeric_format.P_xyz)
+                coeffs = "{:{x}}".format(D, x=numeric_format.p_xyz)
             else:
                 omc_surf = "XPlane"
                 coeffs = f"x0={D}"
@@ -510,7 +510,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         elif surf.Axis.isEqual(FreeCAD.Vector(0, 1, 0), tolerances.pln_angle):
             if out_xml:
                 omc_surf = "y-plane"
-                coeffs = "{:{x}}".format(D, x=numeric_format.P_xyz)
+                coeffs = "{:{x}}".format(D, x=numeric_format.p_xyz)
             else:
                 omc_surf = "YPlane"
                 coeffs = f"y0={D}"
@@ -518,7 +518,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         elif surf.Axis.isEqual(FreeCAD.Vector(0, 0, 1), tolerances.pln_angle):
             if out_xml:
                 omc_surf = "z-plane"
-                coeffs = "{:{x}}".format(D, x=numeric_format.P_xyz)
+                coeffs = "{:{x}}".format(D, x=numeric_format.p_xyz)
             else:
                 omc_surf = "ZPlane"
                 coeffs = f"z0={D}"
@@ -526,7 +526,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         else:
             if out_xml:
                 omc_surf = "plane"
-                coeffs = "{:{abc}} {:{abc}} {:{abc}} {:{d}}".format(A, B, C, D, abc=numeric_format.P_abc, d=numeric_format.P_d)
+                coeffs = "{:{abc}} {:{abc}} {:{abc}} {:{d}}".format(A, B, C, D, abc=numeric_format.p_abc, d=numeric_format.p_d)
             else:
                 omc_surf = "Plane"
                 coeffs = f"a={A},b={B},c={C},d={D}"
@@ -540,7 +540,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         if is_parallel(Dir, FreeCAD.Vector(1, 0, 0), tolerances.angle):
             if out_xml:
                 omc_surf = "x-cylinder"
-                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.y, pos.z, Rad, xy=numeric_format.C_xyz, r=numeric_format.C_r)
+                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.y, pos.z, Rad, xy=numeric_format.c_xyz, r=numeric_format.c_r)
             else:
                 omc_surf = "XCylinder"
                 coeffs = f"y0={pos.y},z0={pos.z},r={Rad}"
@@ -548,7 +548,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerances.angle):
             if out_xml:
                 omc_surf = "y-cylinder"
-                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.x, pos.z, Rad, xy=numeric_format.C_xyz, r=numeric_format.C_r)
+                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.x, pos.z, Rad, xy=numeric_format.c_xyz, r=numeric_format.c_r)
             else:
                 omc_surf = "YCylinder"
                 coeffs = f"x0={pos.x},z0={pos.z},r={Rad}"
@@ -556,7 +556,7 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerances.angle):
             if out_xml:
                 omc_surf = "z-cylinder"
-                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.x, pos.y, Rad, xy=numeric_format.C_xyz, r=numeric_format.C_r)
+                coeffs = "{:{xy}} {:{xy}} {:{r}}".format(pos.x, pos.y, Rad, xy=numeric_format.c_xyz, r=numeric_format.c_r)
             else:
                 omc_surf = "ZCylinder"
                 coeffs = f"x0={pos.x},y0={pos.y},r={Rad}"
@@ -567,9 +567,9 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                 Q = q_form.q_form_cyl(Dir, pos, Rad)
                 coeffs = "{v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}} {v[3]:{aTof}} {v[4]:{aTof}} {v[5]:{aTof}} {v[6]:{gToi}} {v[7]:{gToi}} {v[8]:{gToi}} {v[9]:{j}}".format(
                     v=Q,
-                    aTof=numeric_format.GQ_1to6,
-                    gToi=numeric_format.GQ_7to9,
-                    j=numeric_format.GQ_10,
+                    aTof=numeric_format.gq_1_to_6,
+                    gToi=numeric_format.gq_7_to_9,
+                    j=numeric_format.gq_10,
                 )
             else:
                 if quadricForm:
@@ -601,8 +601,8 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                     Apex.y,
                     Apex.z,
                     tan2,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 omc_surf = "XCone"
@@ -616,8 +616,8 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                     Apex.y,
                     Apex.z,
                     tan2,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 omc_surf = "YCone"
@@ -631,8 +631,8 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                     Apex.y,
                     Apex.z,
                     tan2,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 omc_surf = "ZCone"
@@ -644,9 +644,9 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                 Q = q_form.q_form_cone(Dir, Apex, tan)
                 coeffs = "{v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}} {v[3]:{aTof}} {v[4]:{aTof}} {v[5]:{aTof}} {v[6]:{gToi}} {v[7]:{gToi}} {v[8]:{gToi}} {v[9]:{j}}".format(
                     v=Q,
-                    aTof=numeric_format.GQ_1to6,
-                    gToi=numeric_format.GQ_7to9,
-                    j=numeric_format.GQ_10,
+                    aTof=numeric_format.gq_1_to_6,
+                    gToi=numeric_format.gq_7_to_9,
+                    j=numeric_format.gq_10,
                 )
             else:
                 if quadricForm:
@@ -671,8 +671,8 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                 Center.y,
                 Center.z,
                 Rad,
-                xyz=numeric_format.S_xyz,
-                r=numeric_format.S_r,
+                xyz=numeric_format.s_xyz,
+                r=numeric_format.s_r,
             )
         else:
             omc_surf = "Sphere"
@@ -692,8 +692,8 @@ def open_mc_surface(Type, surf, tolerances, numeric_format, out_xml=True, quadri
                 majRad,
                 minRad,
                 minRad,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
         else:
             coeffs = "x0={},y0={},z0={},r={},r1={},r2={}".format(Center.x, Center.y, Center.z, majRad, minRad, minRad)
@@ -716,15 +716,15 @@ def serpent_surface(id, Type, surf, options, tolerance, numeric_format):
     serpent_def = ""
 
     if Type == "Plane":
-        if surf.pointDef and options.prnt3PPlane:
+        if surf.pointDef and options.prnt_3p_plane:
             P1 = surf.Points[0]
             P2 = surf.Points[1]
             P3 = surf.Points[2]
-            serpent_def = f"surf {id} plane {P1.x/10:{numeric_format.P_d}} {P1.y/10:{numeric_format.P_d}} {P1.z/10:{numeric_format.P_d}}\n"
+            serpent_def = f"surf {id} plane {P1.x/10:{numeric_format.p_d}} {P1.y/10:{numeric_format.p_d}} {P1.z/10:{numeric_format.p_d}}\n"
             serpent_def += (
-                f"      {P2.x/10:{numeric_format.P_d}} {P2.y/10:{numeric_format.P_d}} {P2.z/10:{numeric_format.P_d}}\n"
+                f"      {P2.x/10:{numeric_format.p_d}} {P2.y/10:{numeric_format.p_d}} {P2.z/10:{numeric_format.p_d}}\n"
             )
-            serpent_def += f"      {P3.x/10:{numeric_format.P_d}} {P3.y/10:{numeric_format.P_d}} {P3.z/10:{numeric_format.P_d}}"
+            serpent_def += f"      {P3.x/10:{numeric_format.p_d}} {P3.y/10:{numeric_format.p_d}} {P3.z/10:{numeric_format.p_d}}"
 
         else:
             A = surf.Axis.x
@@ -732,13 +732,13 @@ def serpent_surface(id, Type, surf, options, tolerance, numeric_format):
             C = surf.Axis.z
             D = surf.Axis.dot(surf.Position)
             if surf.Axis.isEqual(FreeCAD.Vector(1, 0, 0), tolerance.pln_angle):
-                serpent_def = f"surf {id} px {D/10:{numeric_format.P_xyz}}"
+                serpent_def = f"surf {id} px {D/10:{numeric_format.p_xyz}}"
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 1, 0), tolerance.pln_angle):
-                serpent_def = f"surf {id} py {D/10:{numeric_format.P_xyz}}"
+                serpent_def = f"surf {id} py {D/10:{numeric_format.p_xyz}}"
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 0, 1), tolerance.pln_angle):
-                serpent_def = f"surf {id} pz {D/10:{numeric_format.P_xyz}}"
+                serpent_def = f"surf {id} pz {D/10:{numeric_format.p_xyz}}"
             else:
-                serpent_def = f"surf {id} plane {A:{numeric_format.P_d}} {B:{numeric_format.P_d}} {C:{numeric_format.P_d}} {D/10:{numeric_format.P_d}}"
+                serpent_def = f"surf {id} plane {A:{numeric_format.p_d}} {B:{numeric_format.p_d}} {C:{numeric_format.p_d}} {D/10:{numeric_format.p_d}}"
 
     elif Type == "Cylinder":
         Dir = surf.Axis
@@ -747,14 +747,14 @@ def serpent_surface(id, Type, surf, options, tolerance, numeric_format):
         rad = surf.Radius * 0.1
         if is_parallel(Dir, FreeCAD.Vector(1, 0, 0), tolerance.angle):
             serpent_def = (
-                f"surf {id} cylx {Pos.y:{numeric_format.C_xyz}} {Pos.z:{numeric_format.C_xyz}} {rad:{numeric_format.C_r}}"
+                f"surf {id} cylx {Pos.y:{numeric_format.c_xyz}} {Pos.z:{numeric_format.c_xyz}} {rad:{numeric_format.c_r}}"
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerance.angle):
             serpent_def = (
-                f"surf {id} cyly {Pos.x:{numeric_format.C_xyz}} {Pos.z:{numeric_format.C_xyz}} {rad:{numeric_format.C_r}}"
+                f"surf {id} cyly {Pos.x:{numeric_format.c_xyz}} {Pos.z:{numeric_format.c_xyz}} {rad:{numeric_format.c_r}}"
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerance.angle):
-            serpent_def = f"surf {id} cylz {rad:{numeric_format.C_r}}"
+            serpent_def = f"surf {id} cylz {rad:{numeric_format.c_r}}"
         else:
             # Is not still working fine
             Q = q_form.q_form_cyl(Dir, Pos, rad)
@@ -765,9 +765,9 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
           {v[9]:{j}} """.format(
                 id,
                 v=Q,
-                aTof=numeric_format.GQ_1to6,
-                gToi=numeric_format.GQ_7to9,
-                j=numeric_format.GQ_10,
+                aTof=numeric_format.gq_1_to_6,
+                gToi=numeric_format.gq_7_to_9,
+                j=numeric_format.gq_10,
             )
 
     elif Type == "Cone":
@@ -792,8 +792,8 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
                 Apex.z,
                 tan**2,
                 sheet,
-                xyz=numeric_format.K_xyz,
-                t2=numeric_format.K_tan2,
+                xyz=numeric_format.k_xyz,
+                t2=numeric_format.k_tan2,
             )
         elif is_parallel(Dir, Y_dir, tolerance.angle):
             sheet = 1
@@ -806,8 +806,8 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
                 Apex.z,
                 tan**2,
                 sheet,
-                xyz=numeric_format.K_xyz,
-                t2=numeric_format.K_tan2,
+                xyz=numeric_format.k_xyz,
+                t2=numeric_format.k_tan2,
             )
         elif is_parallel(Dir, Z_dir, tolerance.angle):
             sheet = 1
@@ -820,8 +820,8 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
                 Apex.z,
                 tan**2,
                 sheet,
-                xyz=numeric_format.K_xyz,
-                t2=numeric_format.K_tan2,
+                xyz=numeric_format.k_xyz,
+                t2=numeric_format.k_tan2,
             )
         else:
             Q = q_form.q_form_cone(Dir, Apex, tan)
@@ -830,7 +830,7 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
         rad = surf.Radius * 0.1
         pnt = surf.Center * 0.1
         # Serpent has only explicit spheres at the origin
-        serpent_def = f"surf {id} sph {pnt.x:{numeric_format.S_xyz}} {pnt.y:{numeric_format.S_xyz}} {pnt.z:{numeric_format.S_xyz}} {rad:{numeric_format.S_r}}"
+        serpent_def = f"surf {id} sph {pnt.x:{numeric_format.s_xyz}} {pnt.y:{numeric_format.s_xyz}} {pnt.z:{numeric_format.s_xyz}} {rad:{numeric_format.s_r}}"
 
     elif Type == "Torus":
         Dir = surf.Axis
@@ -840,19 +840,19 @@ surf quadratic  {v[0]:{aTof}} {v[1]:{aTof}} {v[2]:{aTof}}
         radMin = surf.MinorRadius * 0.1
         if is_parallel(Dir, FreeCAD.Vector(1, 0, 0), tolerance.angle):
             serpent_def = (
-                f"surf {id} torx {Pos.x:{numeric_format.T_xyz}} {Pos.y:{numeric_format.T_xyz}} {Pos.z:{numeric_format.T_xyz}}\n"
+                f"surf {id} torx {Pos.x:{numeric_format.t_xyz}} {Pos.y:{numeric_format.t_xyz}} {Pos.z:{numeric_format.t_xyz}}\n"
             )
-            serpent_def += f"      {radMaj:{numeric_format.T_r}} {radMin:{numeric_format.T_r}} {radMin:{numeric_format.T_r}}"
+            serpent_def += f"      {radMaj:{numeric_format.t_r}} {radMin:{numeric_format.t_r}} {radMin:{numeric_format.t_r}}"
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerance.angle):
             serpent_def = (
-                f"surf {id} tory {Pos.x:{numeric_format.T_xyz}} {Pos.y:{numeric_format.T_xyz}} {Pos.z:{numeric_format.T_xyz}}\n"
+                f"surf {id} tory {Pos.x:{numeric_format.t_xyz}} {Pos.y:{numeric_format.t_xyz}} {Pos.z:{numeric_format.t_xyz}}\n"
             )
-            serpent_def += f"      {radMaj:{numeric_format.T_r}} {radMin:{numeric_format.T_r}} {radMin:{numeric_format.T_r}}"
+            serpent_def += f"      {radMaj:{numeric_format.t_r}} {radMin:{numeric_format.t_r}} {radMin:{numeric_format.t_r}}"
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerance.angle):
             serpent_def = (
-                f"surf {id} torz {Pos.x:{numeric_format.T_xyz}} {Pos.y:{numeric_format.T_xyz}} {Pos.z:{numeric_format.T_xyz}}\n"
+                f"surf {id} torz {Pos.x:{numeric_format.t_xyz}} {Pos.y:{numeric_format.t_xyz}} {Pos.z:{numeric_format.t_xyz}}\n"
             )
-            serpent_def += f"      {radMaj:{numeric_format.T_r}} {radMin:{numeric_format.T_r}} {radMin:{numeric_format.T_r}}"
+            serpent_def += f"      {radMaj:{numeric_format.t_r}} {radMin:{numeric_format.t_r}} {radMin:{numeric_format.t_r}}"
 
     return serpent_def
 
@@ -861,14 +861,14 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
     phits_def = ""
 
     if Type == "Plane":
-        if surf.pointDef and options.prnt3PPlane:
+        if surf.pointDef and options.prnt_3p_plane:
             P1 = surf.Points[0]
             P2 = surf.Points[1]
             P3 = surf.Points[2]
             phits_def = """{:<6d} P   {P1[0]:{d}} {P1[1]:{d}} {P1[2]:{d}} 
            {P2[0]:{d}} {P2[1]:{d}} {P2[2]:{d}}
            {P3[0]:{d}} {P3[1]:{d}} {P3[2]:{d}}""".format(
-                id, P1=P1 / 10, P2=P2 / 10, P3=P3 / 10, d=numeric_format.P_d
+                id, P1=P1 / 10, P2=P2 / 10, P3=P3 / 10, d=numeric_format.p_d
             )
         else:
             A = surf.Axis.x
@@ -876,11 +876,11 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
             C = surf.Axis.z
             D = surf.Axis.dot(surf.Position)
             if surf.Axis.isEqual(FreeCAD.Vector(1, 0, 0), tolerance.pln_angle):
-                phits_def = "{:<6d} PX  {:{x}}".format(id, D / 10.0, x=numeric_format.P_xyz)
+                phits_def = "{:<6d} PX  {:{x}}".format(id, D / 10.0, x=numeric_format.p_xyz)
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 1, 0), tolerance.pln_angle):
-                phits_def = "{:<6d} PY  {:{y}}".format(id, D / 10.0, y=numeric_format.P_xyz)
+                phits_def = "{:<6d} PY  {:{y}}".format(id, D / 10.0, y=numeric_format.p_xyz)
             elif surf.Axis.isEqual(FreeCAD.Vector(0, 0, 1), tolerance.pln_angle):
-                phits_def = "{:<6d} PZ  {:{z}}".format(id, D / 10.0, z=numeric_format.P_xyz)
+                phits_def = "{:<6d} PZ  {:{z}}".format(id, D / 10.0, z=numeric_format.p_xyz)
             else:
                 phits_def = "{:<6d} P   {:{abc}} {:{abc}} {:{abc}} {:{d}}".format(
                     id,
@@ -888,8 +888,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     B,
                     C,
                     D / 10.0,
-                    abc=numeric_format.P_abc,
-                    d=numeric_format.P_d,
+                    abc=numeric_format.p_abc,
+                    d=numeric_format.p_d,
                 )
 
     elif Type == "Cylinder":
@@ -899,24 +899,24 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
         rad = surf.Radius * 0.1
         if is_parallel(Dir, FreeCAD.Vector(1, 0, 0), tolerance.angle):
             if Pos.y == 0.0 and Pos.z == 0.0:
-                phits_def = "{:<6d} CX  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                phits_def = "{:<6d} CX  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 phits_def = "{:<6d} C/X  {:{yz}} {:{yz}} {:{r}}".format(
-                    id, Pos.y, Pos.z, rad, yz=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.y, Pos.z, rad, yz=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerance.angle):
             if Pos.x == 0.0 and Pos.z == 0.0:
-                phits_def = "{:<6d} CY  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                phits_def = "{:<6d} CY  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 phits_def = "{:<6d} C/Y  {:{xz}} {:{xz}} {:{r}}".format(
-                    id, Pos.x, Pos.z, rad, xz=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.x, Pos.z, rad, xz=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerance.angle):
             if Pos.y == 0.0 and Pos.x == 0.0:
-                phits_def = "{:<6d} CZ  {:{r}}".format(id, rad, r=numeric_format.C_r)
+                phits_def = "{:<6d} CZ  {:{r}}".format(id, rad, r=numeric_format.c_r)
             else:
                 phits_def = "{:<6d} C/Z  {:{xy}} {:{xy}} {:{r}}".format(
-                    id, Pos.x, Pos.y, rad, xy=numeric_format.C_xyz, r=numeric_format.C_r
+                    id, Pos.x, Pos.y, rad, xy=numeric_format.c_xyz, r=numeric_format.c_r
                 )
         else:
             # Is not still working fine
@@ -928,9 +928,9 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
           {v[9]:{j}} """.format(
                 id,
                 v=Q,
-                aTof=numeric_format.GQ_1to6,
-                gToi=numeric_format.GQ_7to9,
-                j=numeric_format.GQ_10,
+                aTof=numeric_format.gq_1_to_6,
+                gToi=numeric_format.gq_7_to_9,
+                j=numeric_format.gq_10,
             )
 
         # Si se quiere rcc en vez de Q form
@@ -962,8 +962,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.x,
                     tan**2,
                     sheet,
-                    x=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    x=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 phits_def = "{:<6d} K/X  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -973,8 +973,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         elif is_parallel(Dir, Y_dir, tolerance.angle):
             sheet = 1
@@ -986,8 +986,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.y,
                     tan**2,
                     sheet,
-                    y=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    y=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 phits_def = "{:<6d} K/Y  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -997,8 +997,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         elif is_parallel(Dir, Z_dir, tolerance.angle):
             sheet = 1
@@ -1010,8 +1010,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    z=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    z=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
             else:
                 phits_def = "{:<6d} K/Z  {:{xyz}} {:{xyz}} {:{xyz}} {:{t2}} {}".format(
@@ -1021,8 +1021,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                     Apex.z,
                     tan**2,
                     sheet,
-                    xyz=numeric_format.K_xyz,
-                    t2=numeric_format.K_tan2,
+                    xyz=numeric_format.k_xyz,
+                    t2=numeric_format.k_tan2,
                 )
         else:
             Q = q_form.q_form_cone(Dir, Apex, tan)
@@ -1033,9 +1033,9 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
           {v[9]:{j}} """.format(
                 id,
                 v=Q,
-                aTof=numeric_format.GQ_1to6,
-                gToi=numeric_format.GQ_7to9,
-                j=numeric_format.GQ_10,
+                aTof=numeric_format.gq_1_to_6,
+                gToi=numeric_format.gq_7_to_9,
+                j=numeric_format.gq_10,
             )
 
     elif Type == "Sphere":
@@ -1043,7 +1043,7 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
         rad = surf.Radius * 0.1
         pnt = surf.Center * 0.1
         if pnt.isEqual(FreeCAD.Vector(0, 0, 0), tolerance.sph_distance):
-            phits_def = "{:<6d} SO  {:{r}}".format(id, rad, r=numeric_format.S_r)
+            phits_def = "{:<6d} SO  {:{r}}".format(id, rad, r=numeric_format.s_r)
         else:
             phits_def = "{:<6d} S  {:{xyz}} {:{xyz}} {:{xyz}} {:{r}}".format(
                 id,
@@ -1051,8 +1051,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                 pnt.y,
                 pnt.z,
                 rad,
-                xyz=numeric_format.S_xyz,
-                r=numeric_format.S_r,
+                xyz=numeric_format.s_xyz,
+                r=numeric_format.s_r,
             )
 
     elif Type == "Torus":
@@ -1072,8 +1072,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 1, 0), tolerance.angle):
             phits_def = """\
@@ -1086,8 +1086,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
         elif is_parallel(Dir, FreeCAD.Vector(0, 0, 1), tolerance.angle):
             phits_def = """\
@@ -1100,8 +1100,8 @@ def phits_surface(id, Type, surf, options, tolerance, numeric_format):
                 radMaj,
                 radMin,
                 radMin,
-                xyz=numeric_format.T_xyz,
-                r=numeric_format.T_r,
+                xyz=numeric_format.t_xyz,
+                r=numeric_format.t_r,
             )
 
     return trim(phits_def, 80)

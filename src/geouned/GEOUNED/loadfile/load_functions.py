@@ -10,8 +10,8 @@ logger = logging.getLogger("general_logger")
 
 def get_label(label, options):
     """Deleting the last word of the string if this is a number
-    Only if the option delLastNumber is True"""
-    if not options.delLastNumber:
+    Only if the option del_last_number is True"""
+    if not options.del_last_number:
         return label
     wrd = label.split()
     try:

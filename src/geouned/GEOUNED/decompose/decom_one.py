@@ -84,7 +84,7 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
 
     if len(planes) == 0:
         return [solid]
-    if len(planes[-1]) < options.nPlaneReverse:
+    if len(planes[-1]) < options.n_plane_reverse:
         planes.reverse()
 
     cut = False
@@ -98,7 +98,7 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
             tools = (pp[0].shape,)
 
         try:
-            comsolid = UF.split_bop(solid, tools, options.splitTolerance, options)
+            comsolid = UF.split_bop(solid, tools, options.split_tolerance, options)
         except:
             comsolid = solid
         if len(comsolid.Solids) > 1:
@@ -111,7 +111,7 @@ def cut_full_cylinder(solid, options, tolerances, numeric_format):
 
     tool = (surfaces["Cyl"][0].shape,)
     try:
-        comsolid = UF.split_bop(solid, tool, options.splitTolerance, options)
+        comsolid = UF.split_bop(solid, tool, options.split_tolerance, options)
     except:
         comsolid = solid
 
@@ -746,9 +746,9 @@ def split_planes_org(Solids, universe_box, options, tolerances, numeric_format):
                 for p in Planes[imin]:
                     p.build_surface()
                     Tools.append(p.shape)
-                comsolid = UF.split_bop(base, Tools, options.splitTolerance, options)
+                comsolid = UF.split_bop(base, Tools, options.split_tolerance, options)
                 if len(comsolid.Solids) == 1:
-                    if abs(comsolid.Solids[0].Volume - base.Volume) / base.Volume > tolerances.relativePrecision:
+                    if abs(comsolid.Solids[0].Volume - base.Volume) / base.Volume > tolerances.relative_precision:
                         logger.warning(
                             f"Part of the split object is missing original base is used instead {abs(comsolid.Solids[0].Volume - base.Volume) / base.Volume} {comsolid.Solids[0].Volume} {base.Volume}"
                         )
@@ -860,14 +860,14 @@ def split_p_planes_new(solid, universe_box, options, tolerances, numeric_format)
 
     if len(Planes) == 0:
         return [solid]
-    if len(Planes[-1]) < options.nPlaneReverse:
+    if len(Planes[-1]) < options.n_plane_reverse:
         Planes.reverse()
     out_solid = [solid]
     for pp in Planes:
         for p in pp:
             p.build_surface()
         tools = tuple(p.shape for p in pp)
-        comsolid = UF.split_bop(solid, tools, options.splitTolerance, options)
+        comsolid = UF.split_bop(solid, tools, options.split_tolerance, options)
 
         if len(comsolid.Solids) > 1:
             out_solid = comsolid.Solids
@@ -883,7 +883,7 @@ def split_p_planes_org(solid, universe_box, options, tolerances, numeric_format)
     out_solid = [solid]
     for p in SPlanes["P"]:
         p.build_surface()
-        comsolid = UF.split_bop(solid, [p.shape], options.splitTolerance, options)
+        comsolid = UF.split_bop(solid, [p.shape], options.split_tolerance, options)
         if len(comsolid.Solids) > 1:
             out_solid = comsolid.Solids
             break
@@ -914,7 +914,7 @@ def split_2nd_order(Solids, universe_box, options, tolerances, numeric_format):
                     for s in Surfaces[kind]:
                         s.build_surface()
                         try:
-                            comsolid = UF.split_bop(solid, [s.shape], options.splitTolerance, options)
+                            comsolid = UF.split_bop(solid, [s.shape], options.split_tolerance, options)
                             solidsInCom = []
                             for s in comsolid.Solids:
                                 if s.Volume > 1e-9:
@@ -970,7 +970,7 @@ def split_2nd_o_plane(solid, options, tolerances):
         return [solid], err
 
     for p in planes:
-        comsolid = UF.split_bop(solid, [p], options.splitTolerance, options)
+        comsolid = UF.split_bop(solid, [p], options.split_tolerance, options)
         if not comsolid.Solids:
             comsolid = solid
             continue

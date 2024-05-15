@@ -13,7 +13,7 @@ The example makes use of default  attributes.
 .. code-block:: python
 
     import geouned
-    geo = geouned.CadToCsg(stepFile='cuboid.stp')
+    geo = geouned.CadToCsg(step_filename='cuboid.stp')
     geo.start()
     geo.export_csg()
 
@@ -25,40 +25,40 @@ The following example shows a usage with every attributes specified.
     import geouned
 
     my_options = geouned.Options(
-        forceCylinder=False,
-        newSplitPlane=True,
-        delLastNumber=False,
-        enlargeBox=2,
-        nPlaneReverse=0,
-        splitTolerance=0,
-        scaleUp=True,
-        quadricPY=False,
-        Facets=False,
-        prnt3PPlane=False,
+        force_cylinder=False,
+        new_split_plane=True,
+        del_last_number=False,
+        enlarge_box=2,
+        n_plane_reverse=0,
+        split_tolerance=0,
+        scale_up=True,
+        quadric_py=False,
+        facets=False,
+        prnt_3p_plane=False,
         forceNoOverlap=False,
     )
 
     my_settings = geouned.Settings(
-        matFile="",
-        voidGen=True,
+        mat_file="",
+        void_gen=True,
         debug=False,
-        compSolids=True,
+        comp_solids=True,
         simplify="no",
-        cellRange=[],
-        exportSolids="",
-        minVoidSize=200.0,
-        maxSurf=50,
-        maxBracket=30,
-        voidMat=[],
-        voidExclude=[],
-        startCell=1,
-        startSurf=1,
+        cell_range=[],
+        export_solids="",
+        min_void_size=200.0,
+        max_surf=50,
+        max_bracket=30,
+        void_mat=[],
+        void_exclude=[],
+        start_cell=1,
+        start_surface=1,
         sort_enclosure=False,
     )
 
     my_tolerances = geouned.Tolerances(
-        relativeTol=False,
-        relativePrecision=0.000001,
+        relative_tol=False,
+        relative_precision=0.000001,
         value=0.000001,
         distance=0.0001,
         angle=0.0001,
@@ -74,24 +74,24 @@ The following example shows a usage with every attributes specified.
         min_area=0.01,
     )
     my_numeric_format = geouned.NumericFormat(
-        P_abc="14.7e",
-        P_d="14.7e",
-        P_xyz="14.7e",
-        S_r="14.7e",
-        S_xyz="14.7e",
-        C_r="12f",
-        C_xyz="12f",
-        K_xyz="13.6e",
-        K_tan2="12f",
-        T_r="14.7e",
-        T_xyz="14.7e",
-        GQ_1to6="18.15f",
-        GQ_7to9="18.15f",
-        GQ_10="18.15f",
+        p_abc="14.7e",
+        p_d="14.7e",
+        p_xyz="14.7e",
+        s_r="14.7e",
+        s_xyz="14.7e",
+        c_r="12f",
+        c_xyz="12f",
+        k_xyz="13.6e",
+        k_tan2="12f",
+        t_r="14.7e",
+        t_xyz="14.7e",
+        gq_1_to_6="18.15f",
+        gq_7_to_9="18.15f",
+        gq_10="18.15f",
     )
 
     geo = geouned.CadToCsg(
-        stepFile="cuboid.stp,
+        step_filename="cuboid.stp,
         options=my_options,
         settings=my_settings,
         tolerances=my_tolerances,
