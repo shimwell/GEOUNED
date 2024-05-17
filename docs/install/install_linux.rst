@@ -147,18 +147,14 @@ Download
     curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
     bash Miniforge3-$(uname)-$(uname -m).sh
 
-Install Miniforge3
+Install Miniforge3.
+At the end of the installation you will be prompted to update the shell profile.
+Answering yes to this will make mamba available in the shell when reopened
+After this close and reopen your terminal.
 
 .. code-block:: sh
 
     bash Miniforge3-Linux-x86_64.sh
-
-
-Activate the base environment in your current terminal
-
-.. code-block:: sh
-
-    mamba activate
 
 
 It is recommended to create a new environment
