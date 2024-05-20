@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools >= 69.5.1", "setuptools_scm[toml]>=8.1.0"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools", "wheel", "scikit-build-core",  "setuptools_scm[toml]>=8.1.0"]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "geouned"
 license = {file = "LICENSE.txt"}
-dynamic = ["version"]
+version = "1.2.0"
 authors = [
   { name="Juan-Pablo Catalan", email="jpcatalan@ind.uned.es" },
   { name="Patrick Sauvan", email="psauvan@ind.uned.es" },
@@ -59,3 +59,10 @@ write_to = "src/_version.py"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[tool.scikit-build]
+cmake.verbose = true
+logging.level = "INFO"
+wheel.install-dir = "geouned/core"
+wheel.packages = ["geouned"]
+wheel.exclude = ["CMakeLists.txt", "*.pyx", "*.pxd"]
