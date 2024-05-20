@@ -1,10 +1,4 @@
-#
 # Script to obtain the Qform of a Cylinder
-#
-#
-#
-
-import math
 
 import FreeCAD
 
@@ -26,39 +20,6 @@ def rotation_matrix(u, v):
 
     # cose=math.cos(angle)
     # seno=math.sin(angle)
-    onecos = 1.0 - cose
-
-    # 1st row
-    R.A11 = cose + Axis.x**2 * onecos
-    R.A12 = Axis.x * Axis.y * onecos - Axis.z * seno
-    R.A13 = Axis.x * Axis.z * onecos + Axis.y * seno
-
-    # 2nd row
-    R.A21 = Axis.x * Axis.y * onecos + Axis.z * seno
-    R.A22 = cose + Axis.y**2 * onecos
-    R.A23 = Axis.y * Axis.z * onecos - Axis.x * seno
-
-    # 3rd row
-    R.A31 = Axis.z * Axis.x * onecos - Axis.y * seno
-    R.A32 = Axis.z * Axis.y * onecos + Axis.x * seno
-    R.A33 = cose + Axis.z**2 * onecos
-
-    return R
-
-
-# TODO check if this is being used
-def rotation_matrix_angle_axis(u, angle):
-    """Definition of the rotation matrix for an angle and the rotation axis"""
-
-    # defintion of the exis of rotation
-
-    Axis = u.normalize()
-
-    cose = math.cos(angle)
-    seno = math.sin(angle)
-
-    R = FreeCAD.Matrix()
-
     onecos = 1.0 - cose
 
     # 1st row

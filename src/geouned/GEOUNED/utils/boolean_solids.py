@@ -359,7 +359,7 @@ def remove_extra_surfaces(CellSeq, CTable):
                         val = True if CTable[s][s].val > 0 else False
                         subCell.substitute(s, val)
 
-                if type(subCell.elements) is bool:
+                if isinstance(subCell.elements, bool):
                     if subCell.elements is False:  #  cell does not intersect void box
                         continue
                     else:  # cell cover fully void box

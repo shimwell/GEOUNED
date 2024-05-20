@@ -264,7 +264,7 @@ class FaceGu(object):
 
     def distToShape(self, shape):
         shape1 = self.__face__
-        if type(shape) is Part.Shape:
+        if isinstance(shape, Part.Shape):
             shape2 = shape
         else:
             shape2 = shape.__face__
@@ -274,6 +274,7 @@ class FaceGu(object):
         else:
             try:
                 dist2Shape = shape1.distToShape(shape2)
+            # TODO specify the exception here instead of a bare except
             except:
                 dist2Shape = shape2.distToShape(shape1)
             return dist2Shape

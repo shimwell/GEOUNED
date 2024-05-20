@@ -24,26 +24,24 @@ class BoolSequence:
     """Class storing Boolean expression and operating on it"""
 
     def __init__(self, definition=None, operator=None):
+        self.elements = []
         if definition:
-            self.elements = []
             self.set_def(definition)
         else:
-            self.elements = []
             self.operator = operator
             self.level = 0
 
     def __str__(self):
-        out = f"{self.operator}["
-        if type(self.elements) is bool:
+        if isinstance(self.elements, bool):
             return " True " if self.elements else " False "
+        out = [f"{self.operator}["]
         for e in self.elements:
-            if type(e) is int or type(e) is bool or type(e) is str:
-                out += f" {e} "
+            if isinstance(e, (int, bool, str)):
+                out.append(f" {e} ")
             else:
-                out += e.__str__()
-
-        out += "] "
-        return out
+                out.append(e.__str__())
+        out.append("] ")
+        return "".join(out)
 
     def append(self, *seq):
         """Append a BoolSequence Objects. seq may be :

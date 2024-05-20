@@ -255,7 +255,7 @@ class GeounedSurface:
 
         self.shape = Face
 
-        if type(Face) is str:
+        if isinstance(Face, str):
             if Face == "Build":
                 self.build_surface()
 
@@ -646,6 +646,7 @@ def split_bop(solid, tools, tolerance, options, scale=0.1):
     else:
         try:
             compSolid = BOPTools.SplitAPI.slice(solid, tools, "Split", tolerance=tolerance)
+        # TODO name the type of error that is expected here instead of bare except
         except:
             compSolid = split_bop(solid, tools, tolerance * scale, options, scale)
 

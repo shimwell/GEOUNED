@@ -262,7 +262,7 @@ class VoidBox:
                     val = s > 0
                     voidSolidDef.substitute(abs(s), val)
                 voidSolidDef.clean()
-            if type(voidSolidDef.elements) is bool:
+            if isinstance(voidSolidDef.elements, bool):
                 res = voidSolidDef.elements
             else:
                 res = None
@@ -289,7 +289,7 @@ class VoidBox:
 
             for solDef in voidSolidDef.elements:
                 newSolid = remove_extra_surfaces(solDef, CTable)
-                if type(newSolid.elements) is not bool:
+                if isinstance(newSolid.elements, bool):
                     newTemp.append(newSolid)
                 elif newSolid.elements is True:
                     return None, None
@@ -321,7 +321,7 @@ class VoidBox:
             for comp in voidSolidDef.elements:
                 if simplify == "no":
                     comp.check()
-                    if type(comp.elements) is bool:
+                    if isinstance(comp.elements, bool):
                         chk = comp.elements
                     else:
                         chk = None
@@ -353,106 +353,10 @@ class VoidBox:
         complementary.clean()
         complementary.level_update()
 
-        if type(complementary.elements) is bool:
+        if isinstance(complementary.elements, bool):
             return None, None
         else:
             return complementary, cellIn
-
-    # TODO check this is used in the code
-    def get_box_number(self):
-        return len(self.Objects)
-
-    def get_numbers(self):
-        ns = 0
-        nb = 0
-
-        for m in self.Objects:
-            ns += len(m.Surfaces)
-            nb += len(m.Definition.elements) if m.Definition.level > 0 else 1
-
-        return ns, nb
-
-    def get_bound_planes(self):
-        Xmid = 0.5 * (self.BoundBox.XMin + self.BoundBox.XMax)
-        Ymid = 0.5 * (self.BoundBox.YMin + self.BoundBox.YMax)
-        Zmid = 0.5 * (self.BoundBox.ZMin + self.BoundBox.ZMax)
-        LX = self.BoundBox.ZMin + self.BoundBox.XLength
-        LY = self.BoundBox.ZMin + self.BoundBox.YLength
-        LZ = self.BoundBox.ZMin + self.BoundBox.ZLength
-        PXMin = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(self.BoundBox.XMin, Ymid, Zmid),
-                    FreeCAD.Vector(1, 0, 0),
-                    LY,
-                    LZ,
-                ),
-            ),
-            self.BoundBox,
-        )
-        PXMax = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(self.BoundBox.XMax, Ymid, Zmid),
-                    FreeCAD.Vector(-1, 0, 0),
-                    LY,
-                    LZ,
-                ),
-            ),
-            self.BoundBox,
-        )
-        PYMin = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(Xmid, self.BoundBox.YMin, Zmid),
-                    FreeCAD.Vector(0, 1, 0),
-                    LZ,
-                    LX,
-                ),
-            ),
-            self.BoundBox,
-        )
-        PYMax = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(Xmid, self.BoundBox.YMax, Zmid),
-                    FreeCAD.Vector(0, -1, 0),
-                    LZ,
-                    LX,
-                ),
-            ),
-            self.BoundBox,
-        )
-        PZMin = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(Xmid, Ymid, self.BoundBox.ZMin),
-                    FreeCAD.Vector(0, 0, 1),
-                    LX,
-                    LY,
-                ),
-            ),
-            self.BoundBox,
-        )
-        PZMax = GeounedSurface(
-            (
-                "Plane",
-                (
-                    FreeCAD.Vector(Xmid, Ymid, self.BoundBox.ZMax),
-                    FreeCAD.Vector(0, 0, -1),
-                    LX,
-                    LY,
-                ),
-            ),
-            self.BoundBox,
-        )
-
-        return (PXMin, PXMax, PYMin, PYMax, PZMin, PZMax)
 
     def __remove_extra_comp__(self, Obj, Box, mode="box"):
         reducedSol = []
