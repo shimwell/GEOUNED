@@ -23,7 +23,7 @@ def buildCAD(UnivCell, data, config):
     modelSurfaces = data.GetSurfaces(scale=factor)  # scale change cm in mcnp to mm in CAD Obj
 
     # read Cells and group into universes
-    print(config)
+
     levels, UniverseCells, modelSurfaces = data.GetFilteredCells(modelSurfaces, config)
 
     # assign to each cell the surfaces belonging to the cell

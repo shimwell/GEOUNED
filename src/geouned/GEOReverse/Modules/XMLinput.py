@@ -136,6 +136,9 @@ class XmlInput:
 
 def selectCells(cellList, config):
     selected = {}
+    # TODO the check below were not working so I've added the whole cell lsit for now.
+    # reimplement the checks
+    selected = cellList
     # options are 'all' material
     if config["mat"][0] == "all":
         if config["cell"][0] == "all":

@@ -248,6 +248,8 @@ def substituteLikeCell(universe, Surfaces):
 
 def selectCells(cellList, config):
     selected = {}
+    # setting to all cells as filtering not working
+    selected = cellList
     # options are 'all' material
     if config["mat"][0] == "all":
         if config["cell"][0] == "all":
